@@ -231,7 +231,7 @@ The basic structure for unit1_app:start/2 I've taken from Cowboy's
 
 This involves the following two steps:
 
- 1. Setting up the routes using <a href="https://ninenines.eu/docs/en/cowboy/2.7/manual/cowboy_router.compile/">cowboy_routher:compile/3</a>
+ 1. Setting up the routes using <a href="https://ninenines.eu/docs/en/cowboy/2.7/manual/cowboy_router.compile/">cowboy_router:compile/3</a>
  2. Launching a "listening loop" with <a href="https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy.start_clear/">cowboy:start_clear/3</a>
     for an http server or <a href="https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy.start_tls/">
     cowboy:start_tls/3</a> for an https server.
