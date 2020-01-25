@@ -19,7 +19,7 @@ Elixer, runs on OTP.
 
 Erlang is a "son of Prolog", which I like. But if you prefer Ruby, Elixer may be a better option. Erlang comes included in OTP,
 whereas Elixer &mdash; and a range of other languages such as <a href="https://github.com/rvirding/erlog">Erlog</a> which I'm keen to tinker with
-&mdash;are add-ons.
+&mdash; are add-ons.
 
 To get started with Erlang, head to <https://www.erlang.org/downloads>, download the latest `otp_src_<version number>.tar.gz`
 and follow the build instructions.
@@ -66,6 +66,6 @@ unit1/
     └── vm.args
 ```
 
-Unit 1: Basic, static page server
+[Unit 1](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit1): Basic, static page server
 
 
