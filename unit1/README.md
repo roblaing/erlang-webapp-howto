@@ -313,14 +313,16 @@ The first time you run this might take some time as it needs to download and bui
 Once it has finished, a new tree called `_build` will have appeared in the document root, which
 has a lot of branches and files in it.
 
-The key file we want is `_build/default/rel/unit1/bin/unit1` which is the script use to run our
+The key file we want is `_build/default/rel/unit1/bin/unit1` which is the script we use to run our
 new webserver.
 
 Invoking it without any arguments will bring up a list of options:
 
 ```bash
 ./_build/default/rel/unit1/bin/unit1
-Usage: unit1 {start|start_boot <file>|foreground|stop|restart|reboot|pid|ping|console|console_clean|console_boot <file>|attach|remote_console|upgrade|downgrade|install|uninstall|versions|escript|rpc|rpcterms|eval|status|undefined}
+Usage: unit1 {start|start_boot <file>|foreground|stop|restart|reboot|pid|ping|console|console_clean|
+              console_boot <file>|attach|remote_console|upgrade|downgrade|install|uninstall|versions|
+              escript|rpc|rpcterms|eval|status|undefined}
 ```
 
 While debugging fresh code, the safest option is probably:
