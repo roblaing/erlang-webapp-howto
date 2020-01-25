@@ -72,14 +72,14 @@ even those like me with some experience with Prolog.
       very significant &mdash; especially since Erlang does not have strings <em>per se</em> which I'll elaborate on in Unit 2.</p>
   </dd>
   <dt><a href="https://erlang.org/doc/man/proplists.html">Proplists</a>
-  <dd><p>The rebar.config file consists of something we'll see a lot of in Erlang, `{key, value}` tuples. The value of the
-      `{deps, [{cowboy, ...}]}` follows a pattern that is very common, lists of `[{key1, value1}, {key2, value2}, ...]` to
+  <dd><p>The rebar.config file consists of something we'll see a lot of in Erlang, {key, value} tuples. The value of the
+      {deps, [{cowboy, ...}]} follows a pattern that is very common, lists of [{key1, value1}, {key2, value2}, ...] to
       store key-value pairs. As I've attempted to show in the above Json example, this makes Erlang's proplists more akin
       to Json's objects, though when Erlang lists are not used for {key, value} tuples, they are identical to Json arrays.
       Erlang's <a href="https://erlang.org/doc/man/proplists.html#get_value-2">proplist:get_value(Key, List)</a> can be used
       to reference values in proplists.</p>
       <p>Erlang offers an alternative to proplists, <a href="https://erlang.org/doc/man/maps.html">maps</a> which use
-      `#{key1 => value1, key2 => value2,...}` which I generally prefer.</p>
+      #{key1 => value1, key2 => value2,...} syntax which I generally prefer.</p>
   </dd>
 </dl>
 
@@ -222,8 +222,6 @@ may not need arguments which others do.
 But in the case of the required two arity start function for applications, I can't figure out from the documentation I've seen so far
 what the purpose of these ignored arguments is.
 
-I can't figure from the documentation I've read so far what their purpose is.
-
 One of the attractions of Erlang is it creates a supervisor tree to automate recoveries from crashes, so 
 `unit1_sup:start_link().` which calls the start_link/0 function in unit1_sup.erl needs to remain the final
 <em>return</em> statement.
@@ -347,5 +345,27 @@ and
 ```
 
 To start and stop the web server.
+
+<h3>A quick rant about documentation system</h3>
+
+One of the ironies I've noted learning various programing languages is the worst documented part of most of them tends to be their documentation system, creating a vicious cycle of poor documentation.
+
+Conspiciously absent in the tree `rebar3 new release unit1` creates is a sister directory to `src/' called 'doc/' which should include a file
+called `overview.edoc` which becomes the home page when you use Erlang's [EDoc](http://erlang.org/doc/apps/edoc/chapter.html) package.
+
+On the other hand, the command `rebar3 edoc` makes generating Erlang's documentation a lot easier than figuring out the commands without
+this third-part application, and rebar3's release skeleton includes a github friendly README.md file, which is not entirely compatible 
+with EDoc's markup language &mdash; leading me to curse all the way through translating one to the other for this document.
+
+Vital things associated with Erlang's documentation are its <a href="https://erlang.org/doc/reference_manual/typespec.html">
+Types and Function Specifications</a> which also tie into Erlang's <a href="http://erlang.org/doc/man/dialyzer.html">dialyzer</a> system,
+which I'm guessing was inspired by Lesley Lamport's <a href="https://lamport.azurewebsites.net/tla/tla.html">TLA+</a>.
+
+When dealing with this kind of programming where inputs tend to be convoluted compound data, and the results cause the side-effect of something
+appearing on a web browser, carefully documenting these inputs and outputs is even more important than usual &mdash; and Erlang has a rich
+set of tools to do so, but I don't know how to use them when the input arguments are simply ignored and the function's result comes from a badly
+documented auxiliary function.
+
+
 
 
