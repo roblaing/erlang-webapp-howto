@@ -61,7 +61,7 @@ even those like me with some experience with Prolog.
 
 <dl>
   <dt><a href="https://erlang.org/doc/reference_manual/data_types.html#atom">Atoms</a>
-  <dd><p>Other programming languages tend to call atoms literals &mdash; <em>deps, cowboy, git</em>, and <em>branch</em> 
+  <dd><p>Other programming languages tend to call atoms <em>literals</em> &mdash; <em>deps, cowboy, git</em>, and <em>branch</em> 
       are all atoms in the above example. These must either start with a lower case
       letter or be enclosed in single quotes. In Prologish languages, 
       <a href="http://erlang.org/doc/reference_manual/expressions.html#variables">variables</a> 
@@ -72,14 +72,15 @@ even those like me with some experience with Prolog.
       very significant &mdash; especially since Erlang does not have strings <em>per se</em> which I'll elaborate on in Unit 2.</p>
   </dd>
   <dt><a href="https://erlang.org/doc/man/proplists.html">Proplists</a>
-  <dd><p>The rebar.config file consists of something we'll see a lot of in Erlang, {key, value} tuples. The value of the
-      {deps, [{cowboy, ...}]} follows a pattern that is very common, lists of [{key1, value1}, {key2, value2}, ...] to
+  <dd><p>The rebar.config file consists of something we'll see a lot of in Erlang, <code>{key, value}</code> tuples. The value of the
+      <code>{deps, [{cowboy, Value}]}</code> follows a pattern that is very common, lists of 
+      <code>[{key1, value1}, {key2, value2}, ...]</code> to
       store key-value pairs. As I've attempted to show in the above Json example, this makes Erlang's proplists more akin
       to Json's objects, though when Erlang lists are not used for {key, value} tuples, they are identical to Json arrays.
       Erlang's <a href="https://erlang.org/doc/man/proplists.html#get_value-2">proplist:get_value(Key, List)</a> can be used
       to reference values in proplists.</p>
       <p>Erlang offers an alternative to proplists, <a href="https://erlang.org/doc/man/maps.html">maps</a> which use
-      #{key1 => value1, key2 => value2,...} syntax which I generally prefer.</p>
+      <code>#{key1 => value1, key2 => value2,...}</code> syntax which I generally prefer.</p>
   </dd>
 </dl>
 
@@ -119,8 +120,8 @@ to balance square and curly brackets.
 The third element in the `{application, Application, Proplist}.` tuple found in the 
 <a href="https://erlang.org/doc/design_principles/applications.html#application-resource-file">
 application resource file</a>, which rebar3 creates a skeleton of in `pps/unit1/src/unit1.app.src`,
-is a proplist. The `{key, value}` tuple we need to edit has the key applications followed by a list
-which always constains `[kernel, stdlib]` to provide Erlang's standard builtin functions (BIFs to their friends).
+is a proplist. The `{key, value}` tuple we need to edit has the key <code>applications</code> followed by a list
+which always contains `[kernel, stdlib]` to provide Erlang's standard builtin functions (BIFs to their friends).
 To include cowboy, it needs to be added to this list.
 
 ```
@@ -266,7 +267,7 @@ start(_StartType, _StartArgs) ->
 
 A tip suggested in the <a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/routing/">routing</a> chapter
 of the Cowboy User Guide is to store Dispatch as a <a href="https://erlang.org/doc/man/persistent_term.html">
-persistent_term</a>, refering to it later as `unit1_routes` (or whatever name makes sense to you) instead of Dispatch later.
+persistent_term</a>, refering to it later as `unit1_routes` (or whatever name makes sense to you) instead of Dispatch.
 
 ```erlang
   persistent_term:put(unit1_routes, Dispatch),
