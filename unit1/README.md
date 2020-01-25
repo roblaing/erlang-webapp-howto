@@ -346,11 +346,11 @@ and
 
 To start and stop the web server.
 
-<h3>A quick rant about documentation system</h3>
+<h3>A quick rant about documentation systems</h3>
 
 One of the ironies I've noted learning various programing languages is the worst documented part of most of them tends to be their documentation system, creating a vicious cycle of poor documentation.
 
-Conspiciously absent in the tree `rebar3 new release unit1` creates is a sister directory to `src/' called 'doc/' which should include a file
+Conspiciously absent in the tree `rebar3 new release unit1` creates is a sister directory to `src/` called `doc/` which should include a file
 called `overview.edoc` which becomes the home page when you use Erlang's [EDoc](http://erlang.org/doc/apps/edoc/chapter.html) package.
 
 On the other hand, the command `rebar3 edoc` makes generating Erlang's documentation a lot easier than figuring out the commands without
