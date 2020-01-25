@@ -65,8 +65,8 @@ even those like me with some experience with Prolog.
       are all atoms in the above example. These must either start with a lower case
       letter or be enclosed in single quotes. In Prologish languages, 
       <a href="http://erlang.org/doc/reference_manual/expressions.html#variables">variables</a> 
-      always start with upper case letters or underscores, so atoms need to start with lower case letters or be bounded 
-      by single quotes to indicate they are not variables. </p>
+      always start with upper case letters or underscores, so atoms need to start with lower case letters or be within 
+      single quotes to indicate they are not variables. </p>
       <p>A gotcha in Json is anything except a <em>number, true, false</em>, or <em>null</em> has to be double quoted,
       and single quotes are only used within strings. In Erlang, the difference between single and double quotes is 
       very significant &mdash; especially since Erlang does not have strings <em>per se</em> which I'll elaborate on in Unit 2.</p>
@@ -275,8 +275,8 @@ persistent_term</a>, refering to it later as `unit1_routes` (or whatever name ma
 <h3>Listening</h3>
 
 Here we link our application to a port number. For some reason (some long forgotten tutorial) I got into the habit of using
-3030 instead of the more conventional 8080. I suspect one should be able to pick whatever port number as an argument passed 
-by the start script to the unusued StartArgs, but I don't know how, so am leaving it hardwired in the code for now.
+3030 instead of the more conventional 8080. I assume one should be able to pick whatever port number as an argument passed 
+by the start script to the unused StartArgs, but I don't know how, so am leaving it hardwired in the code for now.
 
 As mentioned above, Cowboy gives you a choice of an http or https listener.
 
