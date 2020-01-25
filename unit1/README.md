@@ -46,13 +46,12 @@ In Json, the above would look something like
 
 ```json
 {
-  "deps": [
-    { "cowboy":
-      { "git": "https://github.com/ninenines/cowboy.git",
-        "branch": "master"
-      }
-    }
-  ]
+	"deps": [{
+		"cowboy": {
+			"git": "https://github.com/ninenines/cowboy.git",
+			"branch": "master"
+		}
+	}]
 }
 ```
 
