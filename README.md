@@ -34,20 +34,20 @@ Abandoning inets, I opted for a third-party Erlang web server library, <a href="
 
 Adding third-party libraries to your Erlang project is very easy once you've decided between <a href="https://www.rebar3.org/">rebar3</a>
 or <a href="https://erlang.mk/">erlang.mk</a>. I've gone for rebar3. Though the Cowboy beginner tutorial uses erlang.mk (they share developers),
-I've used rebar3 and found it very easy.
+I've used rebar3 with Cowboy and found it very easy.
 
 So to get started, you need to install OTP and rebar3 by following the instructions on their respective websites.
 
 For an overview of using rebar3, I suggest an online book <a href="https://adoptingerlang.org/">Adopting Erlang</a> which includes links to
 the many other educational resources available to Erlang learners.
 
-Step 1 is (from whatever project root directory you are using, to invoke
+Step 1 is (from whatever project root directory you are using) to invoke
 
 ```bash
 rebar3 new release unit1
 ```
 
-which will a tree of subdirectories and skeleton files which looks like:
+which will create a tree of subdirectories and skeleton files which looks like:
 
 ```
 unit1/
@@ -65,5 +65,7 @@ unit1/
     ├── sys.config
     └── vm.args
 ```
+
+Unit 1: Basic, static page server
 
 

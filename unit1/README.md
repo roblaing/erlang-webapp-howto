@@ -1,0 +1,351 @@
+<h1>Unit 1: Basic, static page server</h1>
+
+Assuming you have run `rebar3 new release unit1` and have the following subdirectories:
+
+```
+unit1/
+├── .gitignore    
+├── rebar.config
+├── LICENSE
+├── README.md
+├── apps/
+│   └──unit1/
+│      └── src/
+│          ├── unit1_app.erl
+│          ├── unit1_sup.erl
+│          └── unit1.app.src
+└── config/
+    ├── sys.config
+    └── vm.args
+```
+
+I'm assuming you are in the `unit1/` project root directory when running `rebar3 release` to build the application
+in the remainder of this tutorial. But first we need to edit some of the skeleton files
+
+<h2>Add cowboy as a dependency in rebar3.config</h2>
+
+Looking at the rebar.config file, which is in the project root directory, you'll see it has four curly bracketed data structures
+of which the second one, `{deps, []}`, is the one we want to edit to:
+
+```erlang
+{deps, [ {cowboy, {git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}}
+       ]
+}.
+```
+
+This simple edit will prompt rebar3 to download, install and build Cowboy (if it hasn't already).
+
+<h3>Quick digression into Erlang's data types</h3>
+
+Erlang's curly bracketed <a href="https://erlang.org/doc/reference_manual/data_types.html#tuple">tuples</a> 
+and square bracketed <a href="https://erlang.org/doc/reference_manual/data_types.html#list">lists</a>
+look similar to Json's objects and arrays, and they essentially serve the same purpose. 
+
+In Json, the above would look something like
+
+
+```json
+{
+  "deps": [
+    { "cowboy":
+      { "git": "https://github.com/ninenines/cowboy.git",
+        "branch": "master"
+      }
+    }
+  ]
+}
+```
+
+But there are subtle differences between Erlang's data conventions and Json which are bound to trip up novices, 
+even those like me with some experience with Prolog.
+
+<dl>
+  <dt><a href="https://erlang.org/doc/reference_manual/data_types.html#atom">Atoms</a>
+  <dd><p>Other programming languages tend to call atoms literals &mdash; <em>deps, cowboy, git</em>, and <em>branch</em> 
+      are all atoms in the above example. These must either start with a lower case
+      letter or be enclosed in single quotes. In Prologish languages, 
+      <a href="http://erlang.org/doc/reference_manual/expressions.html#variables">variables</a> 
+      always start with upper case letters or underscores, so atoms need to start with lower case letters or be bounded 
+      by single quotes to indicate they are not variables. </p>
+      <p>A gotcha in Json is anything except a <em>number, true, false</em>, or <em>null</em> has to be double quoted,
+      and single quotes are only used within strings. In Erlang, the difference between single and double quotes is 
+      very significant &mdash; especially since Erlang does not have strings <em>per se</em> which I'll elaborate on in Unit 2.</p>
+  </dd>
+  <dt><a href="https://erlang.org/doc/man/proplists.html">Proplists</a>
+  <dd><p>The rebar.config file consists of something we'll see a lot of in Erlang, `{key, value}` tuples. The value of the
+      `{deps, [{cowboy, ...}]}` follows a pattern that is very common, lists of `[{key1, value1}, {key2, value2}, ...]` to
+      store key-value pairs. As I've attempted to show in the above Json example, this makes Erlang's proplists more akin
+      to Json's objects, though when Erlang lists are not used for {key, value} tuples, they are identical to Json arrays.
+      Erlang's <a href="https://erlang.org/doc/man/proplists.html#get_value-2">proplist:get_value(Key, List)</a> can be used
+      to reference values in proplists.</p>
+      <p>Erlang offers an alternative to proplists, <a href="https://erlang.org/doc/man/maps.html">maps</a> which use
+      `#{key1 => value1, key2 => value2,...}` which I generally prefer.</p>
+  </dd>
+</dl>
+
+Don't forget to end expressions with a full stop. The rebar.config file uses four separate `{key, value}` tuples instead of placing
+them in a list, and each one ends with an individual full stop. Even as a relatively experienced Prolog programmer, I often
+get error messages for forgetting to end code blocks with a full stop.
+
+<h3>Style tip: use leading commas</h3>
+
+A habit I picked up from reading SQL code was to start, rather than end, elements in lists with their separating commas.
+This means, rather than write `[{key1, value1}, {key2, value2}, ...]`, write
+
+```
+[ {key1, value1}
+, {key2, value2}
+...
+]
+```
+
+This becomes especially handy when value1 is a nested proplist within a proplist, in turn containing deeper nested proplists.
+Even though my text editor (gedit) highlights matching parenthesis, I still find stacking them like this makes it a lot easier
+to balance square and curly brackets.
+
+```
+[ { key1
+  , value1
+  }
+, { key2
+  , value2
+  }
+...
+]
+```
+
+<h2>Add cowboy to the list of applications to start in apps/unit1/src/unit1.app.src</h2>
+
+The third element in the `{application, Application, Proplist}.` tuple found in the 
+<a href="https://erlang.org/doc/design_principles/applications.html#application-resource-file">
+application resource file</a>, which rebar3 creates a skeleton of in `pps/unit1/src/unit1.app.src`,
+is a proplist. The `{key, value}` tuple we need to edit has the key applications followed by a list
+which always constains `[kernel, stdlib]` to provide Erlang's standard builtin functions (BIFs to their friends).
+To include cowboy, it needs to be added to this list.
+
+```
+  {applications,
+   [ kernel,
+   , stdlib
+   , cowboy
+   ]},
+```
+
+<h2>Serving index.html</h2>
+
+The first thing we typically want to do with any web application framework is get it to load an index.html file with related stylesheets,
+graphics and Javascript files from `http://localhost:<portnumber>`, which can be surprisingly difficult with many of them.
+
+Cowboy does this very easily, though you need to skip to
+<a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/static_files/">Chapter 11</a>
+of its users guide and ignore the opening paragraphs advising you not to use it to serve static files.
+
+Before getting into coding routers and handlers, lets create our index.html and associated files. I assume you already have some,
+and if not, suggest working through Mozilla's 
+<a href="https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web">beginner's tutorial</a>. I'm going to make a subdirectly
+`priv/` as a sibling of the `src/` subdirectory in `apps/unit1/`, and then create `images/`, `styles/`, and `scripts/` folders as suggested by
+<a href="https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/Dealing_with_files">Dealing with files</a> in the Mozilla
+tutorial.
+
+After creating some content, my tree now looks something like this:
+
+```
+unit1/
+├── .gitignore    
+├── rebar.config
+├── LICENSE
+├── README.md
+├── apps/
+│   └──unit1/
+│      ├── priv/
+│      │   ├── index.html
+│      │   ├── images/
+│      │   │   ├── dove.png
+│      │   │   ├── favorite-1.jpg
+│      │   │   └── favorite-4.jpg
+│      │   ├── scripts/
+│      │   │   └── validator.js
+│      │   └── styles/
+│      │       └── style.css
+│      └── src/
+│          ├── unit1_app.erl
+│          ├── unit1_sup.erl
+│          └── unit1.app.src
+└── config/
+    ├── sys.config
+    └── vm.args
+```
+
+<h2>Fleshing out apps/unit1/src/unit1_app.erl</h2>
+
+Erlang and Cowboy very much follows the Rails' <em>convention over configuration</em> school, which makes coding something
+of a <em>paint by numbers</em> job. Opening `apps/unit1/src/unit1_app.erl` shows this skeleton:
+
+```erlang
+%%%-------------------------------------------------------------------
+%% @doc unit1 public API
+%% @end
+%%%-------------------------------------------------------------------
+
+-module(unit1_app).
+
+-behaviour(application).
+
+-export([start/2, stop/1]).
+
+start(_StartType, _StartArgs) ->
+    unit1_sup:start_link().
+
+stop(_State) ->
+    ok.
+
+%% internal functions
+```
+
+The first line of code after comments in every Erlang module is `-module(Modulename).` where Modulename is an atom matching the filename
+without the .erl suffix.
+
+The `export([Function1/N,...]).` allows the fuctions in the module to be called as `Modulename:Function(Arg1, ..., ArgN)` by other modules.
+Functions not included in the export list are private to that specific module.
+
+All we typically want to do with web servers is start and stop them, which Erlang along with rebar3 makes very easy with a script 
+&mdash; which will be called <em>unit1</em> since that is what I called this project &mdash; which we'll get to soon.
+
+<h2>Module:start/2</h2>
+
+There is rather sketchy documentation for the <a href="http://erlang.org/doc/apps/kernel/application.html#Module:start-2">start/2</a>
+function required by modules which have selected `-behaviour(application)`. The underscores to the two arguments in the start function
+follow a Prolog convention of telling the compiler to ignore arguments which are not used in the body of the function. This happens
+in Prologish languages because the same `function_name(Arg1, Arg2, ...)` can be used to handle different cases, and some of these cases
+may not need arguments which others do.
+
+But in the case of the required two arity start function for applications, I can't figure out from the documentation I've seen so far
+what the purpose of these ignored arguments is.
+
+I can't figure from the documentation I've read so far what their purpose is.
+
+One of the attractions of Erlang is it creates a supervisor tree to automate recoveries from crashes, so 
+`unit1_sup:start_link().` which calls the start_link/0 function in unit1_sup.erl needs to remain the final
+<em>return</em> statement.
+
+The basic structure for unit1_app:start/2 I've taken from Cowboy's 
+<a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/getting_started/">getting started</a> tutorial.
+
+This involves the following two steps:
+
+ 1. Setting up the routes using <a href="https://ninenines.eu/docs/en/cowboy/2.7/manual/cowboy_router.compile/">cowboy_routher:compile/3</a>
+ 2. Launching a "listening loop" with <a href="https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy.start_clear/">cowboy:start_clear/3</a>
+    for an http server or <a href="https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy.start_tls/">
+    cowboy:start_tls/3</a> for an https server.
+ 
+<h3>Routing</h3>
+
+Since I've placed my html content in the `priv/` subdirectory, I can use cowboy's priv_file and priv_dir atoms to find them:
+
+```erlang
+start(_StartType, _StartArgs) ->
+  Dispatch = cowboy_router:compile([{'_', % Set Host to any
+    [ {"/"              , cowboy_static, {priv_file, unit1, "index.html"}}
+    , {"/images/[...]"  , cowboy_static, {priv_dir,  unit1, "images"}}
+    , {"/styles/[...]"  , cowboy_static, {priv_dir,  unit1, "styles"}}
+    , {"/scripts/[...]" , cowboy_static, {priv_dir,  unit1, "scripts"}}
+    ]}]),
+  ...
+```
+
+If I want to keep my content in, say, `/var/www`, my routers would look like:
+
+```erlang
+start(_StartType, _StartArgs) ->
+  Dispatch = cowboy_router:compile([{'_', % Set Host to any
+    [ {"/"             , cowboy_static, {file, "/var/www/index.html"}}
+    , {"/images/[...]" , cowboy_static, {dir,  "/var/www/images"}}
+    , {"/styles/[...]" , cowboy_static, {dir,  "/var/www/styles"}}
+    , {"/scripts/[...]", cowboy_static, {dir,  "/var/www/scripts"}}
+    ]}]),
+  ...
+```
+
+A tip suggested in the <a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/routing/">routing</a> chapter
+of the Cowboy User Guide is to store Dispatch as a <a href="https://erlang.org/doc/man/persistent_term.html">
+persistent_term</a>, refering to it later as `unit1_routes` (or whatever name makes sense to you) instead of Dispatch later.
+
+```erlang
+  persistent_term:put(unit1_routes, Dispatch),
+``` 
+
+<h3>Listening</h3>
+
+Here we link our application to a port number. For some reason (some long forgotten tutorial) I got into the habit of using
+3030 instead of the more conventional 8080. I suspect one should be able to pick whatever port number as an argument passed 
+by the start script to the unusued StartArgs, but I don't know how, so am leaving it hardwired in the code for now.
+
+As mentioned above, Cowboy gives you a choice of an http or https listener.
+
+```erlang
+start(_StartType, _StartArgs) ->
+  ...
+  persistent_term:put(unit1_routes, Dispatch),
+  cowboy:start_clear(unit1_http_listener,
+   [{port, 3030}],
+   #{env => #{dispatch => {persistent_term, unit1_routes}}}
+  ),
+  unit1_sup:start_link().
+```
+
+<h2>Module:stop/1</h2>
+
+The documentation for <a href="http://erlang.org/doc/apps/kernel/application.html#Module:stop-1">Module:stop/1</a>
+provides few clues.
+
+The <a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/listeners/">listener</a> section of the Cowboy's User Guide
+suggests a small change to the default skeleton.
+
+```
+stop(_State) ->
+  ok = cowboy:stop_listener(unit1_http_listener).
+```
+
+<h2>Building</h2>
+
+This simply requires running ```rebar3 release``` in the project root directory.
+
+The first time you run this might take some time as it needs to download and build Cowboy.
+
+Once it has finished, a new tree called `_build` will have appeared in the document root, which
+has a lot of branches and files in it.
+
+The key file we want is `_build/default/rel/unit1/bin/unit1` which is the script use to run our
+new webserver.
+
+Invoking it without any arguments will bring up a list of options:
+
+```bash
+./_build/default/rel/unit1/bin/unit1
+Usage: unit1 {start|start_boot <file>|foreground|stop|restart|reboot|pid|ping|console|console_clean|console_boot <file>|attach|remote_console|upgrade|downgrade|install|uninstall|versions|escript|rpc|rpcterms|eval|status|undefined}
+```
+
+While debugging fresh code, the safest option is probably:
+
+```
+./_build/default/rel/unit1/bin/unit1 console
+```
+
+This launches the http daemon and leaves you at the erl REPL command line to see any error messages or warnings that appear when
+you point your browser to `http://localhost:3030` (assuming you haven't picked a different port number).
+
+Once in production, use
+
+```
+./_build/default/rel/unit1/bin/unit1 start
+```
+
+and 
+
+```
+./_build/default/rel/unit1/bin/unit1 stop
+```
+
+To start and stop the web server.
+
+
