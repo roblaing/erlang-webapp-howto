@@ -39,7 +39,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
       ),
       {ok, Req, State};
     true ->
-      Content = template("/home/roblaing/tuts/erlang/cowboy_eg/apps/cowboy_eg/priv/form.html", 
+      Content = template(code:priv_dir(unit2) ++ "/form.html", 
        [ binary_to_atom(Name, utf8)
        , NameError
        , binary_to_atom(Email, utf8)

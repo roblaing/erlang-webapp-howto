@@ -231,12 +231,13 @@ This means I need to remember to use my Name variable twice in the Args list my 
 
 ```erlang
   ...
-  Content = template("/var/www/welcome.html", [Name, Name]),
+  Content = template(code:priv_dir(unit2) ++ "/welcome.html", [Name, Name]),
   ... 
 ```
 
-Note I also need to put the full pathname to my welcome.html file (my simple template function doesn't offer anything as fancy as
-Cowboy's `priv_file` to abstract paths).
+Note the above 
+<a href="https://erlang.org/doc/man/code.html#priv_dir-1">code:priv_dir(ModuleName)</a>
+assumes welcome.html is in priv/ subdirectory of the application. Alternatively, you can use the full pathname.
 
 Calling the welcome URL without a name, ie <code>http://localhost:3030/welcome</code> leads to a 404 error, which I only know from
 having pressed F12 in Firefox to open the developer screen. The browser screen itself is simply blank &mdash; problems I need to

@@ -5,7 +5,7 @@
 
 init(Req0, State) ->
   Name = maps:get(name, maps:get(bindings, Req0)),
-  Content = template("/var/www/welcome.html", [Name, Name]),  
+  Content = template(code:priv_dir(unit2) ++ "/welcome.html", [Name, Name]),  
   Req = cowboy_req:reply(200,
     #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
      },
