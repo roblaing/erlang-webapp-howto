@@ -158,6 +158,17 @@ I've borrowed a bit from for these tutorials.
 
 I'm starting at the <em>end</em> page since it's simpler than the form handler, and illustrates permalinks.
 
+As explained in the <a href="https://ninenines.eu/docs/en/cowboy/2.2/guide/routing/">routing</a> section of the Cowboy
+User Guide, directoy names prefixed with a colon as with <code>"/welcome/:name"</code> become variable names.
+
+It is also worth looking at what is inside Cowboy's <a href="https://ninenines.eu/docs/en/cowboy/2.2/guide/req/">Req0</a> 
+variable that a cowboy_handler's <code>init(Req0, State)</code> receives.
+
+If I enter the URL <code>http://localhost:3030/welcome/John Smith</code>, the above <em>PathMatch "/welcome/:name"</em> sends a
+nested map to the 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/welcome_handler.erl">
+welcome_handler</a> which looks like this:
+
 ```erlang
 #{bindings => #{name => <<"John Smith">>},
   body_length => 0,cert => undefined,has_body => false,
@@ -180,5 +191,69 @@ I'm starting at the <em>end</em> page since it's simpler than the form handler, 
   streamid => 2,version => 'HTTP/1.1'}
 ```
 
+Extracting "John Smith" from this involves first getting the value of <code>bindings</code> from Req0 by calling
+<code>maps:get(bindings, Req0)</code> which returns the map <code>#{name => <<"John Smith">>}</code>, which I then
+have get the value of <code>name</code> from.
+
+I did this with nested maps:get/2 functions
+
+```erlang
+  ...
+  Name = maps:get(name, maps:get(bindings, Req0)),
+  ...
+```
+
+In this case, Name is now the binary <code><<"John Smit">></code> which <code>io_lib:format(Template, Args)</code> can handle.
+I've used two <code>~s</code> in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/priv/welcome.html">
+welcome.html</a>, once in the title and once in the body:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>~s's Home Page</title>
+    <link rel="stylesheet" href="/styles/form.css">
+  </head>
+  <body>
+    <h1>Welcome ~s!</h2>
+  </body>
+</html>
+```
+This means I need to remember to use my Name variable twice in the Args list my template/2 function passes to io_lib:format/2:
+
+```erlang
+  ...
+  Content = template("/var/www/welcome.html", [Name, Name]),
+  ... 
+```
+
+Note I also need to put the full pathname to my welcome.html file (my simple template function doesn't offer anything as fancy as
+Cowboy's `priv_file` to abstract paths).
+
+Calling the welcome URL without a name, ie <code>http://localhost:3030/welcome</code> leads to a 404 error, which I only know from
+having pressed F12 in Firefox to open the developer screen. The browser screen itself is simply blank &mdash; problems I need to
+address sometime, but not yet.
+
+<h4>Form page</h4>
+
+The <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>
+I wrote battling to get to grips with Erlang's three string types and what can and cannot be used as a guard. For instance,
+<code>byte_size(Name) > 0</code> is a permissable guard, but when I tried to first convert Name from a binary to a character code list
+and use <code>string:length(Name) > 0</code>, the compiler threw an <em>illegal guard expression</em> error.
+
+The idea of guards I kinda understand, they are based on the classics of 
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.97&rep=rep1&type=pdf>Edsger Dijkstra's guarded commands</a> along with
+various papers from Tony Hoare and other giants of computer science.
+
+While I think guards are great, Erlang's implementation seems a bit arbitrary and frustrating to me.
+
+Anyways, my spaghetti code in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler.erl</a>
+yielded the desired result of either redrawing the form with error messages or redirecting to a welcome page.
+
+The need to check user data will come up in Unit 4 when I create a cookie-based login system. For this simple example, it is more efficient
+to do the checks in the browser using Javascript, so mainly to refresh my own knowledge, I've added it here.
 
 

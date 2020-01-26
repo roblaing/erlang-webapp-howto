@@ -38,7 +38,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
         Req0
       ),
       {ok, Req, State};
-	  true ->
+    true ->
       Content = template("/home/roblaing/tuts/erlang/cowboy_eg/apps/cowboy_eg/priv/form.html", 
        [ binary_to_atom(Name, utf8)
        , NameError
@@ -55,7 +55,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
         Req0
       ),
       {ok, Req, State}
-	end.
+  end.
 
 template(FileName, ArgList) ->
   {ok, Binary} = file:read_file(FileName),
