@@ -154,10 +154,10 @@ Typically with a web form you want to validate the user input, and if it is corr
 but if there are missing or wrong answers, back to the form with hints on what needs to be done, and the original inputs held
 so as not to force the exasperated user to start from scratch.
 
-This pretty basic stuff, which many web application frameworks make impossible, (the inets library which comes with OTP for instance).
+This is pretty basic stuff, which many web application frameworks make impossible, (the inets library which comes with OTP for instance).
 
-Luckily, Cowboy makes this all fairly easy. It also has a nifty <em>permalink</em> very similar to Google app engine (which is the one
-I'm most familiar with from doing the Udacity web development course given by Reddid founder Steve Huffman a few years ago, which
+Luckily, Cowboy makes this all fairly easy. It also has a nifty <em>permalink</em> very similar to Google app engine, which is the one
+I'm most familiar with from doing the Udacity web development course given by Reddid founder Steve Huffman a few years ago that
 I've borrowed a bit from for these tutorials.
 
 <h4>Welcome page</h4>
