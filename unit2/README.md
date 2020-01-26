@@ -270,7 +270,7 @@ with garbage data. Again, I'm using a Mozilla
 In this example, no Javascript is needed since simply editing the html to include a <code>required</code> attribute as in:
 
 ```html
-					<input type="text" id="name" name="user_name" value="~s" required/>
+          <input type="text" id="name" name="user_name" value="~s" required/>
 ```
 will get the browser to insist the user fill in the fields before submitting.
 
@@ -327,36 +327,36 @@ and my modified form.html looks like this:
 ```html
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
+  <head>
+    <meta charset="utf-8" />
     <title>Your first HTML form, styled</title>
     <link rel="stylesheet" href="/styles/form.css">
     <script src="/scripts/form.js" defer></script>
   </head>
   <body>
-		<form onsubmit="return validateForm()" method="post">
-			<ul>
-				<li>
-					<label for="name">Name:</label>
-					<input type="text" id="name" name="user_name" value="~s"/>
-					<span class="error" id="name_error">~s</span>
-				</li>
-				<li>
-					<label for="mail">E-mail:</label>
-					<input type="email" id="mail" name="user_mail" value="~s"/>
-					<span class="error" id="mail_error">~s</span>
-				</li>
-				<li>
-					<label for="msg">Message:</label>
-					<textarea id="msg" name="user_message">~s</textarea>
+    <form onsubmit="return validateForm()" method="post">
+      <ul>
+        <li>
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="user_name" value="~s"/>
+          <span class="error" id="name_error">~s</span>
+        </li>
+        <li>
+          <label for="mail">E-mail:</label>
+          <input type="email" id="mail" name="user_mail" value="~s"/>
+          <span class="error" id="mail_error">~s</span>
+        </li>
+        <li>
+          <label for="msg">Message:</label>
+          <textarea id="msg" name="user_message">~s</textarea>
           <span class="error" id="msg_error">~s</span>
-				</li>
-				<li class="button">
-					<button type="submit">Send your message</button>
-				</li>
-			</ul>
-		</form>
-	</body>
+        </li>
+        <li class="button">
+          <button type="submit">Send your message</button>
+        </li>
+      </ul>
+    </form>
+  </body>
 </html>
 ```
 
