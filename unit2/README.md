@@ -26,7 +26,7 @@ template(FileName, ArgList) ->
   list_to_binary(io_lib:format(Binary, ArgList)).
 ```
 
-The file loaded from FileName is a standard HTML file with <code>~s</code> written wherever I want to create a <em>hole</e>
+The file loaded from FileName is a standard HTML file with <code>~s</code> written wherever I want to create a <em>hole</em>
 to be filled by substituting a string from ArgList. The strings in ArgList have to be exactly in the order of <code>~s</code> and 
 the length of ArgList has to match the number of tilde esses.
 
@@ -124,7 +124,6 @@ seems to be missing):
 -behavior(cowboy_handler).
 
 -export([init/2]).
-
 ```
 
 A skeleton init function looks like:
