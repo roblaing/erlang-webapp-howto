@@ -33,7 +33,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
   if 
     NameError =:= '', EmailError =:= '', MessageError =:= '' ->
       Req = cowboy_req:reply(303,
-        #{ <<"location">> => list_to_binary("/welcome/" ++ io_lib:format("~s", [Name]))
+        #{ <<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))
          },
         Req0
       ),

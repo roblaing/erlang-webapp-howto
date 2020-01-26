@@ -159,7 +159,7 @@ I've borrowed a bit from for these tutorials.
 I'm starting at the <em>end</em> page since it's simpler than the form handler, and illustrates permalinks.
 
 As explained in the <a href="https://ninenines.eu/docs/en/cowboy/2.2/guide/routing/">routing</a> section of the Cowboy
-User Guide, directoy names prefixed with a colon as with <code>"/welcome/:name"</code> become variable names.
+User Guide, directory names prefixed with a colon as with <code>"/welcome/:name"</code> become variable names.
 
 It is also worth looking at what is inside Cowboy's <a href="https://ninenines.eu/docs/en/cowboy/2.2/guide/req/">Req0</a> 
 variable that a cowboy_handler's <code>init(Req0, State)</code> receives.
@@ -239,12 +239,12 @@ address sometime, but not yet.
 <h4>Form page</h4>
 
 The <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>
-I wrote battling to get to grips with Erlang's three string types and what can and cannot be used as a guard. For instance,
+I wrote results from by battle to get to grips with Erlang's three string types and what can and cannot be used as a guard. For instance,
 <code>byte_size(Name) > 0</code> is a permissable guard, but when I tried to first convert Name from a binary to a character code list
 and use <code>string:length(Name) > 0</code>, the compiler threw an <em>illegal guard expression</em> error.
 
-The idea of guards I kinda understand, they are based on the classics of 
-<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.97&rep=rep1&type=pdf>Edsger Dijkstra's guarded commands</a> along with
+The idea of guards I kinda understand, they are based on the classic theories of 
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.97&rep=rep1&type=pdf">Edsger Dijkstra's guarded commands</a> along with
 various papers from Tony Hoare and other giants of computer science.
 
 While I think guards are great, Erlang's implementation seems a bit arbitrary and frustrating to me.
