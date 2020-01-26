@@ -209,7 +209,7 @@ stop(_State) ->
 The first line of code after comments in every Erlang module is `-module(Modulename).` where Modulename is an atom matching the filename
 without the .erl suffix.
 
-The `export([Function1/N,...]).` allows the fuctions in the module to be called as `Modulename:Function(Arg1, ..., ArgN)` by other modules.
+The `export([Function1/N,...]).` allows the functions in the module to be called as `Modulename:Function(Arg1, ..., ArgN)` by other modules.
 Functions not included in the export list are private to that specific module.
 
 All we typically want to do with web servers is start and stop them, which Erlang along with rebar3 makes very easy with a script 
