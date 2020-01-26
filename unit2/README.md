@@ -1,4 +1,4 @@
-<h1>Unit2: Forms with validation and redirection</h2>
+<h1>Unit 2: Forms with validation and redirection</h2>
 
 Step1 is run `rebar3 new release unit2` and add cowboy as a dependency in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/rebar.config">rebar.config</a> 
@@ -113,6 +113,10 @@ Next we need to create two new modules in <code>apps/unit2/src</code> called
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler.erl</a> and 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/welcome_handler.erl">welcome_handler.erl</a>.
 
+You don't have to add form_handler and welcome_handler (along with unit2_app and unit2_sup) to <code>{modules, [...]}</code> in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/unit2.app.src">apps/unit2/src/unit2.app.src</a>
+because rebar3 will do it for you in _build/default/lib/unit2/ebin/unit2.app when you run `rebar3 release`.
+ 
 A drawback of using rebar3 instead of Cowboy-aligned erlang.mk is there is no `make new t=cowboy.http n=hello_handler` to create a skeleton
 file.
 
