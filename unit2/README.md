@@ -115,19 +115,21 @@ Next we need to create two new modules in <code>apps/unit2/src</code> called
 
 You don't have to add form_handler and welcome_handler (along with unit2_app and unit2_sup) to <code>{modules, [...]}</code> in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/unit2.app.src">apps/unit2/src/unit2.app.src</a>
-because rebar3 will do it for you in _build/default/lib/unit2/ebin/unit2.app when you run `rebar3 release`.
+because if you look at the required <a href="https://erlang.org/doc/man/app.html">application resource file</a> in 
+_build/default/lib/unit2/ebin/unit2.app,
+you'll see all the required module names magically appeared there when you ran `rebar3 release`.
  
 A drawback of using rebar3 instead of Cowboy-aligned erlang.mk is there is no `make new t=cowboy.http n=hello_handler` to create a skeleton
 file.
 
-The key things are a Cowboy handler needs to have <code>-behavior(cowboy_handler).</code> and
-<code>-export([init/2]).</code> (which whould be explained in the
+The key things are a Cowboy handler needs to have <code>-behaviour(cowboy_handler).</code> and
+<code>-export([init/2]).</code> (which should be explained in the
 <a href="https://ninenines.eu/docs/en/cowboy/2.2/guide/handlers/">handlers</a> section of its User Guide, but
 seems to be missing):
 
 ```erlang
 -module(foo_handler).
--behavior(cowboy_handler).
+-behaviour(cowboy_handler).
 
 -export([init/2]).
 ```
@@ -243,7 +245,7 @@ address sometime, but not yet.
 <h4>Form page</h4>
 
 The <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>
-I wrote results from by battle to get to grips with Erlang's three string types and what can and cannot be used as a guard. For instance,
+I wrote results from my battle to get to grips with Erlang's three string types and what can and cannot be used as a guard. For instance,
 <code>byte_size(Name) > 0</code> is a permissable guard, but when I tried to first convert Name from a binary to a character code list
 and use <code>string:length(Name) > 0</code>, the compiler threw an <em>illegal guard expression</em> error.
 
@@ -257,7 +259,104 @@ Anyways, my spaghetti code in
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler.erl</a>
 yielded the desired result of either redrawing the form with error messages or redirecting to a welcome page.
 
-The need to check user data will come up in Unit 4 when I create a cookie-based login system. For this simple example, it is more efficient
-to do the checks in the browser using Javascript, so mainly to refresh my own knowledge, I've added it here.
+<h4>Client-side form validation</h4>
 
+While we often do need to check what the user has sent from their browser once it has reached the server &mdash; 
+especially for loging in
+covered in Unit 4 &mdash; for this simple example, a better option is to get the browser to refuse to wast the server's time
+with garbage data. Again, I'm using a Mozilla
+<a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation">tutorial</a>, partly because I need a refresher.
+
+In this example, no Javascript is needed since simply editing the html to include a <code>required</code> attribute as in:
+
+```html
+					<input type="text" id="name" name="user_name" value="~s" required/>
+```
+will get the browser to insist the user fill in the fields before submitting.
+
+Adding these lines to styles/form.css will make it obvious to the user these fields must be filled in:
+
+```css
+input:invalid {
+  border: 2px dashed red;
+}
+
+input:valid {
+  border: 2px solid black;
+}
+```
+But since I'm mainly doing this for educational purposes, I'm going to proceed with
+<a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation#Validating_forms_using_JavaScript">
+Validating forms using JavaScript</a> for future reference.
+
+Since this tutorial is about Erlang, I haven't included client-side validation by default.
+
+To enable it, the form element needs to have an 
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onsubmit">onsubmit</a> 
+attribute added to the form element, calling a Javascript function which 
+returns true or false depending on whether the input data validates.
+
+My /scripts/form.js file looks like this:
+
+```js
+function validateForm() {
+  let valid = true;
+  if (document.getElementById('name').value.length === 0) {
+    document.getElementById('name_error').textContent = "Browser says you need to enter a name";
+    valid = false;  
+  } else {
+    document.getElementById('name_error').textContent = "";
+  }
+  if (document.getElementById('mail').value.length === 0) {
+    document.getElementById('mail_error').textContent = "Browser says you need to enter an email address";
+    valid = false;  
+  } else {
+    document.getElementById('mail_error').textContent = "";
+  }
+  if (document.getElementById('msg').value.length === 0) {
+    document.getElementById('msg_error').textContent = "Browser says you need to type a message";
+    valid = false;  
+  } else {
+    document.getElementById('msg_error').textContent = "";
+  }
+  return valid;
+}
+```
+and my modified form.html looks like this:
+
+```html
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+    <title>Your first HTML form, styled</title>
+    <link rel="stylesheet" href="/styles/form.css">
+    <script src="/scripts/form.js" defer></script>
+  </head>
+  <body>
+		<form onsubmit="return validateForm()" method="post">
+			<ul>
+				<li>
+					<label for="name">Name:</label>
+					<input type="text" id="name" name="user_name" value="~s"/>
+					<span class="error" id="name_error">~s</span>
+				</li>
+				<li>
+					<label for="mail">E-mail:</label>
+					<input type="email" id="mail" name="user_mail" value="~s"/>
+					<span class="error" id="mail_error">~s</span>
+				</li>
+				<li>
+					<label for="msg">Message:</label>
+					<textarea id="msg" name="user_message">~s</textarea>
+          <span class="error" id="msg_error">~s</span>
+				</li>
+				<li class="button">
+					<button type="submit">Send your message</button>
+				</li>
+			</ul>
+		</form>
+	</body>
+</html>
+```
 
