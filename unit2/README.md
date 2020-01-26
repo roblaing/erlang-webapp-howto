@@ -109,7 +109,9 @@ except we add two new routes conforming to the pattern <code>{PathMatch, Handler
      ]
 ```
 
-Next we need to create two new modules in <code>apps/unit2/src</code> called form_handler.erl and welcome_handler.erl.
+Next we need to create two new modules in <code>apps/unit2/src</code> called 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler.erl</a> and 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/welcome_handler.erl">welcome_handler.erl</a>.
 
 A drawback of using rebar3 instead of Cowboy-aligned erlang.mk is there is no `make new t=cowboy.http n=hello_handler` to create a skeleton
 file.
@@ -138,5 +140,45 @@ init(Req0, State) ->
   ),
   {ok, Req, State}.
 ```
+
+<h3>Form logic</h3>
+
+Typically with a web form you want to validate the user input, and if it is correct, redirect the user to a <em>success page</em>
+&mdash; with URL <code>http://localhost:3030/welcome/John Smith</code> or whatever port number and user name &mdash;
+but if there are missing or wrong answers, back to the form with hints on what needs to be done, and the original inputs held
+so as not to force the exasperated user to start from scratch.
+
+This pretty basic stuff, which many web application frameworks make impossible, (the inets library which comes with OTP for instance).
+
+Luckily, Cowboy makes this all fairly easy. It also has a nifty <em>permalink</em> very similar to Google app engine (which is the one
+I'm most familiar with from doing the Udacity web development course given by Reddid founder Steve Huffman a few years ago, which
+I've borrowed a bit from for these tutorials.
+
+<h4>Welcome page</h4>
+
+I'm starting at the <em>end</em> page since it's simpler than the form handler, and illustrates permalinks.
+
+```erlang
+#{bindings => #{name => <<"John Smith">>},
+  body_length => 0,cert => undefined,has_body => false,
+  headers =>
+      #{<<"accept">> =>
+            <<"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8">>,
+        <<"accept-encoding">> => <<"gzip, deflate">>,
+        <<"accept-language">> => <<"en-US,en;q=0.5">>,
+        <<"connection">> => <<"keep-alive">>,
+        <<"host">> => <<"localhost:3030">>,
+        <<"upgrade-insecure-requests">> => <<"1">>,
+        <<"user-agent">> =>
+            <<"Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0">>},
+  host => <<"localhost">>,host_info => undefined,method => <<"GET">>,
+  path => <<"/welcome/John%20Smith">>,path_info => undefined,
+  peer => {{127,0,0,1},48270},
+  pid => <0.531.0>,port => 3030,qs => <<>>,ref => my_http_listener,
+  scheme => <<"http">>,
+  sock => {{127,0,0,1},3030},
+  streamid => 2,version => 'HTTP/1.1'}
+```
+
 
 
