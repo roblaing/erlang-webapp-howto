@@ -68,5 +68,5 @@ unit1/
 
 [Unit 1](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit1): Basic, static page server
 
-Unit 2: Forms with validation and redirection
+[Unit 2](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2): Forms with validation and redirection
 

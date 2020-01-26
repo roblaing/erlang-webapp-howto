@@ -1,6 +1,9 @@
 <h1>Unit2: Forms with validation and redirection</h2>
 
-Step1 is run `rebar3 new release unit2` and add cowboy as a dependency in rebar.config and to the applications list in apps/unit2/src/unit2.app.src
+Step1 is run `rebar3 new release unit2` and add cowboy as a dependency in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/rebar.config">rebar.config</a> 
+and to the applications list in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/unit2.app.src">apps/unit2/src/unit2.app.src</a>
 as described in <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit1">Unit 1</a>.
 
 <h2>Templating</h2>
@@ -31,41 +34,42 @@ For Prolog programers, Erlang's <a href="https://erlang.org/doc/man/io_lib.html#
 and for C-family programers, it's nearly identical to the <code>printf</code> function except it uses tildes instead of percentage signs to mark
 what in a string is to be substituted.
 
-Here is a form using my templating method based on Mozilla's <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Your_first_form">
+Here is an <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/priv/form.html">html form</a> using my 
+templating method based on Mozilla's <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Your_first_form">
 Your first form</a> tutorial.
 
 ```html
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8" />
+  <head>
+    <meta charset="utf-8" />
     <title>Your first HTML form, styled</title>
     <link rel="stylesheet" href="/styles/form.css">
   </head>
   <body>
-		<form method="post">
-			<ul>
-				<li>
-					<label for="name">Name:</label>
-					<input type="text" id="name" name="user_name" value="~s"/>
-					<span class="error">~s</span>
-				</li>
-				<li>
-					<label for="mail">E-mail:</label>
-					<input type="email" id="mail" name="user_mail" value="~s"/>
-					<span class="error">~s</span>
-				</li>
-				<li>
-					<label for="msg">Message:</label>
-					<textarea id="msg" name="user_message">~s</textarea>
+    <form method="post">
+      <ul>
+        <li>
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="user_name" value="~s"/>
           <span class="error">~s</span>
-				</li>
-				<li class="button">
-					<button type="submit">Send your message</button>
-				</li>
-			</ul>
-		</form>
-	</body>
+        </li>
+        <li>
+          <label for="mail">E-mail:</label>
+          <input type="email" id="mail" name="user_mail" value="~s"/>
+          <span class="error">~s</span>
+        </li>
+        <li>
+          <label for="msg">Message:</label>
+          <textarea id="msg" name="user_message">~s</textarea>
+          <span class="error">~s</span>
+        </li>
+        <li class="button">
+          <button type="submit">Send your message</button>
+        </li>
+      </ul>
+    </form>
+  </body>
 </html>
 ```
 
