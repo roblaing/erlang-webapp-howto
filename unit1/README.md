@@ -24,7 +24,9 @@ in the remainder of this tutorial. But first we need to edit some of the skeleto
 
 <h2>Add cowboy as a dependency in rebar3.config</h2>
 
-Looking at the rebar.config file, which is in the project root directory, you'll see it has four curly bracketed data structures
+Looking at the 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit1/rebar.config">rebar.config</a> 
+file, which is in the project root directory, you'll see it has four curly bracketed data structures
 of which the second one, `{deps, []}`, is the one we want to edit to:
 
 ```erlang
@@ -118,7 +120,9 @@ to balance square and curly brackets.
 
 The third element in the `{application, Application, Proplist}.` tuple found in the 
 <a href="https://erlang.org/doc/design_principles/applications.html#application-resource-file">
-application resource file</a>, which rebar3 creates a skeleton of in `pps/unit1/src/unit1.app.src`,
+application resource file</a>, which rebar3 creates a skeleton of in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit1/apps/unit1/src/unit1.app.src">
+apps/unit1/src/unit1.app.src</a>
 is a proplist. The `{key, value}` tuple we need to edit has the key <code>applications</code> followed by a list
 which always contains `[kernel, stdlib]` to provide Erlang's standard builtin functions (BIFs to their friends).
 To include cowboy, it needs to be added to this list.
@@ -136,7 +140,7 @@ To include cowboy, it needs to be added to this list.
 The first thing we typically want to do with any web application framework is get it to load an index.html file with related stylesheets,
 graphics and Javascript files from `http://localhost:<portnumber>`, which can be surprisingly difficult with many of them.
 
-Cowboy does this very easily, though you need to skip to
+Cowboy does this fairly painlessly, though you need to skip to
 <a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/static_files/">Chapter 11</a>
 of its users guide and ignore the opening paragraphs advising you not to use it to serve static files.
 
@@ -238,7 +242,10 @@ This involves the following two steps:
  
 <h3>Routing</h3>
 
-Since I've placed my html content in the `priv/` subdirectory, I can use cowboy's priv_file and priv_dir atoms to find them:
+Since I've placed my html content in the recommended
+<a href="https://erlang.org/doc/design_principles/applications.html#directory-structure">directory structure</a> 
+`priv/` subdirectory, I can use cowboy's <code>priv_file</code> 
+and <code>priv_dir</code> atoms to find them:
 
 ```erlang
 start(_StartType, _StartArgs) ->
