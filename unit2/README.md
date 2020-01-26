@@ -297,7 +297,8 @@ To enable it, the form element needs to have an
 attribute added to the form element, calling a Javascript function which 
 returns true or false depending on whether the input data validates.
 
-My /scripts/form.js file looks like this:
+My <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/priv/scripts/form.js">
+/scripts/form.js</a> file looks like this:
 
 ```js
 function validateForm() {
