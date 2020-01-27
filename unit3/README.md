@@ -13,7 +13,16 @@ several hours.
 I'm assuming you have PosgreSQL (or MySQL, or whatever you want to use) installed and running on your computer. If
 not, head to <a href="https://www.postgresql.org/">https://www.postgresql.org/</a> and follow the instructions.
 
-Within your database, I assume you have a table which in Postgres's SQL dialect looks like so:
+In this tutorial, I'm recreating a project from Udacity's Steve Huffman course which he called ASCIIChan. This lets
+users (without verification at this stage, we add that in Unit 4) submit ASCII art to the site, which can be 
+obtained from <a href="https://www.asciiart.eu/">https://www.asciiart.eu/</a>. The submitted art is stored in a database and
+imediately rendered on the page. 
+
+I discovered the hard way in my earlier adventures in SWI Prolog that ASCII art is good test material because if there are problems 
+with user input text messing up your HTML or exposing you to SQL-injection attacks by not escaping single quotes, a random
+selection of ASCII art is likely to bring up the symptoms.
+
+Within your database, you need a table which in Postgres's SQL dialect looks like so:
 
 ```sql
 CREATE TABLE IF NOT EXISTS arts (
@@ -81,5 +90,89 @@ in having the following route and handler name in the list:
     , {"/arts", arts_handler, []}
 ```
 
+<h2>4. Writing the handler</h2>
+
+Handling the top, form, part of the arts page is nearly identical to Unit 2's
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>.
+
+What is new in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit3/apps/unit3/src/arts_handler.erl">arts_handler</a>
+is I need to render a list obtained from the database into HTML &mdash; a very common task in web applications.
+
+Once you have some data in the arts table, calling
+
+```erlang
+pgo:query("SELECT title, art FROM arts ORDER BY created DESC")
+```
+
+The queries returned by pgo are in a map with three keys:
+
+```erlang
+{command => select,num_rows => N,rows => [{Title1, Art1}, {Title2, Art2}, ...]}
+```
+
+So what we want to do is translate each of the {Title1, Art1} tuple in the rows list into an HTML string to 
+insert into our template.
+
+<h3>A quick digression into list processing in Erlang</h3>
+
+Anyone coming from a traditional C-family language might assume you do this with a <em>for loop</em>,
+and an initial shock when learning languages which fall under the jargon umbrella of <em>functional programming</em> 
+is no support for for <em>for loop</em>.
+
+A reason is Erlang, like its ancestor Prolog, does not permit variables to change their value once they have been set, breaking
+for loops which rely on constantly overwriting the value of a counter by incrementing or decrementing it from a start to and end value.  
+
+Even in traditional programming languages, I've noticed an increasing <em>for loops considered harmful</em> attitude, with the alternatives
+from functional languages getting adopted by Python, Ruby, Javascript etc.
+
+While limiting oneself to <em>immutable</em> variables at first seems weird, languages which have adopted this have been able to embrace
+parallel computing far more easily by avoiding the horror of <em>mutex locks</em>. 
+
+Some of the ways to iterate in Erlang include:
+
+<dl>
+  <dt><a href="https://erlang.org/doc/programming_examples/list_comprehensions.html">List Comprehensions</a></dt>
+  <dd>Popularised by Python, but invented by Erlang.</dd>
+  <dt><a href="https://erlang.org/doc/man/lists.html#map-2">lists:map(Fun, List1) -> List2</a></dt>
+  <dd>I first encountered <em>map</ml> in a course on Meta Language (ML), and find the <em>map-reduce</em>
+      way of thinking it encourages very helpful. The word map is a bit confusing in Erlang since it also
+      uses it for what Python calls <em>dictionaries</em> and Json <em>objects</em>.</dd>
+  <dt>Prolog-style [Head|Tail] recursion</dt>
+  <dd>Notes I wrote on the many ways of iterating in Prolog are on <a href="https://swish.swi-prolog.org/p/Iteration2.swinb">
+     Swish. This is method most fresh to me at the moment, so I'll start with it and then rewrite my code using map and 
+     as a list comprehension to refresh my memory.</a>.
+</dl>
+
+<h4>Recursive solution</h4>
+
+The indentation is a bit ugly because I'm more worried about the indentation in the HTML generated than this code.
+
+An important thing I haven't been doing so far is using Erlang's `-spec ...` command which is part of its documentation
+system Edoc and its Dialyzer specification checker.
+
+I generally try to follow the recipe taught by MIT's free
+<a href="https://htdp.org/2019-02-24/part_preface.html#%28part._sec~3asystematic-design%29">How to design programs</a> textbook
+which teaches you to write down a <em>signature</em> (equating to the -spec line) and a <em>purpose statement</em>
+(equating to the %% @doc ... line) before starting to code. This helps making it clear in your mind what your
+function is going to produce and consume, and reminds you not to break its <em>contract</em> with existing code that uses
+it when you rewrite it.
+
+```erlang
+-spec title_art([{Title::string(), Art::string()}], Html0::string()) -> Html1::string().
+%% @doc Convert the title and art entries read from the arts table into HTML.
+title_art([], Html) -> Html;
+title_art([{Title, Art}|Tail], Html0) ->
+    Html1 = io_lib:format("
+~s
+    <h2>~s</h2>
+    <pre>
+~s
+    </pre>
+", [Html0, Title, Art]),
+    title_art(Tail, Html1).
+```
+
+<h4>Map</h4>
 
 
