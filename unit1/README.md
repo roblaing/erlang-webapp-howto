@@ -1,6 +1,6 @@
 <h1>Unit 1: Basic, static page server</h1>
 
-Assuming you have run `rebar3 new release unit1` and have the following subdirectories:
+If you haven't already, run `rebar3 new release unit1` to get the following subdirectories and skeleton files:
 
 ```
 unit1/
@@ -22,7 +22,7 @@ unit1/
 I'm assuming you are in the `unit1/` project root directory when running `rebar3 release` to build the application
 in the remainder of this tutorial. But first we need to edit some of the skeleton files
 
-<h2>Add cowboy as a dependency in rebar3.config</h2>
+<h2>1. Add cowboy as a dependency in rebar3.config</h2>
 
 Looking at the 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit1/rebar.config">rebar.config</a> 
@@ -116,7 +116,7 @@ to balance square and curly brackets.
 ]
 ```
 
-<h2>Add cowboy to the list of applications to start in apps/unit1/src/unit1.app.src</h2>
+<h2>2. Add cowboy to the list of applications to start in apps/unit1/src/unit1.app.src</h2>
 
 The third element in the `{application, Application, Proplist}.` tuple found in the 
 <a href="https://erlang.org/doc/design_principles/applications.html#application-resource-file">
@@ -146,7 +146,7 @@ which I'd forgotten to do. The skeleton provided by rebar3 is an empty list.
 But checking the `_build/default/lib/unit1/ebin/unit1.app` created by invoking `rebar3 release`, I discovered
 the build tool does that automatically, so you don't have to worry about it.
 
-<h2>Serving index.html</h2>
+<h3>Serving index.html</h3>
 
 The first thing we typically want to do with any web application framework is get it to load an index.html file with related stylesheets,
 graphics and Javascript files from `http://localhost:<portnumber>`, which can be surprisingly difficult with many of them.
@@ -191,7 +191,7 @@ unit1/
     └── vm.args
 ```
 
-<h2>Fleshing out apps/unit1/src/unit1_app.erl</h2>
+<h2>3. Flesh out apps/unit1/src/unit1_app.erl</h2>
 
 Erlang and Cowboy very much follows the Rails' <em>convention over configuration</em> school, which makes coding something
 of a <em>paint by numbers</em> job. Opening `apps/unit1/src/unit1_app.erl` shows this skeleton:
@@ -226,7 +226,7 @@ Functions not included in the export list are private to that specific module.
 All we typically want to do with web servers is start and stop them, which Erlang along with rebar3 makes very easy with a script 
 &mdash; which will be called <em>unit1</em> since that is what I called this project &mdash; which we'll get to soon.
 
-<h2>Module:start/2</h2>
+<h3>Module:start/2</h3>
 
 There is rather sketchy documentation for the <a href="http://erlang.org/doc/apps/kernel/application.html#Module:start-2">start/2</a>
 function required by modules which have selected `-behaviour(application)`. The underscores to the two arguments in the start function
@@ -322,7 +322,7 @@ stop(_State) ->
   ok = cowboy:stop_listener(unit1_http_listener).
 ```
 
-<h2>Building</h2>
+<h2>4. Build</h2>
 
 This simply requires running ```rebar3 release``` in the project root directory.
 
@@ -330,6 +330,8 @@ The first time you run this might take some time as it needs to download and bui
 
 Once it has finished, a new tree called `_build` will have appeared in the document root, which
 has a lot of branches and files in it.
+
+<h2>5. Start and stop the server</h2>
 
 The key file we want is `_build/default/rel/unit1/bin/unit1` which is the script we use to run our
 new webserver.
