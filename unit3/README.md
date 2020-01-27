@@ -11,7 +11,7 @@ tutorial (which I'm redoing here in Erlang), I'm no fan of Microsoft's ODBC "sta
 several hours.
 
 I'm assuming you have PosgreSQL (or MySQL, or whatever you want to use) installed and running on your computer. If
-not, head to <a href="https://www.postgresql.org/">https://www.postgresql.org/</a> and follow the instruction.
+not, head to <a href="https://www.postgresql.org/">https://www.postgresql.org/</a> and follow the instructions.
 
 Within your database, I assume you have a table which in Postgres's SQL dialect looks like so:
 
@@ -36,7 +36,9 @@ along with Cowboy. For pgo, my list looks like this:
 }.
 ```
 To get this new application started, add it to the list in
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit3/apps/unit3/src/unit3.app.src">:
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit3/apps/unit3/src/unit3.app.src">
+apps/unit3/src/unit3.app.src
+</a>
 
 ```erlang
   {applications,
