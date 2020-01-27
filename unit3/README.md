@@ -224,4 +224,33 @@ title_art(Rows, _) ->
 ", [Title, Art]) end, "", Rows).
 ```
 
+Since title_art/{1,2} is a foldl rather than map problem it doesn't lend itself to list comprehension. 
+
+Though I have escaped single quotes within SQL strings, there is still the problem that my
+simple template/2 function cannot handle bad guys inputing `<element attribute="value"...>` which could do something
+malicious in browsers. A simple way of escaping HTML is
+
+```erlang
+html_escape(ArgList) ->
+  lists:map(fun(Html) -> 
+              string:replace(string:replace(Html, "<", "&lt;", all), ">", "&gt;", all)
+            end, 
+            ArgList
+).
+```
+
+And the elements in Arglist can be filtered through this before getting put in the template like so:
+
+```erlang
+title_art(Rows) ->
+  lists:foldl(fun({Title, Art}, Html) ->
+    Html ++ io_lib:format("
+    <h2>~s</h2>
+    <pre>
+~s
+    </pre>
+", html_escape([Title, Art])) end, "", Rows).
+```
+
+
 

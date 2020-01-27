@@ -6,7 +6,7 @@
 init(Req0=#{method := <<"GET">>}, State) ->
   Rows = maps:get(rows, pgo:query("SELECT title, art FROM arts ORDER BY created DESC")),
   Content = template(code:priv_dir(unit3) ++ "/arts.html",
-    ["", "", "", "", title_art(Rows, "")]),
+    ["", "", "", "", title_art(Rows)]),
   Req = cowboy_req:reply(200,
     #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
      },
@@ -38,7 +38,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
     true ->
      Rows = maps:get(rows, pgo:query("SELECT title, art FROM arts ORDER BY created DESC")),
      Content = template(code:priv_dir(unit3) ++ "/arts.html", 
-       [Title, TitleError, Art, ArtError, title_art(Rows, "")]
+       [Title, TitleError, Art, ArtError, title_art(Rows)]
       ),
       Req = cowboy_req:reply(200,
         #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
@@ -49,18 +49,22 @@ init(Req0=#{method := <<"POST">>}, State) ->
       {ok, Req, State}    
   end.
 
--spec title_art([{Title::string(), Art::string()}], Html0::string()) -> Html1::string().
+-spec title_art([{Title::string(), Art::string()}]) -> Html::string().
 %% @doc Convert the title and art entries read from the arts table into HTML.
-title_art([], Html) -> Html;
-title_art([{Title, Art}|Tail], Html0) ->
-    Html1 = io_lib:format("
-~s
+title_art(Rows) ->
+  lists:foldl(fun({Title, Art}, Html) ->
+    Html ++ io_lib:format("
     <h2>~s</h2>
     <pre>
 ~s
     </pre>
-", [Html0, Title, Art]),
-    title_art(Tail, Html1).
+", html_escape([Title, Art])) end, "", Rows).
+
+html_escape(ArgList) ->
+  lists:map(fun(Html) -> 
+      string:replace(string:replace(Html, "<", "&lt;", all), ">", "&gt;", all)
+    end, 
+    ArgList).
 
 template(FileName, ArgList) ->
   {ok, Binary} = file:read_file(FileName),
