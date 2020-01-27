@@ -34,8 +34,8 @@ in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit3/re
 along with Cowboy. For pgo, my list looks like this:
 
 ```erlang
-{deps, [ {cowboy, {git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}},
-         {pgo, {git, "https://github.com/tsloughter/pgo.git", {branch, "master"}}}
+{deps, [ {cowboy, {git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}}
+       , {pgo, {git, "https://github.com/tsloughter/pgo.git", {branch, "master"}}}
        ]
 }.
 ```
@@ -46,10 +46,10 @@ apps/unit3/src/unit3.app.src
 
 ```erlang
   {applications,
-   [kernel,
-    stdlib,
-    cowboy,
-    pgo
+   [ kernel
+   , stdlib
+   , cowboy
+   , pgo
    ]},
 ```
 
@@ -82,7 +82,9 @@ apps/unit3/src/unit3_app.erl</a> file only differs from the ones in unit1 and un
 in having the following route and handler name in the list:
 
 ```erlang
+    ...
     , {"/arts", arts_handler, []}
+    ...
 ```
 
 <h2>4. Writing the handler</h2>
