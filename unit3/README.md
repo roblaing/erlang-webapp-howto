@@ -149,7 +149,7 @@ and an initial shock when learning languages under the jargon umbrella of <em>fu
 is no support for <em>for loops</em>.
 
 A reason is Erlang, like its ancestor Prolog, does not permit variables to change their value once they have been set, breaking
-for loops which rely on constantly overwriting the value of a counter by incrementing or decrementing it from a start to and end value.  
+for loops which rely on constantly overwriting the value of a counter by incrementing or decrementing it from a start to an end value.  
 
 Even in traditional programming languages, I've noticed an increasing <em>for loops considered harmful</em> attitude, with the alternatives
 from functional languages getting adopted by Python, Ruby, Javascript etc.
@@ -206,7 +206,7 @@ it when you rewrite it.
 
 <h4>Map</h4>
 
-Mapping problems typically involve an output list which is the same as the input list with each item translated somehow.
+Mapping problems typically involve an output list which is the same length as the input list with each item translated somehow.
 This is not quite what we want here since we want one item at the end, making this a <em>foldl</em> style problem.
 
 Rewriting this using <a href="https://erlang.org/doc/man/lists.html#foldl-3">foldl(Fun, Acc0, List) -> Acc1</a>
