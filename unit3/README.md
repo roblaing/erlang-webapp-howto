@@ -91,7 +91,7 @@ I discovered the hard way in my earlier adventures in SWI Prolog that ASCII art 
 with user input text messing up your HTML or exposing you to SQL-injection attacks by not escaping single quotes, a random
 selection of ASCII art is likely to bring up the symptoms.
 
-A particular important test I accidently discovered was the <b>Little Linux penguin</b> by Joan G. Stark:
+A particularly good test I accidently discovered was the <b>Little Linux penguin</b> by Joan G. Stark:
 
 ```
        .---.
@@ -203,5 +203,25 @@ function is going to produce and consume, and reminds you not to break its <em>c
 it when you rewrite it.
 
 <h4>Map</h4>
+
+Mapping problems typically involve an output list which is the same as the input list with each item translated somehow.
+This is not quite what we want here since we want one item at the end, making this a <em>foldl</em> style problem.
+
+Rewriting this using <a href="https://erlang.org/doc/man/lists.html#foldl-3">foldl(Fun, Acc0, List) -> Acc1</a>
+gets rid of needing to keep an accumulator argument in the function, so perhaps this should be rewritten as
+a one arity function, getting rid of the now <code>_</code> <em>don't care</em> second argument.
+
+Again, the indentation is weird because the focus is on the indentation of the generated Html.
+
+```erlang
+title_art(Rows, _) ->
+  lists:foldl(fun({Title, Art}, Html) ->
+    Html ++ io_lib:format("
+    <h2>~s</h2>
+    <pre>
+~s
+    </pre>
+", [Title, Art]) end, "", Rows).
+```
 
 
