@@ -15,7 +15,7 @@ start(_StartType, _StartArgs) ->
     , {"/images/[...]" , cowboy_static, {priv_dir,  unit2, "images"}}
     , {"/styles/[...]" , cowboy_static, {priv_dir,  unit2, "styles"}}
     , {"/scripts/[...]", cowboy_static, {priv_dir,  unit2, "scripts"}}
-    , {"/form"         , form_handler, ['','','','','','']}
+    , {"/form"         , form_handler, ["","","","","",""]}
     , {"/welcome/:name", welcome_handler, []}
     ]}]),
   persistent_term:put(unit2_routes, Dispatch),

@@ -28,7 +28,7 @@ template(FileName, ArgList) ->
 
 The file loaded from FileName is a standard HTML file with <code>~s</code> written wherever I want to create a <em>hole</em>
 to be filled by substituting a string from ArgList. The strings in ArgList have to be exactly in the order of <code>~s</code> and 
-the length of ArgList has to match the number of tilde esses.
+the length of ArgList has to match the number of tilde <em>esses</em>.
 
 For Prolog programers, Erlang's <a href="https://erlang.org/doc/man/io_lib.html#format-2">format/2</a> function will be familiar,
 and for C-family programers, it's nearly identical to the <code>printf</code> function except it uses tildes instead of percentage signs to mark
@@ -75,26 +75,30 @@ Your first form</a> tutorial.
 
 <h3>Quick warning about Erlang's text traps</h3>
 
-I discovered I needed to use <code>~s</code> rather than the more familiar (to Prolog programers) <code>~p</code> else the double quotes
-surrounding the string would remain in the rendered HTML. If I used <code>~w</code>, Erlang would convert "Hello World" to 
-[72,101,108,108,111,32,87,111,114,108,100]. The reason is that unlike <em>modern</em> programming languages (including versions
-of Prolog like SWI Prolog), Erlang does not consider text a type in its own right, but one of three things:
+Text in Erlang can be one of three things:
 
-  1. Double quoted "Hello World" is seen as a list of character codes. Since it's a list, you can concatenate these using Erlang's
-     "Hello " ++ "World" notation.
+  1. Double quoted "Hello World" is under the hood a list of character codes [72,101,108,108,111,32,87,111,114,108,100]. 
+     Since it's a list, you can concatenate these using Erlang's "Hello " ++ "World" notation.
   2. Single quoted 'Hello World' is an atom, and cannot be concatenated unless converted by <code>atom_to_list('Hello World')</code>
      first.
   3. Chevroned <<"Hello World">> is a <a href="https://erlang.org/doc/reference_manual/data_types.html#bit-strings-and-binaries">binary</a>.
      This is the format that <a href="https://erlang.org/doc/man/file.html#read_file-1">file:read_file("form.hml")</a> returns the HTML in
      form.html as, and also how Cowboy sends and receives http headers and bodies, which is apparently more efficient than traditional text.
 
-While text handling functions such as io_lib:format(Template, [Arg1, Arg2, Arg3, ...]) hide that Erlang has no string type <em>per se</em> 
-by allowing Template and each argument to be any of these three types, I hit snags when returning "POST" data in binary format to be re-rendered
-for incorrect forms. For instance, blank strings were rendered as <<>>. To fix this, I used `binary_to_atom(Name, utf8)` rather than their
-original format when doing string substitution.
+I've found the <code>io_lib:format(Template, [Arg1, Arg2, Arg3, ...])</code> function a huge boon because <code>Template</code> can be any
+of the three types above, each Arg in the Arglist can be a different one of the three types, and all the type conversion you would need
+to do if you wanted to laboriously concatenate strings happens automagically.
 
-Long story short, text processing with Erlang requires keeping in mind which of the three string types is suitable when. I only learnt the hard way
-that my two-line template function had to convert the list returned by format into a binary for Cowboy.
+A thing that tripped me up was that though my input to format/2 was a binary from read_file/1, the output is a character code list, which
+cowboy_req:reply/3 refused to accept, so I needed to use <a href="http://erlang.org/doc/man/erlang.html#list_to_binary-1">
+list_to_binary(IoList) -> binary()</a> to translate back into binary.
+
+Another snag was I initially used `~w` instead of `~s` since it's more commonly used in Prolog's
+<a href="https://www.swi-prolog.org/pldoc/doc_for?object=format/2">format/2</a> statement, which caused the input to get rendered
+in my HTML as `[72,101,...]`. Next i tried `~p`, which caused the surrounding double quotes, single quotes, or chevrons to be retained
+in the HTML output.
+
+Mercifully, `~s` appears to be the correct magic incantation, and so far appears to be working well.
 
 <h2>Adding routes</h2>
 
@@ -104,10 +108,13 @@ except we add two new routes conforming to the pattern <code>{PathMatch, Handler
 
 ```erlang
      [ ...
-     , {"/form", form_handler, ['','','','','','']}
+     , {"/form", form_handler, ["","","","","",""]}
      , {"/welcome/:name", welcome_handler, []}
      ]
 ```
+
+Note the `InitialState` I'm passing to my form_handler is the six arguments needed to fill the `~s` holes in my form.html with
+empty strings initially.
 
 Next we need to create two new modules in <code>apps/unit2/src</code> called 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler.erl</a> and 
@@ -264,7 +271,7 @@ yielded the desired result of either redrawing the form with error messages or r
 
 While we often do need to check what the user has sent from their browser once it has reached the server &mdash; 
 especially for loging in
-covered in Unit 4 &mdash; for this simple example, a better option is to get the browser to refuse to wast the server's time
+covered in Unit 4 &mdash; for this simple example, a better option is to get the browser to refuse to waste the server's time
 with garbage data. Again, I'm using a Mozilla
 <a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation">tutorial</a>, partly because I need a refresher.
 
