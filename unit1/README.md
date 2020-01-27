@@ -388,6 +388,6 @@ appearing on a web browser, carefully documenting these inputs and outputs is ev
 set of tools to do so, but I don't know how to use them when the input arguments are simply ignored and the function's result comes from a badly
 documented auxiliary function.
 
-
+Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2">Unit 2</a>: Forms with validation and redirection.
 
 
