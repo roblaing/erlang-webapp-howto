@@ -17,10 +17,6 @@ users (without verification at this stage, we add that in Unit 4) submit ASCII a
 obtained from <a href="https://www.asciiart.eu/">https://www.asciiart.eu/</a>. The submitted art is stored in a database and
 imediately rendered on the page. 
 
-I discovered the hard way in my earlier adventures in SWI Prolog that ASCII art is good test material because if there are problems 
-with user input text messing up your HTML or exposing you to SQL-injection attacks by not escaping single quotes, a random
-selection of ASCII art is likely to bring up the symptoms.
-
 Within your database, you need a table which in Postgres's SQL dialect looks like so:
 
 ```sql
@@ -91,12 +87,43 @@ in having the following route and handler name in the list:
 
 <h2>4. Writing the handler</h2>
 
-Handling the top, form, part of the arts page is nearly identical to Unit 2's
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>.
+I discovered the hard way in my earlier adventures in SWI Prolog that ASCII art is good test material because if there are problems 
+with user input text messing up your HTML or exposing you to SQL-injection attacks by not escaping single quotes, a random
+selection of ASCII art is likely to bring up the symptoms.
 
-What is new in 
+A particular important test I accidently discovered was the <b>Little Linux penguin</b> by Joan G. Stark:
+
+```
+       .---.
+      /     \
+      \.@-@./
+      /`\_/`\
+     //  _  \\
+    | \     )|_
+   /`\_`>  <_/ \
+jgs\__/'---'\__/
+
+```
+
+The reason is it contains single quotes, which are dangerous within SQL strings which are bounded by single quotes. 
+To escape single quotes not intended to end the string, they must be preceeded by a single quote. I achieved this
+in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit3/apps/unit3/src/arts_handler.erl">arts_handler</a>
-is I need to render a list obtained from the database into HTML &mdash; a very common task in web applications.
+like so:
+
+
+```erlang
+      ...
+      EscapedTitle = string:replace(Title, "'", "''", all),
+      EscapedArt = string:replace(Art, "'", "''", all),
+      Query = io_lib:format("INSERT INTO arts (title, art) VALUES ('~s', '~s')", [EscapedTitle, EscapedArt]),
+      pgo:query(Query),
+      ...
+```
+
+Most of arts_handler is nearly indentical to Unit 2's
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>,
+but what is new is the need to render a list obtained from the database into HTML &mdash; a very common task in web applications.
 
 Once you have some data in the arts table, calling
 
@@ -145,17 +172,8 @@ Some of the ways to iterate in Erlang include:
 
 <h4>Recursive solution</h4>
 
-The indentation is a bit ugly because I'm more worried about the indentation in the HTML generated than this code.
-
-An important thing I haven't been doing so far is using Erlang's `-spec ...` command which is part of its documentation
-system Edoc and its Dialyzer specification checker.
-
-I generally try to follow the recipe taught by MIT's free
-<a href="https://htdp.org/2019-02-24/part_preface.html#%28part._sec~3asystematic-design%29">How to design programs</a> textbook
-which teaches you to write down a <em>signature</em> (equating to the -spec line) and a <em>purpose statement</em>
-(equating to the %% @doc ... line) before starting to code. This helps making it clear in your mind what your
-function is going to produce and consume, and reminds you not to break its <em>contract</em> with existing code that uses
-it when you rewrite it.
+Note this is called with <code>title_art(Rows, "")</code> with the initial value of the Html string
+produced set to empty.
 
 ```erlang
 -spec title_art([{Title::string(), Art::string()}], Html0::string()) -> Html1::string().
@@ -171,6 +189,18 @@ title_art([{Title, Art}|Tail], Html0) ->
 ", [Html0, Title, Art]),
     title_art(Tail, Html1).
 ```
+
+The indentation is a bit ugly because I'm more worried about the indentation in the HTML generated than this code.
+
+An important thing I haven't been doing so far is using Erlang's `-spec ...` command which is part of its documentation
+system Edoc and its Dialyzer specification checker.
+
+I generally try to follow the recipe taught by MIT's free
+<a href="https://htdp.org/2019-02-24/part_preface.html#%28part._sec~3asystematic-design%29">How to design programs</a> textbook
+which teaches you to write down a <em>signature</em> (equating to the -spec line) and a <em>purpose statement</em>
+(equating to the %% @doc ... line) before starting to code. This helps making it clear in your mind what your
+function is going to produce and consume, and reminds you not to break its <em>contract</em> with existing code that uses
+it when you rewrite it.
 
 <h4>Map</h4>
 
