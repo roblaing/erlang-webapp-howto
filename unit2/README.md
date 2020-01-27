@@ -95,7 +95,7 @@ list_to_binary(IoList) -> binary()</a> to translate back into binary.
 
 Another snag was I initially used `~w` instead of `~s` since it's more commonly used in Prolog's
 <a href="https://www.swi-prolog.org/pldoc/doc_for?object=format/2">format/2</a> statement, which caused the input to get rendered
-in my HTML as `[72,101,...]`. Next i tried `~p`, which caused the surrounding double quotes, single quotes, or chevrons to be retained
+in my HTML as `[72,101,...]`. Next I tried `~p`, which caused the surrounding double quotes, single quotes, or chevrons to be retained
 in the HTML output.
 
 Mercifully, `~s` appears to be the correct magic incantation, and so far appears to be working well.
@@ -119,12 +119,6 @@ empty strings initially.
 Next we need to create two new modules in <code>apps/unit2/src</code> called 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler.erl</a> and 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/welcome_handler.erl">welcome_handler.erl</a>.
-
-You don't have to add form_handler and welcome_handler (along with unit2_app and unit2_sup) to <code>{modules, [...]}</code> in 
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/unit2.app.src">apps/unit2/src/unit2.app.src</a>
-because if you look at the required <a href="https://erlang.org/doc/man/app.html">application resource file</a> in 
-_build/default/lib/unit2/ebin/unit2.app,
-you'll see all the required module names magically appeared there when you ran `rebar3 release`.
  
 A drawback of using rebar3 instead of Cowboy-aligned erlang.mk is there is no `make new t=cowboy.http n=hello_handler` to create a skeleton
 file.
