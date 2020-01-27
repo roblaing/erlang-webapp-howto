@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+    <title>ASCIIChan</title>
+    <link rel="stylesheet" href="/styles/basic.css">
+    <script src="/scripts/arts.js" defer></script>
+  </head>
+  <body>
+    <h1>ASCIIChan</h1>
+    <form onsubmit="return validateForm()" method="post">
+      <ul>
+        <li>
+          <label for="name">Title:</label>
+          <input type="text" id="title" name="title" value="~s"/>
+          <span class="error" id="title_error">~s</span>
+        </li>
+        <li>
+          <label for="art">Art:</label>
+          <textarea id="art" name="art" rows="30" cols="160">~s</textarea>
+          <span class="error" id="art_error">~s</span>
+        </li>
+        <li class="button">
+          <button type="submit">Send your message</button>
+        </li>
+      </ul>
+    </form>
+~s
+	</body>
+</html>
+
