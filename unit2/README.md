@@ -370,5 +370,5 @@ and my modified form.html looks like this:
 </html>
 ```
 
-Next &mdahs; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>: Linking to a database.
+Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>: Linking to a database.
  
