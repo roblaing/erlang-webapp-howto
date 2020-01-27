@@ -7,7 +7,7 @@ third-party libraries for Erlang remains bewildering. Fairly randomly, I've sele
 Other choices include using the database bundled with OTP, Mnesia, and the standard libraries also include
 ODBC support which should make nearly every database accessible. As I mentioned in 
 <a href="https://github.com/roblaing/swipl-webapp-howto/tree/master/unit3">Unit 3</a> of my SWI Prolog web application 
-tutorial (which I'm redoing here in Erlang), I'm no fan of Microsoft's poorly documentated ODBC "standard".
+tutorial (which I'm redoing here in Erlang), I'm no fan of Microsoft's poorly documented ODBC "standard".
 
 I'm assuming you have PostgreSQL (or MySQL, or whatever you want to use) installed and running on your computer. If
 not, head to <a href="https://www.postgresql.org/">https://www.postgresql.org/</a> and follow the instructions.
@@ -20,12 +20,12 @@ imediately rendered on the page.
 Within your database, you need a table which in Postgres's SQL dialect looks like so:
 
 ```sql
-CREATE TABLE IF NOT EXISTS arts (
-    id      SERIAL PRIMARY KEY,
-    title   TEXT NOT NULL,
-    art     TEXT NOT NULL,
-    created TIMESTAMP DEFAULT current_timestamp
-);
+CREATE TABLE IF NOT EXISTS arts 
+  ( id      SERIAL PRIMARY KEY
+  , title   TEXT NOT NULL
+  , art     TEXT NOT NULL
+  , created TIMESTAMP DEFAULT current_timestamp
+  );
 ```
 <h2>1. Adding the database driver as a dependency</h2>
 
