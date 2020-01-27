@@ -135,6 +135,17 @@ To include cowboy, it needs to be added to this list.
    ]},
 ```
 
+After adding some modules in Unit 2 and successfully using the run script to start and stop the server,
+I recalled OTP tutorials saying you need to add module names to a tuple in the application resource file
+which I'd forgotten to do. The skeleton provided by rebar3 is an empty list.
+
+```
+{modules, []},
+```
+
+But checking the `_build/default/lib/unit1/ebin/unit1.app` created by invoking `rebar3 release`, I discovered
+the build tool does that automatically, so you don't have to worry about it.
+
 <h2>Serving index.html</h2>
 
 The first thing we typically want to do with any web application framework is get it to load an index.html file with related stylesheets,
