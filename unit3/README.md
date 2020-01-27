@@ -134,10 +134,10 @@ Some of the ways to iterate in Erlang include:
 <dl>
   <dt><a href="https://learnyousomeerlang.com/recursion">Recursion</a></dt>
   <dd>Notes I wrote on the many ways of iterating in Prolog are on <a href="https://swish.swi-prolog.org/p/Iteration2.swinb">
-     Swish</a>. This is method most fresh to me at the moment, so I'll start with it and then rewrite my code using map and 
+     Swish</a>. This method is most fresh to me at the moment, so I'll start with it and then rewrite my code using map and 
      as a list comprehension to refresh my memory.</a>.
   <dt><a href="https://erlang.org/doc/man/lists.html#map-2">lists:map(Fun, List1) -> List2</a></dt>
-  <dd>I first encountered <em>map</ml> in a course on Meta Language (ML), and find the <em>map-reduce</em>
+  <dd>I first encountered <em>map</em> in a course on Meta Language (ML), and find the <em>map-reduce</em>
       way of thinking it encourages very helpful. The word map is a bit confusing in Erlang since it also
       uses it for what Python calls <em>dictionaries</em> and Json <em>objects</em>.</dd>
   <dt><a href="https://erlang.org/doc/programming_examples/list_comprehensions.html">List Comprehensions</a></dt>
