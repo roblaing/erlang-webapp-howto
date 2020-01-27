@@ -70,3 +70,5 @@ unit1/
 
 [Unit 2](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2): Forms with validation and redirection
 
+[Unit 3](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3): Linking to a database (PostgreSQL)
+
