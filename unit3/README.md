@@ -5,12 +5,11 @@ third-party libraries for Erlang remains bewildering. Fairly randomly, I've sele
 <em>PG...Oh god not nother Postgres client in Erlang...</em>, <a href="https://github.com/erleans/pgo">pgo</a>.
 
 Other choices include using the database bundled with OTP, Mnesia, and the standard libraries also include
-ODBC support which should make most databases accessible. As I mentioned in 
+ODBC support which should make nearly every database accessible. As I mentioned in 
 <a href="https://github.com/roblaing/swipl-webapp-howto/tree/master/unit3">Unit 3</a> of my SWI Prolog web application 
-tutorial (which I'm redoing here in Erlang), I'm no fan of Microsoft's ODBC "standard" whose poor documentation cost me
-several hours.
+tutorial (which I'm redoing here in Erlang), I'm no fan of Microsoft's poorly documentated ODBC "standard".
 
-I'm assuming you have PosgreSQL (or MySQL, or whatever you want to use) installed and running on your computer. If
+I'm assuming you have PostgreSQL (or MySQL, or whatever you want to use) installed and running on your computer. If
 not, head to <a href="https://www.postgresql.org/">https://www.postgresql.org/</a> and follow the instructions.
 
 In this tutorial, I'm recreating a project from Udacity's Steve Huffman course which he called ASCIIChan. This lets
@@ -105,10 +104,10 @@ Once you have some data in the arts table, calling
 pgo:query("SELECT title, art FROM arts ORDER BY created DESC")
 ```
 
-The queries returned by pgo are in a map with three keys:
+returns a map with three keys:
 
 ```erlang
-{command => select,num_rows => N,rows => [{Title1, Art1}, {Title2, Art2}, ...]}
+{command => select, num_rows => N, rows => [{Title1, Art1}, {Title2, Art2}, ...]}
 ```
 
 So what we want to do is translate each of the {Title1, Art1} tuple in the rows list into an HTML string to 
@@ -117,8 +116,8 @@ insert into our template.
 <h3>A quick digression into list processing in Erlang</h3>
 
 Anyone coming from a traditional C-family language might assume you do this with a <em>for loop</em>,
-and an initial shock when learning languages which fall under the jargon umbrella of <em>functional programming</em> 
-is no support for for <em>for loop</em>.
+and an initial shock when learning languages under the jargon umbrella of <em>functional programming</em> 
+is no support for <em>for loops</em>.
 
 A reason is Erlang, like its ancestor Prolog, does not permit variables to change their value once they have been set, breaking
 for loops which rely on constantly overwriting the value of a counter by incrementing or decrementing it from a start to and end value.  
