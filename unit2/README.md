@@ -1,6 +1,13 @@
 <h1>Unit 2: Forms with validation and redirection</h2>
 
-Step1 is run `rebar3 new release unit2` and add cowboy as a dependency in 
+The way I've structured these tutorials is you don't need to do `rebar3 new release unit2`, but rather just add
+what's new here to your existing release. That way your computer won't have to download and build Cowboy again
+when you enter `rebar3 release`. Just remember to change `unitX` in the code to whatever you have called your
+project.
+
+I've seperated the units to keep each one small and simple.
+
+If you are starting afresh with `rebar3 new release unit2`, step1 is run to add cowboy as a dependency in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/rebar.config">rebar.config</a> 
 and to the applications list in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/unit2.app.src">apps/unit2/src/unit2.app.src</a>
