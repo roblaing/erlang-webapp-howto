@@ -7,7 +7,7 @@ project.
 
 I've seperated the units to keep each one small and simple.
 
-If you are starting afresh with `rebar3 new release unit2`, step1 is run to add cowboy as a dependency in 
+If you are starting afresh with `rebar3 new release unit2`, step1 is add cowboy as a dependency in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/rebar.config">rebar.config</a> 
 and to the applications list in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/unit2.app.src">apps/unit2/src/unit2.app.src</a>
@@ -35,7 +35,7 @@ template(FileName, ArgList) ->
 
 The file loaded from FileName is a standard HTML file with <code>~s</code> written wherever I want to create a <em>hole</em>
 to be filled by substituting a string from ArgList. The strings in ArgList have to be exactly in the order of <code>~s</code> and 
-the length of ArgList has to match the number of tilde <em>esses</em>.
+the length of ArgList has to match the number of tilde <em>esses</em> in the html file loaded.
 
 For Prolog programers, Erlang's <a href="https://erlang.org/doc/man/io_lib.html#format-2">format/2</a> function will be familiar,
 and for C-family programers, it's nearly identical to the <code>printf</code> function except it uses tildes instead of percentage signs to mark
