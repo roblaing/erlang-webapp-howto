@@ -72,3 +72,5 @@ unit1/
 
 [Unit 3](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3): Linking to a database (PostgreSQL)
 
+[Unit 4](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit4): User authentication
+
