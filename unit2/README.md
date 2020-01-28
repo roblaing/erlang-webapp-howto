@@ -86,8 +86,7 @@ using its HTML generating tools, resulting in ugly, unmaintainable code embedded
 equally ugly HTML.
 
 While you do need to protect your site from malicious user input, that's easily done in HTML by translating `<` to `&lt;` and 
-`>` to `&gt;` before inserting strings into the layout template.
-I'll cover this in Unit 3, along with escaping single quotes in SQL.
+`>` to `&gt;` before inserting strings into the layout template. I'll cover this in Unit 3, along with escaping single quotes in SQL.
 
 <h3>Quick warning about Erlang's text traps</h3>
 
@@ -102,8 +101,8 @@ Text in Erlang can be one of three things:
      form.html as, and also how Cowboy sends and receives http headers and bodies, which is apparently more efficient than traditional text.
 
 I've found the <code>io_lib:format(Template, [Arg1, Arg2, Arg3, ...])</code> function a huge boon because <code>Template</code> can be any
-of the three types above, each Arg in the Arglist can be a different one of the three types, and all the type conversion you would need
-to do if you wanted to laboriously concatenate strings happens automagically.
+of these three types, as can each Arg in the Arglist, with all the type conversion you would need
+to do if you wanted to laboriously concatenate strings happening automagically.
 
 A thing that tripped me up was that though my input to format/2 was a binary from read_file/1, the output is a character code list, which
 cowboy_req:reply/3 refused to accept, so I needed to use <a href="http://erlang.org/doc/man/erlang.html#list_to_binary-1">
@@ -118,7 +117,7 @@ Mercifully, `~s` appears to be the correct magic incantation, and so far appears
 
 <h2>Adding routes</h2>
 
-<code>unit2_app.erl</code> is nearly identical to
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/unit2_app.erl">unit2_app.erl</a> is nearly identical to
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit1/apps/unit1/src/unit1_app.erl">unit1_app.erl</a>
 except we add two new routes conforming to the pattern <code>{PathMatch, Handler, InitialState}</code>:
 
