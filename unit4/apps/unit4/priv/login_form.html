@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles/basic.css">
+  </head>
+  <body>
+    <div class="login-area">
+      <a class="login-link" href="/signup">Signup</a>
+    </div>
+    <form name="login" onsubmit="return validateLoginForm()" method="POST">
+      <h2>Login</h2>
+      <ul>
+        <li>
+          <label for="username">Name:</label>
+          <input type="text" id="username" name="username" value="~s">
+          <span class="error" id="username_error">~s</span>
+        </li>
+        <li>
+          <label for="mail">Password:</label>
+          <input type="password" id="password" name="password" value="~s">
+          <span class="error" id="password_error">~s</span>
+        </li>
+        <li class="button">
+          <button type="submit">Login</button>
+        </li>
+      </ul>
+      <input type="hidden" id="salt" name="salt" 
+             value="Some big secret that nobody should be able to read, but unfortunately anybody can">
+      <span class="error" id="login_error">~s</span>
+    </form>
+    <script src="/scripts/login.js"></script>
+  </body>
+</html>
+

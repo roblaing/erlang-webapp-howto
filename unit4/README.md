@@ -1,4 +1,4 @@
-<h1>Unit 4: User authentication.</h2>
+<h1>Unit 4: User authentication</h1>
 
 If you are starting this project afresh instead of continuing from Unit 3, make the necessary edits to
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/rebar.config">rebar.config</a>,
@@ -24,7 +24,7 @@ reads as a cookie.
 
 This means the user's password never leaves their browser for bad guys to intercept <em>en route</em> to our server.
 We don't simply store this hash as the id in our database because if anyone breaks in and copies it, they could set it as
-as a cookie on their browser to masquerade as the user. So the hash created by Javascript in the browser needs to get rehashed
+a cookie on their browser to masquerade as the user. So the hash created by Javascript in the browser needs to get rehashed
 using functions in OTP's <a href="https://erlang.org/doc/man/crypto.html">crypto</a> library.
 
 The important thing is that the same combination of login and password must create the same unique gibberish for the server
@@ -54,7 +54,7 @@ user_id=aca87862328161c8d5cc6b95d29c04401df3d4496001ba54748fed7719834a0c
 
 and the database id should be
 
-```js
+```
 21b07bc6c590b4b826d8786b837c859e740d9d1a1e9cbfdfcc3c05c299f5f62d
 ```
 
