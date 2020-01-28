@@ -31,12 +31,15 @@ The important thing is that the same combination of login and password must crea
 to authenticate the user with. 
 
 I've used the following to be compatible with the <a href="https://github.com/roblaing/swipl-webapp-howto/tree/master/unit4">
-SWI Prolog tutorial</a> I'm redoing here in Erlang.
+SWI Prolog tutorial</a> I'm redoing here in Erlang. I need to return a hexadecimal value, and found the way to do this with a
+list comprehension in this 
+<a href="https://stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex">facebook post</a>.
 
 ```erlang
 create_hash(Binary) ->
   Salt = "Some very long randomly generated string",
-  crypto:mac(hmac, sha256, Salt, Binary).
+  crypto:mac(hmac, sha256, Salt, Binary),
+  [begin if N < 10 -> 48 + N; true -> 87 + N end end || <<N:4>> <= Bin].
 ```
 
 The options listed for <a href="https://erlang.org/doc/man/crypto.html#mac-4">
@@ -48,9 +51,9 @@ As with my SWI Prolog version, I'm going to use John Smith as the username and P
 
 Once this user is registered and logged in, the browser cookie should be
 
-``js
+```js
 user_id=aca87862328161c8d5cc6b95d29c04401df3d4496001ba54748fed7719834a0c
-``
+```
 
 and the database id should be
 
@@ -92,3 +95,44 @@ apps/unit4/src/unit4_app.erl</a> looks like this:
    ]
   ),
 ```
+
+<h3>Reading cookies</h3>
+
+Back to the <a href=""https://ninenines.eu/docs/en/cowboy/2.2/guide/req/"">Req</a> Erlang 
+<a href="https://erlang.org/doc/man/maps.html">map</a> that cowboy handler's init/2 receive
+as their first argument.
+
+```erlang
+#{headers => #{...
+  <<"cookie">> =>
+    <<"user_id=aca87862328161c8d5cc6b95d29c04401df3d4496001ba54748fed7719834a0c">>,
+  ...}
+}
+```
+
+Checking if a user is logged in requires a three step series of checks:
+
+ 1. Is there a <<"cookie">> key in the headers map? If no cookie is set, the user is not logged in.
+ 2. Even if there is a cookie string, it could be junk put their by advertisers and browser plugins.
+    If no "user_id=" in the cookie string, the user is not logged in.
+ 3. Even if there is a "user_id=Hash", the Hash may not match an Id in the database, in which
+    case the user is not logged in.
+
+To work through this fairly convoluted logic, I've written the following auxiliary function which
+either returns a string with the user's name from the database or false.
+
+```erlang
+
+logged_in(Req0) ->
+  HeadersMap = maps:get(headers, Req0),
+  AreCookiesSet = maps:is_key(<<"cookie">>, HeadersMap),
+  if 
+    AreCookiesSet ->
+      CookieString = binary:bin_to_list(maps:get(<<"cookie">>, HeadersMap)),
+      IdStart = string:find(CookieString, "user_id="),
+      IdEnd = string:split(IdStart, ";"),
+    true -> io:format("Not logged in~n")
+  end,
+  ...
+```
+

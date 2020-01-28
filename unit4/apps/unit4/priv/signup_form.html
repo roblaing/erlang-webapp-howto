@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="/styles/basic.css">
+  </head>
+  <body>
+    <div class="login-area">
+      <a class="login-link" href="/login">Login</a>
+    </div>
+    <form name="signup" onsubmit="return validateSignupForm()" method="POST">
+      <h2>Signup</h2>
+      <ul>
+        <li>
+          <label for="username">Name:</label>
+          <input type="text" id="username" name="username" value="~s">
+          <span class="error" id="error_username">~s</span>
+        </li>
+        <li>
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password">
+          <span class="error" id="error_password"></span>
+        </li>
+        <li>
+          <label for="verify">Verify:</label>
+          <input type="password" id="verify" name="verify">
+          <span class="error" id="error_verify"></span>
+        </li>
+        <li>
+          <label for="email">Email (optional):</label>
+          <input type="text" id="email" name="email" value="">
+          <span class="error" id="error_email"></span>
+        </li>
+        <li class="button">
+          <button type="submit">Subscribe</button>
+        </li>
+      </ul>
+      <input type="hidden" id="salt" name="salt" 
+             value="Some big secret that nobody should be able to read, but unfortunately anybody can">
+    </form>
+    <script src="/scripts/login.js"></script>
+  </body>
+</html>
+
