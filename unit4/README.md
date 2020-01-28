@@ -38,7 +38,7 @@ list comprehension in this
 ```erlang
 create_hash(Binary) ->
   Salt = "Some very long randomly generated string",
-  crypto:mac(hmac, sha256, Salt, Binary),
+  Bin = crypto:mac(hmac, sha256, Salt, Binary),
   [begin if N < 10 -> 48 + N; true -> 87 + N end end || <<N:4>> <= Bin].
 ```
 
@@ -98,7 +98,7 @@ apps/unit4/src/unit4_app.erl</a> looks like this:
 
 <h3>Reading cookies</h3>
 
-Back to the <a href=""https://ninenines.eu/docs/en/cowboy/2.2/guide/req/"">Req</a> Erlang 
+Back to the <a href="https://ninenines.eu/docs/en/cowboy/2.2/guide/req/">Req</a> Erlang 
 <a href="https://erlang.org/doc/man/maps.html">map</a> that cowboy handler's init/2 receive
 as their first argument.
 
