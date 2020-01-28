@@ -80,6 +80,15 @@ Your first form</a> tutorial.
 </html>
 ```
 
+To a text editor or linter like <em>tidy</em> the above looks exactly like HTML, which I've found to be a huge advantage.
+A reason my SWI Prolog version of this tutorial petered out before becoming a fully fledged blog is I made the mistake of 
+using its HTML generating tools, resulting in ugly, unmaintainable code embedded in Prolog, which produced
+equally ugly HTML.
+
+While you do need to protect your site from malicious user input, that's easily done in HTML by translating `<` to `&lt;` and 
+`>` to `&gt;` before inserting strings into the layout template.
+I'll cover this in Unit 3, along with escaping single quotes in SQL.
+
 <h3>Quick warning about Erlang's text traps</h3>
 
 Text in Erlang can be one of three things:
@@ -244,7 +253,7 @@ This means I need to remember to use my Name variable twice in the Args list my 
 ```
 
 Note the above 
-<a href="https://erlang.org/doc/man/code.html#priv_dir-1">code:priv_dir(ModuleName)</a>
+<a href="https://erlang.org/doc/man/code.html#priv_dir-1">code:priv_dir(ApplicationName)</a>
 assumes welcome.html is in priv/ subdirectory of the application. Alternatively, you can use the full pathname.
 
 Calling the welcome URL without a name, ie <code>http://localhost:3030/welcome</code> leads to a 404 error, which I only know from
@@ -341,10 +350,9 @@ and my modified form.html looks like this:
     <meta charset="utf-8" />
     <title>Your first HTML form, styled</title>
     <link rel="stylesheet" href="/styles/form.css">
-    <script src="/scripts/form.js" defer></script>
   </head>
   <body>
-    <form onsubmit="return validateForm()" method="post">
+    <form onsubmit="return validateForm()" method="POST">
       <ul>
         <li>
           <label for="name">Name:</label>
@@ -366,6 +374,7 @@ and my modified form.html looks like this:
         </li>
       </ul>
     </form>
+    <script src="/scripts/form.js"></script>
   </body>
 </html>
 ```
