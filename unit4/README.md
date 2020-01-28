@@ -112,7 +112,7 @@ as their first argument.
 
 Checking if a user is logged in requires a three step series of checks:
 
- 1. Is there a <<"cookie">> key in the headers map? If no cookie is set, the user is not logged in.
+ 1. Is there a `<<"cookie">>` key in the headers map? If no cookie is set, the user is not logged in.
  2. Even if there is a cookie string, it could be junk put their by advertisers and browser plugins.
     If no "user_id=" in the cookie string, the user is not logged in.
  3. Even if there is a "user_id=Hash", the Hash may not match an Id in the database, in which
@@ -122,17 +122,29 @@ To work through this fairly convoluted logic, I've written the following auxilia
 either returns a string with the user's name from the database or false.
 
 ```erlang
-
+-spec logged_in(Req0::map()) -> Name::string() | false.
 logged_in(Req0) ->
   HeadersMap = maps:get(headers, Req0),
   AreCookiesSet = maps:is_key(<<"cookie">>, HeadersMap),
   if 
     AreCookiesSet ->
       CookieString = binary:bin_to_list(maps:get(<<"cookie">>, HeadersMap)),
-      IdStart = string:find(CookieString, "user_id="),
-      IdEnd = string:split(IdStart, ";"),
-    true -> io:format("Not logged in~n")
-  end,
-  ...
+      case string:find(CookieString, "user_id=", leading) of
+          nomatch -> false;
+          IdStart ->
+            case string:find(IdStart, ";") of
+              nomatch -> [_, Hash]      = string:split(IdStart, "=");
+              _       -> [UpToColon, _] = string:split(IdStart, ";"),
+                         [_, Hash]      = string:split(UpToColon, "=")
+            end,
+            Query = io_lib:format("SELECT name FROM users WHERE id='~s'", [create_hash(Hash)]),
+            QueryMap = pgo:query(Query),
+            case maps:get(num_rows, QueryMap) of
+              0 -> false;
+              1 -> [{Name}] = maps:get(rows, QueryMap), Name
+            end
+      end;
+    true -> false
+  end.
 ```
 
