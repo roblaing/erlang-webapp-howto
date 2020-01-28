@@ -4,7 +4,7 @@ I like PostgreSQL, but even after whittling the choice down to one specific data
 third-party libraries for Erlang remains bewildering. Fairly randomly, I've selected one called 
 <em>PG...Oh god not nother Postgres client in Erlang...</em>, <a href="https://github.com/erleans/pgo">pgo</a>.
 
-Other choices include using the database bundled with OTP, Mnesia, and the standard libraries also include
+Alternatives include using the database bundled with OTP, Mnesia, and the standard libraries also include
 ODBC support which should make nearly every database accessible. As I mentioned in 
 <a href="https://github.com/roblaing/swipl-webapp-howto/tree/master/unit3">Unit 3</a> of my SWI Prolog web application 
 tutorial (which I'm redoing here in Erlang), I'm no fan of Microsoft's poorly documented ODBC "standard".
