@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Logout</title>
+  <script>
+    function deleteUserIdCookie() {
+      document.cookie = 'user_id= ; max-age=0; path=/';
+      document.location.replace('/login');
+    }  
+  </script>
+</head>
+<body onload="deleteUserIdCookie()"></body>
+</html>

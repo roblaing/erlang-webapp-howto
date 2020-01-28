@@ -1,0 +1,17 @@
+{application, unit4,
+ [{description, "User authentication example"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {unit4_app, []}},
+  {applications,
+   [ kernel
+   , stdlib
+   , cowboy
+   , pgo
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
