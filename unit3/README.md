@@ -220,7 +220,7 @@ Since title_art/{1,2} is a foldl rather than map problem it doesn't lend itself 
 
 Though I have escaped single quotes within SQL strings, there is still the problem that my
 simple template/2 function cannot handle bad guys inputing `<element attribute="value"...>` which could do something
-malicious in browsers. A simple way of escaping HTML is
+malicious in browsers. A simple way of escaping HTML is this function I've added to my webutil module:
 
 ```erlang
 html_escape(ArgList) ->
