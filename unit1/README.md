@@ -128,6 +128,7 @@ application resource file</a>, which rebar3 creates a skeleton of in
 apps/unit1/src/unit1.app.src</a>
 is a proplist. The `{key, value}` tuple we need to edit has the key <code>applications</code> followed by a list
 which always contains `[kernel, stdlib]` to provide Erlang's standard builtin functions (BIFs to their friends).
+
 To include cowboy, it needs to be added to this list.
 
 ```
@@ -137,6 +138,12 @@ To include cowboy, it needs to be added to this list.
    , cowboy
    ]},
 ```
+
+A thing that tripped me was if you run Erlang's REPL invoked by `erl` at a command line, it seems you can use any command
+in the libraries that OTP installs. Later in these tutorials I tried to use `http_uri:encode(URI)`, and found that while it worked
+from the REPL command line, calling it from my code caused my application to crash. The reason is it's part of the inets application which I only
+add to the above list in Unit 5. So nothing but the functions from applications you explicitly add to the applications list are
+available in your application, despite what tutorials running from a REPL command line may make you think.
 
 After adding some modules in Unit 2 and successfully using the run script to start and stop the server,
 I recalled OTP tutorials saying you need to add module names to a tuple in the application resource file
