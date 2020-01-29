@@ -130,35 +130,26 @@ Checking if a user is logged in requires a three step series of checks:
  3. Even if there is a "user_id=Hash", the Hash may not translate into a valid Id in the database, in which
     case the Hash was created from a wrong user name or password, so the user is not be logged in.
 
-To work through this fairly convoluted logic, I've written the following auxiliary function which
-either returns a string with the user's name from the database or false.
+I initially wrote some extremely convoluted code to work through these steps (learning a bit about
+Erlang's string:find/2 and string:split2 which I'm sure will come in handy later) but mercifully found
+<a href="https://ninenines.eu/docs/en/cowboy/2.4/manual/cowboy_req.match_cookies/">cowboy_req:match_cookies</a>
+which handled all this with
 
 ```erlang
--spec logged_in(Req0::cowboy_req:req()) -> Name::binary() | false.
+-spec logged_in(Req :: cowboy_req:req()) -> Name::binary() | false.
 %% @doc if the user is logged in, return their name, else return false.
-logged_in(Req0) ->
-  HeadersMap = maps:get(headers, Req0),
-  AreCookiesSet = maps:is_key(<<"cookie">>, HeadersMap),
-  if 
-    AreCookiesSet ->
-      CookieString = binary:bin_to_list(maps:get(<<"cookie">>, HeadersMap)),
-      case string:find(CookieString, "user_id=") of
-          nomatch -> false;
-          IdStart ->
-            case string:find(IdStart, ";") of
-              nomatch -> [_, Hash]      = string:split(IdStart, "=");
-              _       -> [UpToColon, _] = string:split(IdStart, ";"),
-                         [_, Hash]      = string:split(UpToColon, "=")
-            end,
-            Query = io_lib:format("SELECT name FROM users WHERE id='~s'", [create_hash(Hash)]),
-            QueryMap = pgo:query(Query),
-            case maps:get(num_rows, QueryMap) of
-              0 -> false;
-              1 -> [{Name}] = maps:get(rows, QueryMap), 
-                   Name
-            end
-      end;
-    true -> false
+logged_in(Req) ->
+  #{user_id := Hash} = cowboy_req:match_cookies([{user_id, [], false}], Req),
+  if
+    Hash =:= false -> false;
+    true ->
+      Query = io_lib:format("SELECT name FROM users WHERE id='~s'", [create_hash(Hash)]),
+      QueryMap = pgo:query(Query),
+      case maps:get(num_rows, QueryMap) of
+        0 -> false;
+        1 -> [{Name}] = maps:get(rows, QueryMap), 
+             Name
+      end
   end.
 ```
 
@@ -264,5 +255,25 @@ johnsmith6982).
 Again, I'm relying on the browser to check that the user name and password are at least six characters long, and that the password
 entered a second time in the verify field matches.
 
+This involved adding another helper to my webutil module:
 
+```erlang
+-spec add_user(Req :: cowboy_req:req(), Name :: string(), Email :: string()) -> ok | {error, nocookie}.
+%% @doc Insert a row into users tables. Assumes the name entry has already been screened for duplicates.
+add_user(Req, Name, Email) ->
+  #{user_id := Hash} = cowboy_req:match_cookies([{user_id, [], false}], Req),
+  if
+    Hash =:= false -> {error, nocookie};
+    true ->
+      Id = create_hash(Hash),
+      EscapedName = string:replace(Name, "'", "''", all),
+      EscapedEmail = string:replace(Email, "'", "''", all),
+      Query = io_lib:format("INSERT INTO users (id, name, email) VALUES ('~s', '~s', '~s')", 
+        [Id, EscapedName, EscapedEmail]),
+      pgo:query(Query)
+  end.
+```
+
+I initially tried to reduce the number of arguments by thinking I could call `{ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0)`
+if I passed Req0 as an argument, but discovered this only works in the handler's init/2 function. 
 
