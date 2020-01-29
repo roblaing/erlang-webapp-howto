@@ -168,7 +168,7 @@ a string whose characters are limited to numbers `0` to `9` and letters `a` to `
 
 <h2>welcome_or_login_handler</h2>
 
-Once I had the webutil:logged_in/1 function, writing the 
+Once I had the webutil:logged_in/1 function working, writing the 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/src/welcome_or_login_handler.erl">
 welcome_or_login_handler.erl</a> was relatively straighforward:
 
@@ -196,6 +196,73 @@ Trying to be pedantic and figuring out how to URI encode in Erlang turned into a
 function <a href="http://erlang.org/doc/man/http_uri.html#encode-1">http_uri:encode/1</a> but it's not available
 because inets isn't included in the application list which I'm not using because inets doesn't support redirections which
 I use a lot. Cowboy which I'm using instead of inets doesn't seem to have a URI encode function, so I didn't bother.
+
+<h2>login_handler</h2>
+
+My <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/src/login_handler.erl">login_handler.erl</a>
+code is only slightly more elaborate than the welcome_or_login_handler.erl above because it needs to handle rendering a new form when 
+it receives a "GET" request and then either redraw with an error message for "POST" or redirect to the welcome page.
+
+```erlang
+-module(login_handler).
+-behaviour(cowboy_handler).
+
+-export([init/2]).
+
+init(Req0=#{method := <<"GET">>}, State) ->
+  Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/login_form.html", ["",""]),
+  Req = cowboy_req:reply(200,
+    #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0),
+  {ok, Req, State};
+
+init(Req0=#{method := <<"POST">>}, State) ->
+  case webutil:logged_in(Req0) of
+    false ->
+      {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
+      Name = proplists:get_value(<<"username">>, PostVals),
+      Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/login_form.html", 
+        [Name,"Your user name or password is incorrect"]),
+      Req = cowboy_req:reply(200,
+        #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0);
+    Name ->
+      Req = cowboy_req:reply(303, 
+        #{<<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))}, Req0)
+  end,
+  {ok, Req, State}.
+```
+I had to restrain myself from over elaborating by redirecting to the welcome page if a user was already logged in.
+
+Note this is a lot simpler than the form in <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2">Unit 2</a>
+because I've kept the input validation in the browser
+
+```html
+<input type="text" id="username" name="username" value="~s" required minlength="6">
+```
+
+to prevent submission of usernames or passwords shorter than six characters. But I still need a `onsubmit="return validateLoginForm()"`
+call to set the cookie. What I also do in this Javascript function is blank the password and salt values that get passed to the server.
+
+```js
+function validateLoginForm() {
+  const text = document.forms.login.elements.username.value +
+                 document.forms.login.elements.salt.value +
+                 document.forms.login.elements.password.value;
+  digestMessage(text).then(digestValue => {
+    document.cookie = 'user_id=' + hexString(digestValue);
+  });
+  document.forms.login.elements.password.value = '';
+  document.forms.login.elements.salt.value = '';
+  return true;  
+}
+```
+
+<h2>signup_handler</h2>
+
+Like Facebook and Twitter, user names have to be unique (though I haven't bothered to tell someone signing up as John Smith that he as to be
+johnsmith6982). 
+
+Again, I'm relying on the browser to check that the user name and password are at least six characters long, and that the password
+entered a second time in the verify field matches.
 
 
 

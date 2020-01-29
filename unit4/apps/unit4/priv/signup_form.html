@@ -14,23 +14,21 @@
       <ul>
         <li>
           <label for="username">Name:</label>
-          <input type="text" id="username" name="username" value="~s">
+          <input type="text" id="username" name="username" value="~s" required minlength="6">
           <span class="error" id="error_username">~s</span>
         </li>
         <li>
           <label for="password">Password:</label>
-          <input type="password" id="password" name="password">
-          <span class="error" id="error_password"></span>
+          <input type="password" id="password" name="password" required minlength="6">
         </li>
         <li>
           <label for="verify">Verify:</label>
-          <input type="password" id="verify" name="verify">
+          <input type="password" id="verify" name="verify" required minlength="6">
           <span class="error" id="error_verify"></span>
         </li>
         <li>
           <label for="email">Email (optional):</label>
-          <input type="text" id="email" name="email" value="">
-          <span class="error" id="error_email"></span>
+          <input type="text" id="email" name="email" value="~s">
         </li>
         <li class="button">
           <button type="submit">Subscribe</button>
