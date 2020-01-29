@@ -32,7 +32,7 @@ just going to use this two-line function as my templating system:
 %% @doc Reads an html file from its complete path name, and inserts strings without escaping `<' or `>'.
 template(FileName, ArgList) ->
   {ok, Binary} = file:read_file(FileName),
-  list_to_binary(io_lib:format(Binary, ArgList)).
+  io_lib:format(Binary, ArgList).
 ```
 
 <h3>Modules</h3>
@@ -153,11 +153,7 @@ I've found the <code>io_lib:format(Template, [Arg1, Arg2, Arg3, ...])</code> fun
 of these three types, as can each Arg in the Arglist, with all the type conversion you would need
 to do if you wanted to laboriously concatenate strings happening automagically.
 
-A thing that tripped me up was that though my input to format/2 was a binary from read_file/1, the output is a character code list, which
-cowboy_req:reply/3 refused to accept, so I needed to use <a href="http://erlang.org/doc/man/erlang.html#list_to_binary-1">
-list_to_binary(IoList) -> binary()</a> to translate back into binary.
-
-Another snag was I initially used `~w` instead of `~s` since it's more commonly used in Prolog's
+One snag was I initially used `~w` instead of `~s` since it's more commonly used in Prolog's
 <a href="https://www.swi-prolog.org/pldoc/doc_for?object=format/2">format/2</a> statement, which caused the input to get rendered
 in my HTML as `[72,101,...]`. Next I tried `~p`, which caused the surrounding double quotes, single quotes, or chevrons to be retained
 in the HTML output.
