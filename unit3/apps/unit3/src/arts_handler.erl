@@ -5,7 +5,7 @@
 
 init(Req0=#{method := <<"GET">>}, State) ->
   Rows = maps:get(rows, pgo:query("SELECT title, art FROM arts ORDER BY created DESC")),
-  Content = template(code:priv_dir(unit3) ++ "/arts.html",
+  Content = webutil:template(code:priv_dir(unit3) ++ "/arts.html",
     ["", "", "", "", title_art(Rows)]),
   Req = cowboy_req:reply(200,
     #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
@@ -37,7 +37,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
       {ok, Req, State};      
     true ->
      Rows = maps:get(rows, pgo:query("SELECT title, art FROM arts ORDER BY created DESC")),
-     Content = template(code:priv_dir(unit3) ++ "/arts.html", 
+     Content = webutil:template(code:priv_dir(unit3) ++ "/arts.html", 
        [Title, TitleError, Art, ArtError, title_art(Rows)]
       ),
       Req = cowboy_req:reply(200,
@@ -58,16 +58,5 @@ title_art(Rows) ->
     <pre>
 ~s
     </pre>
-", html_escape([Title, Art])) end, "", Rows).
-
-html_escape(ArgList) ->
-  lists:map(fun(Html) -> 
-      string:replace(string:replace(Html, "<", "&lt;", all), ">", "&gt;", all)
-    end, 
-    ArgList).
-
-template(FileName, ArgList) ->
-  {ok, Binary} = file:read_file(FileName),
-  list_to_binary(io_lib:format(Binary, ArgList)).
-
+", webutil:html_escape([Title, Art])) end, "", Rows).
 

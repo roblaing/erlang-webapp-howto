@@ -194,16 +194,6 @@ title_art([{Title, Art}|Tail], Html0) ->
 
 The indentation is a bit ugly because I'm more worried about the indentation in the HTML generated than this code.
 
-An important thing I haven't been doing so far is using Erlang's `-spec ...` command which is part of its documentation
-system Edoc and its Dialyzer specification checker.
-
-I generally try to follow the recipe taught by MIT's free
-<a href="https://htdp.org/2019-02-24/part_preface.html#%28part._sec~3asystematic-design%29">How to design programs</a> textbook
-which teaches you to write down a <em>signature</em> (equating to the -spec line) and a <em>purpose statement</em>
-(equating to the %% @doc ... line) before starting to code. This helps making it clear in your mind what your
-function is going to produce and consume, and reminds you not to break its <em>contract</em> with existing code that uses
-it when you rewrite it.
-
 <h4>Map</h4>
 
 Mapping problems typically involve an output list which is the same length as the input list with each item translated somehow.
@@ -244,6 +234,8 @@ html_escape(ArgList) ->
 And the elements in Arglist can be filtered through this before getting put in the template like so:
 
 ```erlang
+-spec html_escape(ArgList :: [string()]) -> EscapedList :: [string()].
+%% @doc Makes input text "safe" by replacing `<' with `&lt;' and `>' with `&gt;'.
 title_art(Rows) ->
   lists:foldl(fun({Title, Art}, Html) ->
     Html ++ io_lib:format("
@@ -251,7 +243,7 @@ title_art(Rows) ->
     <pre>
 ~s
     </pre>
-", html_escape([Title, Art])) end, "", Rows).
+", webutil:html_escape([Title, Art])) end, "", Rows).
 ```
 
 Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit4">Unit 4</a>: User authentication.
