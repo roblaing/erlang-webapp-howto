@@ -296,7 +296,7 @@ This means I need to remember to use my Name variable twice in the Args list my 
 
 ```erlang
   ...
-  Content = template(code:priv_dir(unit2) ++ "/welcome.html", [Name, Name]),
+  Content = webutil:template(code:priv_dir(unit2) ++ "/welcome.html", [Name, Name]),
   ... 
 ```
 
