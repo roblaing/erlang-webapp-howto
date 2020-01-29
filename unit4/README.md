@@ -132,7 +132,7 @@ Checking if a user is logged in requires a three step series of checks:
 
 I initially wrote some extremely convoluted code to work through these steps (learning a bit about
 Erlang's string:find/2 and string:split2 which I'm sure will come in handy later) but mercifully found
-<a href="https://ninenines.eu/docs/en/cowboy/2.4/manual/cowboy_req.match_cookies/">cowboy_req:match_cookies</a>
+<a href="https://ninenines.eu/docs/en/cowboy/2.4/manual/cowboy_req.match_cookies/">cowboy_req:match_cookies/3</a>
 which handled all this with
 
 ```erlang
@@ -201,7 +201,7 @@ it receives a "GET" request and then either redraw with an error message for "PO
 -export([init/2]).
 
 init(Req0=#{method := <<"GET">>}, State) ->
-  Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/login_form.html", ["",""]),
+  Content = webutil:template(code:priv_dir(unit4) ++ "/login_form.html", ["",""]),
   Req = cowboy_req:reply(200,
     #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0),
   {ok, Req, State};
@@ -211,7 +211,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
     false ->
       {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
       Name = proplists:get_value(<<"username">>, PostVals),
-      Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/login_form.html", 
+      Content = webutil:template(code:priv_dir(unit4) ++ "/login_form.html", 
         [Name,"Your user name or password is incorrect"]),
       Req = cowboy_req:reply(200,
         #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0);

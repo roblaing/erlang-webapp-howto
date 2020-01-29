@@ -4,7 +4,7 @@
 -export([init/2]).
 
 init(Req0=#{method := <<"GET">>}, State) ->
-  Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/login_form.html", ["",""]),
+  Content = webutil:template(code:priv_dir(unit4) ++ "/login_form.html", ["",""]),
   Req = cowboy_req:reply(200,
     #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0),
   {ok, Req, State};
@@ -14,7 +14,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
     false ->
       {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
       Name = proplists:get_value(<<"username">>, PostVals),
-      Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/login_form.html", 
+      Content = webutil:template(code:priv_dir(unit4) ++ "/login_form.html", 
         [Name,"Your user name or password is incorrect"]),
       Req = cowboy_req:reply(200,
         #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0);
