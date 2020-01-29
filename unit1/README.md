@@ -35,7 +35,7 @@ of which the second one, `{deps, []}`, is the one we want to edit to:
 }.
 ```
 
-This simple edit will prompt rebar3 to download, install and build Cowboy (if it hasn't already).
+This simple edit will prompt rebar3 to download, install and build Cowboy (if it hasn't already) when you invoke `rebar3 release`.
 
 <h3>Quick digression into Erlang's data types</h3>
 
@@ -62,11 +62,11 @@ even those like me with some experience with Prolog.
 
 <dl>
   <dt><a href="https://erlang.org/doc/reference_manual/data_types.html#atom">Atoms</a>
-  <dd><p>Other programming languages tend to call atoms <em>literals</em> &mdash; <em>deps, cowboy, git</em>, and <em>branch</em> 
+  <dd><p>Non-Prolog programming languages tend to call atoms <em>literals</em> &mdash; <em>deps, cowboy, git</em>, and <em>branch</em> 
       are all atoms in the above example. These must either start with a lower case
       letter or be enclosed in single quotes. In Prologish languages, 
       <a href="http://erlang.org/doc/reference_manual/expressions.html#variables">variables</a> 
-      always start with upper case letters or underscores, so atoms need to start with lower case letters or be within 
+      always start with upper case letters or underscores, so names that aren't variables need to start with lower case letters or be within 
       single quotes to indicate they are not variables. </p>
       <p>A gotcha in Json is anything except a <em>number, true, false</em>, or <em>null</em> has to be double quoted,
       and single quotes are only used within strings. In Erlang, the difference between single and double quotes is 
@@ -76,16 +76,19 @@ even those like me with some experience with Prolog.
   <dd><p>The rebar.config file consists of something we'll see a lot of in Erlang, <code>{key, value}</code> tuples. The value of the
       <code>{deps, [{cowboy, Value}]}</code> follows a pattern that is very common, lists of 
       <code>[{key1, value1}, {key2, value2}, ...]</code> to
-      store key-value pairs. As I've attempted to show in the above Json example, this makes Erlang's proplists more akin
-      to Json's objects, though when Erlang lists are not used for {key, value} tuples, they are identical to Json arrays.
+      store key-value pairs. This makes Erlang's proplists akin
+      to Json's `{"key1": value1, "key2": value2, ...}` objects, though when Erlang square bracketed lists are not used for 
+      `{key, value}` tuples, they are pretty much identical to Json arrays.
       Erlang's <a href="https://erlang.org/doc/man/proplists.html#get_value-2">proplist:get_value(Key, List)</a> can be used
       to reference values in proplists.</p>
       <p>Erlang offers an alternative to proplists, <a href="https://erlang.org/doc/man/maps.html">maps</a> which use
-      <code>#{key1 => value1, key2 => value2,...}</code> syntax which I generally prefer.</p>
+      <code>#{key1 => value1, key2 => value2,...}</code> syntax which I generally prefer. Another alternative compound data structure
+      is <a href="https://erlang.org/doc/reference_manual/records.html">records</a></p>
   </dd>
 </dl>
 
-Don't forget to end expressions with a full stop. The rebar.config file uses four separate `{key, value}` tuples instead of placing
+Don't forget to end blocks of expressions with a full stop. 
+The rebar.config file uses four separate `{key, value}` tuples instead of placing
 them in a list, and each one ends with an individual full stop. Even as a relatively experienced Prolog programmer, I often
 get error messages for forgetting to end code blocks with a full stop.
 
@@ -144,7 +147,7 @@ which I'd forgotten to do. The skeleton provided by rebar3 is an empty list.
 ```
 
 But checking the `_build/default/lib/unit1/ebin/unit1.app` created by invoking `rebar3 release`, I discovered
-the build tool does that automatically, so you don't have to worry about it.
+the build tool had written `{modules,[unit1_app,unit1_sup]}`, so you don't have to worry about it.
 
 <h3>Serving index.html</h3>
 
@@ -220,7 +223,7 @@ stop(_State) ->
 The first line of code after comments in every Erlang module is `-module(Modulename).` where Modulename is an atom matching the filename
 without the .erl suffix.
 
-The `export([Function1/N,...]).` allows the functions in the module to be called as `Modulename:Function(Arg1, ..., ArgN)` by other modules.
+The `-export([Function1/N,...]).` allows the functions in the module to be called as `Modulename:Function(Arg1, ..., ArgN)` by other modules.
 Functions not included in the export list are private to that specific module.
 
 All we typically want to do with web servers is start and stop them, which Erlang along with rebar3 makes very easy with a script 
@@ -283,8 +286,8 @@ start(_StartType, _StartArgs) ->
 ```
 
 A tip suggested in the <a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/routing/">routing</a> chapter
-of the Cowboy User Guide is to store Dispatch as a <a href="https://erlang.org/doc/man/persistent_term.html">
-persistent_term</a>, refering to it later as `unit1_routes` (or whatever name makes sense to you) instead of Dispatch.
+of the Cowboy User Guide is to store `Dispatch` as a <a href="https://erlang.org/doc/man/persistent_term.html">
+persistent_term</a>, refering to it later as `unit1_routes` (or whatever name makes sense to you) instead of `Dispatch`.
 
 ```erlang
   persistent_term:put(unit1_routes, Dispatch),
@@ -372,7 +375,7 @@ To start and stop the web server.
 
 One of the ironies I've noted learning various programing languages is the worst documented part of most of them tends to be their documentation system, creating a vicious cycle of poor documentation.
 
-Conspiciously absent in the tree `rebar3 new release unit1` creates is a sister directory to `src/` called `doc/` which should include a file
+Conspiciuously absent in the tree `rebar3 new release unit1` creates is a sister directory to `src/` called `doc/` which should include a file
 called `overview.edoc` which becomes the home page when you use Erlang's [EDoc](http://erlang.org/doc/apps/edoc/chapter.html) package.
 
 On the other hand, the command `rebar3 edoc` makes generating Erlang's documentation a lot easier than figuring out the commands without
