@@ -78,7 +78,7 @@ even those like me with some experience with Prolog.
       <code>[{key1, value1}, {key2, value2}, ...]</code> to
       store key-value pairs. This makes Erlang's proplists akin
       to Json's <code>{"key1": value1, "key2": value2, ...}</code> objects, though when Erlang square bracketed lists are not used for 
-      `{key, value}` tuples, they are pretty much identical to Json arrays.
+      <code>{key, value}</code> tuples, they are pretty much identical to Json arrays.
       Erlang's <a href="https://erlang.org/doc/man/proplists.html#get_value-2">proplist:get_value(Key, List)</a> can be used
       to reference values in proplists.</p>
       <p>Erlang offers an alternative to proplists, <a href="https://erlang.org/doc/man/maps.html">maps</a> which use
