@@ -4,7 +4,7 @@
 -export([init/2]).
 
 init(Req0=#{method := <<"GET">>}, State) ->
-  Content = template(code:priv_dir(unit2) ++ "/form.html", State),
+  Content = webutil:template(code:priv_dir(unit2) ++ "/form.html", State),
   Req = cowboy_req:reply(200,
     #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
      },
@@ -39,7 +39,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
       ),
       {ok, Req, State};
 	  true ->
-      Content = template(code:priv_dir(unit2) ++ "/form.html", 
+      Content = webutil:template(code:priv_dir(unit2) ++ "/form.html", 
        [Name, NameError, Email, EmailError, Message, MessageError]
       ),
       Req = cowboy_req:reply(200,
@@ -50,8 +50,4 @@ init(Req0=#{method := <<"POST">>}, State) ->
       ),
       {ok, Req, State}
 	end.
-
-template(FileName, ArgList) ->
-  {ok, Binary} = file:read_file(FileName),
-  list_to_binary(io_lib:format(Binary, ArgList)).
 

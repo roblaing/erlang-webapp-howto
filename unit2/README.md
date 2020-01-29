@@ -28,10 +28,59 @@ If you are familiar with one of these templating systems, simply add it with cow
 just going to use this two-line function as my templating system:
 
 ```erlang
+-spec template(FileName :: file:filename(), ArgList :: [string()]) -> Html :: binary().
+%% @doc Reads an html file from its complete path name, and inserts strings without escaping `<' or `>'.
 template(FileName, ArgList) ->
   {ok, Binary} = file:read_file(FileName),
   list_to_binary(io_lib:format(Binary, ArgList)).
 ```
+
+<h3>Modules</h3>
+
+The template/2 function is the first of many auxiliary functions common to the `foo_handler.erl` files that will grow as my
+project expands. I'm going to put these helpers in a separate module
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/webutil.erl">
+apps/unit2/src/webutil.erl</a>.
+
+The top of my module must include `-module(foo)` (which must match the filename foo.erl) and the functions I want to make
+public must be included in `-export(FunctionsList)` with the name of the function fullowed by `/` and the number of arguments
+it expects (arity to its friends). Unlike Prolog, zero arity functions in Erlang still require brackets as in foo().
+
+```erlang
+%% @doc Helper functions for my simple templating system.
+-module(webutil).
+-export([template/2]).
+```
+
+As the number of helper functions grows, I need to remember to add them to the export list
+```erlang
+-export([ template/2
+        , html_escape/1
+        ]).
+```
+
+I can then use these functions in other modules with Erlang's `Module:Function(...)` convention,
+eg `webutil:template("/var/www/index.html", ["Hello", "World"])`.
+
+Running `rebar3 edoc` will create a new subdirectory `apps/unit2/doc/` with an `index.html` file which you can simply load
+with Ctrl-O. The home page is made from an optional `overview.edoc` file explained in the
+<a href="http://erlang.org/doc/apps/edoc/chapter.html">EDoc</a>. For some reason, rebar3 does not include the doc/ subdirectory
+and its contents in its `_build` tree, so you need to remember to that yourself if you intend writing software useable by
+other people.
+
+I generally try to follow the recipe taught by MIT's free
+<a href="https://htdp.org/2019-02-24/part_preface.html#%28part._sec~3asystematic-design%29">How to design programs</a> textbook
+which teaches you to write down a <em>signature</em> (equating to the -spec line) and a <em>purpose statement</em>
+(equating to the %% @doc ... line) before starting to code. This helps making it clear in your mind what your
+function is going to produce and consume, and reminds you not to break its <em>contract</em> with existing code that uses
+it when you rewrite it.
+
+The `spec- ...` line is optional, but vital in my opinion to make your software decipherable. It virtually has a language of 
+its own explained in the
+<a href="https://erlang.org/doc/reference_manual/typespec.html">Types and Function Specifications</a> chapter of the official
+documentation.
+
+<h3>The beauty of keeping HTML HTML</h3>
 
 The file loaded from FileName is a standard HTML file with <code>~s</code> written wherever I want to create a <em>hole</em>
 to be filled by substituting a string from ArgList. The strings in ArgList have to be exactly in the order of <code>~s</code> and 
