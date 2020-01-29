@@ -67,9 +67,9 @@ the cookie are in my
 apps/unit4/priv/scripts/login.js</a> file and based on Mozilla's
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest">examples</a>.
 
-The options listed for <a href="https://erlang.org/doc/man/crypto.html#mac-4">
+The options listed for Erlang's <a href="https://erlang.org/doc/man/crypto.html#mac-4">
 mac(Type, SubType, Key, Data) -> Mac | descriptive_error()</a> are exhaustive, but I couldn't find a builtin
-Erlang function to translate the `Mac` binary (called a `digest` by hashing libraries) into a hexadecimal string.
+Erlang function to translate the <em>Mac</em> binary (called a <em>digest</em> by hashing libraries) into a hexadecimal string.
 
 Luckily a Google search revealed someone on <a href="https://stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex">
 stackoverflow</a> had written a nifty list comprehension for me to cut 'n paste.
