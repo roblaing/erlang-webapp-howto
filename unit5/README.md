@@ -61,18 +61,22 @@ OpenWeather asks users not to bombard its servers with constant requests, as cou
 was placed in the web page handler of a busy site.
 
 Ideally we need a type of cron job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
-somewhere for handlers to read rather than constantly hitting the data supplier's servers.
+somewhere for handlers to read rather than constantly hitting your data supplier's servers.
+
+Besides being polite to your data service provider, fetching new data in the backround while presenting the freshest available
+data from RAM to your site's visitors makes it load far quicker.
 
 To be run as cron jobs, these data fetchers should possibly be made a separate application with their own run script.
-But for now I'll write helper functions get_json and get_xml in my webutil module which will be called once when the application starts.
-I intend to explore caching options further in Unit 6. The ASCIIChan project in 
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>, for instance, could probably be improved
-by getting the handler to access the list of art from a cache instead of making an SQL request every time, and updating the cache
-whenever fresh art is added to the database.
+But for now I'll write a helper function in my webutil module which will be called once when the application starts.
 
 In this tutorial I'm introducing Erlang Term Storage, <a href="https://erlang.org/doc/man/ets.html">ets</a>,
 to cache the data downloaded from OpenWeather so it can be rendered any number of times without needing
-another hit on the service provider.
+another download from the service provider.
+
+I intend to explore Erlang's caching options further in Unit 6.  The ASCIIChan project in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>, for instance, could probably be improved
+by getting the handler to access the list of art from a cache instead of making an SQL request every time, and updating the cache
+whenever fresh art is added to the database.
 
 <h3>Json</h3>
 
