@@ -2,13 +2,15 @@
 
 For this we need a web client, which the standard library's <a href="http://erlang.org/doc/apps/inets/http_client.html">inets</a>
 includes as <a href="http://erlang.org/doc/apps/inets/http_client.html">httpc</a>. 
-For this client to access `https://...` sites, it needs Erlang's 
+to access `https://...` sites, httpc needs Erlang's 
 secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> application. 
 
 We also need a Json parser &mdash; which means adding a third-party application to the dependency list &mdash; and 
 an XML parser which is included.
 
-This means we need to edit apps/unit5/src/unit5.app.src to include several new additions to the applications list.
+This means we need to edit 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5.app.src">
+apps/unit5/src/unit5.app.src</a> to include several new additions to the applications list.
 
 ```erlang
   {applications,
@@ -30,10 +32,10 @@ Since the example data supplier I'm using in this tutorial has an `https://...` 
 added.
 
 Erlang's standard library doesn't include a Json parser, so we need to pick one of the many third-party libraries available.
-I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is simpler to add as dependency because applications in 
-Elixer's <a href="https://hex.pm/">https://hex.pm/</a> depo don't need a full path.
+I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is easy to add as dependency because applications in 
+Elixer's <a href="https://hex.pm/">https://hex.pm/</a> depo don't need accompanying URL's to their github or whatever homes.
 
-So we need to edit rebar.config:
+So we need a small edit in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/rebar.config">rebar.config</a>:
 
 ```erlang
 {deps, [ {cowboy, {git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}}
@@ -43,15 +45,13 @@ So we need to edit rebar.config:
 }.
 ```
 
-The standard library does include an XML, parser, xmerl, which also needs to be added to the list to be accessible to our code.
-
 <h2>Reading and parsing Json and XML</h2>
 
 This tutorial goes into the common task of getting data from another website &mdash; usually supplied as Json, but
 sometimes XML &mdash; and then parsing it and rendering it on our site.
 
-I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but also a
-test URL which requires no registration to use.
+I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts which your don't need
+if using its test URL which requires no registration to use.
 
 From the erl command line, if you run 
 ```erlang
@@ -62,10 +62,10 @@ httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&a
 io:format("Body: ~p~n", [Body]).
 ```
 This will show `Body` to be a string containing Json, so lots of escaped double quotes inside the bounding double quotes,
-which can be gotten rid of with `io:format("Body: ~s~n", [Body])`. I find the `~p` option handy when exploring so as to
+which can be gotten rid of in the output with `io:format("Body: ~s~n", [Body])`. I find the `~p` option handy when exploring so as to
 show if the returned data is a string, binary, atom, map...
 
-Using <a href="https://jsonlint.com/"> to neaten up the indentation results in:
+Using <a href="https://jsonlint.com/">https://jsonlint.com</a> to neaten up the indentation results in:
 
 ```json
 {
