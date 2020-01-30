@@ -146,7 +146,60 @@ this <a href="https://erlang.org/doc/man/proplists.html">proplist</a>:
  {<<"name">>,<<"London">>},
  {<<"cod">>,200}]
 ```
-Which we next want to store in an ets table.
+
+I now want to start using Erlang Term Storage (ETS) to cache data obtained from other websites, using
+<a href="https://erlang.org/doc/man/ets.html">ets</a>.
+
+That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
+The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Tab, {Key, Value}) -> true</a>
+function is an exception to Erlang's immutable variable rule. If `Key` already exists, its old value gets
+overwritten with the new value, making it ideal to regularly update our weather data.
+
+We can insert the above proplist into an ETS table with this recursive function:
+
+```erlang
+proplist_to_ets(TabId, []) -> ok;
+proplist_to_ets(TabId, [{Key, Value}|Proplist]) ->
+    ets:insert(TabId, {Key, Value}),
+    proplist_to_ets(TabId, Proplist).
+```
+
+Before I can use the table refered to as TabId, I need to have called 
+<a href="https://erlang.org/doc/man/ets.html#new-2">new(Name, Options) -> tid() | atom()</a>,
+which I'm going to do first thing in my application's start/2 function.
+
+The default `type` option `set` is what I think I want (it implies no duplicate keys). 
+
+I'm guessing the default `protection` option needs to be changed to `public` so that my function can update
+the values.
+
+The `named_table` option means whatever name I give my ETS table gets 
+<a href="http://erlang.org/doc/man/erlang.html#register-2">registered</a>, ie its process ID becomes a global
+constant that, say, `get_json()` and `get_xml()` can be on a first name basis with.
+
+A tuple in my application resource file I havent used yet is `{registered, []}`, so I had better insert my table name
+(I'm picking `weather_table`) to this list.
+
+The start of the start function in my apps/unit5/src/unit5_app.erl file now looks like this:
+
+```erlang
+start(_StartType, _StartArgs) ->
+  ets:new(weather_table, [public, named_table]),
+  ...
+```
+For the sake of good housekeeping, I'm going to expand my stop function to:
+
+```erlang
+stop(_State) ->
+  ets:delete(weather_table),
+  ok = cowboy:stop_listener(my_http_listener).
+```
+
+has been put in the ETS weather_table like so: 
+
+```erlang
+  [{<<"name">>, Name}] = ets:lookup(weather_table, <<"name">>)
+```
 
 <h3>XML</h3>
 
