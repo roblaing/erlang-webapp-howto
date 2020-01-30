@@ -82,7 +82,10 @@ even those like me with some experience with Prolog.
       Erlang's <a href="https://erlang.org/doc/man/proplists.html#get_value-2">proplist:get_value(Key, List)</a> can be used
       to reference values in proplists.</p>
       <p>Erlang offers an alternative to proplists, <a href="https://erlang.org/doc/man/maps.html">maps</a> which use
-      <code>#{key1 => value1, key2 => value2,...}</code> syntax which I generally prefer. Another alternative compound data structure
+      <code>#{key1 => value1, key2 => value2,...}</code> syntax which I generally prefer. Proplists can be converted to
+      maps with <a href="https://erlang.org/doc/man/maps.html#from_list-1">maps:from_list(List) -> Map</a>
+      and back with <a href="https://erlang.org/doc/man/maps.html#to_list-1">to_list(Map) -> [{Key, Value}]</a>.</p> 
+      <p>Another alternative compound data structure
       is <a href="https://erlang.org/doc/reference_manual/records.html">records</a></p>
   </dd>
 </dl>
