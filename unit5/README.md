@@ -248,7 +248,8 @@ if by destroying the ETS table when I'm finished with it gets rid of its atoms o
 than sorry.
 
 Besides the issue of strings vs atoms, there's also the issue that the keys and values in the proplists are not
-identical:
+identical, nor are the ways their trees are structured (things which are parents in the Json version are children
+in the XML version and <em>vice versa</em>):
 
 <table>
 <tr><th>Json key</th><th>XML key</th></tr>
@@ -265,8 +266,9 @@ identical:
 <tr><td><<"cod">></td><td></td></tr>
 </table>
 
-Ultimately, the differences between Json and XML, at least in this example, are too big to make this an easy
-exercise, so I'm abandoning get_xml(), and can only wish any readers who have to use XML with Erlang good luck.
+The differences between Json and XML, at least in this example, are too big to make this an easy
+exercise, and since this is a hobby project I'm doing for fun, I'm abandoning get_xml(), and can only wish any 
+readers who have to make both Json and XML work together good luck.
 
 
 <h2>ETS</h2>
