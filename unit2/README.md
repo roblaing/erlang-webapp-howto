@@ -42,7 +42,7 @@ project expands. I'm going to put these helpers in a separate module
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/webutil.erl">
 apps/unit2/src/webutil.erl</a>.
 
-The top of my module must include `-module(<ModuleName>)` (which must match the filename <ModuleName>.erl) and the functions I want to make
+The top of my module must include `-module(<ModuleName>)` (which must match the filename `<ModuleName>.erl`) and the functions I want to make
 public must be included in `-export(FunctionsList)` with the name of the function fullowed by `/` and the number of arguments
 it expects (arity to its friends). Unlike Prolog, zero arity functions in Erlang still require brackets as in foo().
 
