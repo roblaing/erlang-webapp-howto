@@ -74,3 +74,5 @@ unit1/
 
 [Unit 4](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit4): User authentication
 
+[Unit 5](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5): Web services
+
