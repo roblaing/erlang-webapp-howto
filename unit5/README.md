@@ -22,6 +22,7 @@ apps/unit5/src/unit5.app.src</a> to include several new additions to the applica
    , pgo
    , jsx
    , xmerl
+   , tempo
    ]},
 ```
 
@@ -30,15 +31,19 @@ Adding inets to the above list automatically creates an httpc process when the `
 
 Erlang's standard library doesn't include a Json parser, so we need to pick one of the many third-party libraries available.
 I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is easy to add as dependency because 
-<a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, so they don't need extra 
+<a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, so we don't need extra 
 information on how to get them from their github or wherever homes.
 
-We need a small edit in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/rebar.config">rebar.config</a>:
+The standard library also doesn't include a way to format `datetime` values (the number of seconds since the start of 1970) to a human
+readable string. For this I'm going to use a third-party application <a href="https://github.com/selectel/tempo">tempo</a>.
+
+The edits required in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/rebar.config">rebar.config</a> are:
 
 ```erlang
 {deps, [ {cowboy, {git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}}
        , {pgo, {git, "https://github.com/tsloughter/pgo.git", {branch, "master"}}}
-       , jsx  
+       , jsx
+       , {tempo, {git, "https://github.com/selectel/tempo", {branch, "master"}}}
        ]
 }.
 ```
@@ -48,15 +53,15 @@ We need a small edit in <a href="https://github.com/roblaing/erlang-webapp-howto
 This tutorial goes into the common task of getting data from another website &mdash; usually supplied as Json, but
 sometimes XML &mdash; and then parsing it and rendering it on our site.
 
-I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts which your don't need
-if using its test URL as I'll do here.
+I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
+be skipped by using its test URL as I'll do here.
 
 <h3>Caching</h3>
 
 OpenWeather asks users not to bombard its servers with constant requests, as could happen if `httpc:request(URL)`
 was placed in the web page handler of a busy site.
 
-Ideally we need a type of `cron` job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
+Ideally we need a type of cron job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
 somewhere for handlers to read rather than constantly hitting the data supplier's servers.
 
 To be run as cron jobs, these data fetchers should possibly be made a separate application with their own run script.
@@ -128,10 +133,6 @@ Using <a href="https://jsonlint.com/">https://jsonlint.com</a> to neaten up the 
 	"cod": 200
 }
 ```
-
-If you live in London, note the "dt" (datetime) value of 1485789600 in the Json returned equates to 2017 January 30, 
-so if you want a live, current weather report, you'll need to get a propper `appid=...` value by registering 
-instead of using the test data.
 
 `jsx:decode(Json)` barfs if the input text isn't binary, so `Json = list_to_binary(Body)` is needed to produce
 this <a href="https://erlang.org/doc/man/proplists.html">proplist</a>:
@@ -216,6 +217,26 @@ has been put in the ETS weather_table like so:
 ```erlang
   [{<<"name">>, Name}] = ets:lookup(weather_table, <<"name">>)
 ```
+
+<h4>Date formating</h4>
+
+This Json objects includes a "dt" key with a value of 1485789600 &mdash; the number of seconds to that particular date 
+since 1970 &mdash; which converting to something human readable is exasperating in most programing languages, and in
+Erlang more than most.
+
+I eventually discovered the magic incantation in tempo was 
+`{ok, Date} = tempo:format(iso8601, {unix, 1485789600})` which produced <<"2017-01-30T15:20:00Z">>, coincidently
+exactly two years from when I was writing this.
+
+Alternatively using `rfc1123` instead of `iso8601` produces <<"Mon, 30 Jan 2017 15:20:00 GMT">>, and
+`rfc2822` produces `<<"Mon, 30 Jan 2017 15:20:00 +0000">>`.
+
+The tempo application is a wrapper for C's <a href="https://linux.die.net/man/3/strftime">strftime</a> function, so you can
+customise as in `<<"%A, %Y-%d-%m">>` which produces `<<"Monday, 2017-30-01">>`.
+
+Long story short, if you live in London, you'll need to get a proper `appid=...` value by registering 
+instead of using the test data to get a current weather forecast.
+
 
 <h3>XML</h3>
 
