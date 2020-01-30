@@ -1,12 +1,12 @@
 <h1>Unit 5: Web Services</h1>
 
-For this we need a web client, which the standard library's <a href="http://erlang.org/doc/apps/inets/http_client.html">inets</a>
+For this we need a web client, which the standard OTP application <a href="http://erlang.org/doc/apps/inets/http_client.html">inets</a>
 includes as <a href="http://erlang.org/doc/apps/inets/http_client.html">httpc</a>. 
-to access `https://...` sites, httpc needs Erlang's 
+To access `https://...` sites, httpc needs Erlang's 
 secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> application. 
 
 We also need a Json parser &mdash; which means adding a third-party application to the dependency list &mdash; and 
-an XML parser which is included.
+an XML parser which comes included.
 
 This means we need to edit 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5.app.src">
@@ -51,7 +51,7 @@ This tutorial goes into the common task of getting data from another website &md
 sometimes XML &mdash; and then parsing it and rendering it on our site.
 
 I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts which your don't need
-if using its test URL which requires no registration to use.
+if using its test URL as I'll do here.
 
 From the erl command line, if you run 
 ```erlang
@@ -116,55 +116,42 @@ instead of using the test data.
 
 If your prefer XML to Json, Open Weather provides the `mode=xml` option in the URL's query string:
 ```
-inets:start().  % Done automatically if inets added to the list of applications in resource file.
-ssl:start().    % Only discovered I needed this after getting an error for leaving it out.
-{ok, {{Version, 200, ReasonPhrase}, Headers, Body}} = 
-httpc:request("https://samples.openweathermap.org/data/2.5/forecast?q=London,us&mode=xml&appid=b6907d289e10d714a6e88b30761fae22"),
-io:format("Body: ~s~n", [Body]).
+httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&&mode=xml&appid=b6907d289e10d714a6e88b30761fae22").
 ```
-The body of this request is again a string, but containing XML, which for some reason is far more verbose than the
-Json version because it includes dozens of `<time ...>` elements which I've only included the first of.
+The body of this request is again a string, but containing XML, which pretty printed looks like this:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<weatherdata>
-   <location>
-      <name>London</name>
-      <type />
-      <country>US</country>
-      <timezone />
-      <location altitude="0" latitude="39.8865" longitude="-83.4483" geobase="geonames" geobaseid="4517009" />
-   </location>
-   <credit />
-   <meta>
-      <lastupdate />
-      <calctime>0.0028</calctime>
-      <nextupdate />
-   </meta>
-   <sun rise="2017-03-03T12:03:03" set="2017-03-03T23:28:37" />
-   <forecast>
-      <time from="2017-03-03T06:00:00" to="2017-03-03T09:00:00">
-         <symbol number="600" name="light snow" var="13n" />
-         <precipitation unit="3h" value="0.03125" type="snow" />
-         <windDirection deg="303.004" code="WNW" name="West-northwest" />
-         <windSpeed mps="2.29" name="Light breeze" />
-         <temperature unit="kelvin" value="269.91" min="269.91" max="270.877" />
-         <pressure unit="hPa" value="1005.61" />
-         <humidity value="93" unit="%" />
-         <clouds value="scattered clouds" all="32" unit="%" />
-      </time>
-   </forecast>
-</weatherdata>
+<current>
+   <city id="2643743" name="London">
+      <coord lon="-0.13" lat="51.51" />
+      <country>GB</country>
+      <sun rise="2017-01-30T07:40:36" set="2017-01-30T16:47:56" />
+   </city>
+   <temperature value="280.15" min="278.15" max="281.15" unit="kelvin" />
+   <humidity value="81" unit="%" />
+   <pressure value="1012" unit="hPa" />
+   <wind>
+      <speed value="4.6" name="Gentle Breeze" />
+      <gusts />
+      <direction value="90" code="E" name="East" />
+   </wind>
+   <clouds value="90" name="overcast clouds" />
+   <visibility value="10000" />
+   <precipitation mode="no" />
+   <weather number="701" value="mist" icon="50d" />
+   <lastupdate value="2017-01-30T15:50:00" />
+</current>
 ```      
 
-OpenWeather requests that users don't constantly request data from its servers, as would happen if the `httpc:request(URL)`
-was placed in the web page handler everytime a visitor pointed their browser to its corresponding URL.
+OpenWeather asks users not to bombard its servers with requests, as could happen if `httpc:request(URL)`
+was placed in the web page handler of a busy site.
 
 Ideally we need a type of `cron` job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
 somewhere for handlers to read rather than constantly hitting the data supplier's servers. I'm going to use
 Erlang's <a href="https://erlang.org/doc/man/ets.html">ets</a> module to cache the Json and XML file.
 
-To be run as cron jobs, these data fetchers should possibly be separate applications with their own run scripts.
+To be run as cron jobs, these data fetchers should possibly be made a separate application with their own run script.
 But for now I'll write helper functions get_json and get_xml in my webutil module which will be called once when the application starts.
 I intend to explore caching options further in Unit 6. The ASCIIChan project in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>, for instance, could probably be improved
