@@ -34,7 +34,8 @@ I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is easy to ad
 <a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, so we don't need extra 
 information on how to get them from their github or wherever homes.
 
-The standard library also doesn't include a way to format `datetime` values (the number of seconds since the start of 1970) to a human
+The standard library also doesn't include a way to convert the conventional way of representing time as data &mdash; 
+the number of seconds since the start of 1970 &mdash; to a human
 readable string. For this I'm going to use a third-party application <a href="https://github.com/selectel/tempo">tempo</a>.
 
 The edits required in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/rebar.config">rebar.config</a> are:
@@ -192,7 +193,7 @@ the values.
 
 The `named_table` option means whatever name I give my ETS table gets 
 <a href="http://erlang.org/doc/man/erlang.html#register-2">registered</a>, ie its process ID becomes a global
-constant that, say, `get_json()` and `get_xml()` can be on a first name basis with.
+constant that, say, `get_json()` and `get_xml()`, can be on a first name basis with.
 
 A tuple in my application resource file I havent used yet is `{registered, []}`, so I had better insert my table name
 (I'm picking `weather_table`) to this list.
@@ -212,7 +213,7 @@ stop(_State) ->
   ok = cowboy:stop_listener(my_http_listener).
 ```
 
-has been put in the ETS weather_table like so: 
+And now my hander can extract keys from the ETS weather_table like so: 
 
 ```erlang
   [{<<"name">>, Name}] = ets:lookup(weather_table, <<"name">>)
@@ -225,10 +226,10 @@ since 1970 &mdash; which converting to something human readable is exasperating 
 Erlang more than most.
 
 I eventually discovered the magic incantation in tempo was 
-`{ok, Date} = tempo:format(iso8601, {unix, 1485789600})` which produced <<"2017-01-30T15:20:00Z">>, coincidently
+`{ok, Date} = tempo:format(iso8601, {unix, 1485789600})` which produced `<<"2017-01-30T15:20:00Z">>`, coincidently
 exactly two years from when I was writing this.
 
-Alternatively using `rfc1123` instead of `iso8601` produces <<"Mon, 30 Jan 2017 15:20:00 GMT">>, and
+Alternatively using `rfc1123` instead of `iso8601` produces `<<"Mon, 30 Jan 2017 15:20:00 GMT">>`, and
 `rfc2822` produces `<<"Mon, 30 Jan 2017 15:20:00 +0000">>`.
 
 The tempo application is a wrapper for C's <a href="https://linux.die.net/man/3/strftime">strftime</a> function, so you can
