@@ -17,7 +17,7 @@ users (without verification at this stage, we add that in Unit 4) submit ASCII a
 obtained from <a href="https://www.asciiart.eu/">https://www.asciiart.eu/</a>. The submitted art is stored in a database and
 imediately rendered on the page. 
 
-Within your database, you need a table which in Postgres's SQL dialect looks like so:
+Within your database, you need a table which in Postgres's SQL dialect is created like so:
 
 ```sql
 CREATE TABLE IF NOT EXISTS arts 
@@ -136,10 +136,10 @@ pgo:query("SELECT title, art FROM arts ORDER BY created DESC")
 returns a map with three keys:
 
 ```erlang
-{command => select, num_rows => N, rows => [{Title1, Art1}, {Title2, Art2}, ...]}
+#{command => select, num_rows => N, rows => [{Title1, Art1}, {Title2, Art2}, ...]}
 ```
 
-So what we want to do is translate each of the {Title1, Art1} tuple in the rows list into an HTML string to 
+So what we want to do is translate each of the {Title1, Art1} tuples in the rows list into an HTML string to 
 insert into our template.
 
 <h3>A quick digression into list processing in Erlang</h3>
