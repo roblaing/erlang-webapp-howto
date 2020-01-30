@@ -1,5 +1,11 @@
 <h1>Unit 5: Web Services</h1>
 
+This tutorial goes into the common task of getting data from another website &mdash; usually supplied as Json, but
+sometimes XML &mdash; and then parsing it and rendering it on our site.
+
+I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
+be skipped by using its test URL as I'll do here.
+
 For this we need a web client, which the standard OTP application <a href="http://erlang.org/doc/apps/inets/http_client.html">inets</a>
 includes as <a href="http://erlang.org/doc/apps/inets/http_client.html">httpc</a>. 
 To access `https://...` sites, httpc needs Erlang's 
@@ -48,14 +54,6 @@ The edits required in <a href="https://github.com/roblaing/erlang-webapp-howto/b
        ]
 }.
 ```
-
-<h2>Reading and parsing Json and XML</h2>
-
-This tutorial goes into the common task of getting data from another website &mdash; usually supplied as Json, but
-sometimes XML &mdash; and then parsing it and rendering it on our site.
-
-I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
-be skipped by using its test URL as I'll do here.
 
 <h3>Caching</h3>
 
@@ -178,12 +176,12 @@ We can insert the above proplist into an ETS table with this recursive function:
 ```erlang
 proplist_to_ets(TabId, []) -> ok;
 proplist_to_ets(TabId, [{Key, Value}|Proplist]) ->
-    ets:insert(TabId, {Key, Value}),
-    proplist_to_ets(TabId, Proplist).
+  ets:insert(TabId, {Key, Value}),
+  proplist_to_ets(TabId, Proplist).
 ```
 
 Before I can use the table refered to as TabId, I need to have called 
-<a href="https://erlang.org/doc/man/ets.html#new-2">new(Name, Options) -> tid() | atom()</a>,
+<a href="https://erlang.org/doc/man/ets.html#new-2">ets:new(Name, Options) -> tid() | atom()</a>,
 which I'm going to do first thing in my application's start/2 function.
 
 The default `type` option `set` is what I think I want (it implies no duplicate keys). 
