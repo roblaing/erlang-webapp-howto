@@ -28,14 +28,12 @@ apps/unit5/src/unit5.app.src</a> to include several new additions to the applica
 Adding inets to the above list automatically creates an httpc process when the `unit5` application is started. 
 (One of the things that makes inet's httpd application confusing is it isn't started unless you make edits to explicitly include it.)
 
-Since the example data supplier I'm using in this tutorial has an `https://...` address, we also need Erlang's `ssl` application
-added.
-
 Erlang's standard library doesn't include a Json parser, so we need to pick one of the many third-party libraries available.
-I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is easy to add as dependency because applications in 
-Elixer's <a href="https://hex.pm/">https://hex.pm/</a> depo don't need accompanying URL's to their github or whatever homes.
+I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is easy to add as dependency because 
+<a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, so they don't need extra 
+information on how to get them from their github or wherever homes.
 
-So we need a small edit in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/rebar.config">rebar.config</a>:
+We need a small edit in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/rebar.config">rebar.config</a>:
 
 ```erlang
 {deps, [ {cowboy, {git, "https://github.com/ninenines/cowboy.git", {branch, "master"}}}
@@ -52,6 +50,8 @@ sometimes XML &mdash; and then parsing it and rendering it on our site.
 
 I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts which your don't need
 if using its test URL as I'll do here.
+
+<h3>Json</h3>
 
 From the erl command line, if you run 
 ```erlang
@@ -114,9 +114,45 @@ If you live in London, note the "dt" (datetime) value of 1485789600 in the Json 
 so if you want a live, current weather report, you'll need to get a propper `appid=...` value by registering 
 instead of using the test data.
 
+`jsx:decode(Json)` barfs if the input text isn't binary, so `Json = list_to_binary(Body)` is needed to produce
+this <a href="https://erlang.org/doc/man/proplists.html">proplist:
+
+```erlang
+[{<<"coord">>,[{<<"lon">>,-0.13},{<<"lat">>,51.51}]},
+ {<<"weather">>,
+  [[{<<"id">>,300},
+    {<<"main">>,<<"Drizzle">>},
+    {<<"description">>,<<"light intensity drizzle">>},
+    {<<"icon">>,<<"09d">>}]]},
+ {<<"base">>,<<"stations">>},
+ {<<"main">>,
+  [{<<"temp">>,280.32},
+   {<<"pressure">>,1012},
+   {<<"humidity">>,81},
+   {<<"temp_min">>,279.15},
+   {<<"temp_max">>,281.15}]},
+ {<<"visibility">>,10000},
+ {<<"wind">>,[{<<"speed">>,4.1},{<<"deg">>,80}]},
+ {<<"clouds">>,[{<<"all">>,90}]},
+ {<<"dt">>,1485789600},
+ {<<"sys">>,
+  [{<<"type">>,1},
+   {<<"id">>,5091},
+   {<<"message">>,0.0103},
+   {<<"country">>,<<"GB">>},
+   {<<"sunrise">>,1485762037},
+   {<<"sunset">>,1485794875}]},
+ {<<"id">>,2643743},
+ {<<"name">>,<<"London">>},
+ {<<"cod">>,200}]
+```
+Which we next want to store in an ets table.
+
+<h3>XML</h3>
+
 If your prefer XML to Json, Open Weather provides the `mode=xml` option in the URL's query string:
 ```
-httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&&mode=xml&appid=b6907d289e10d714a6e88b30761fae22").
+httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&mode=xml&appid=b6907d289e10d714a6e88b30761fae22").
 ```
 The body of this request is again a string, but containing XML, which pretty printed looks like this:
 
