@@ -36,9 +36,8 @@ init(Req0=#{method := <<"POST">>}, State) ->
         #{ <<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))
          },
         Req0
-      ),
-      {ok, Req, State};
-	  true ->
+      );
+    true ->
       Content = webutil:template(code:priv_dir(unit2) ++ "/form.html", 
        [Name, NameError, Email, EmailError, Message, MessageError]
       ),
@@ -48,6 +47,6 @@ init(Req0=#{method := <<"POST">>}, State) ->
         Content,
         Req0
       ),
-      {ok, Req, State}
-	end.
+  end,
+  {ok, Req, State}.
 
