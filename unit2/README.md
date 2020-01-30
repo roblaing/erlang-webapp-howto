@@ -35,6 +35,18 @@ template(FileName, ArgList) ->
   io_lib:format(Binary, ArgList).
 ```
 
+I generally try to follow the recipe taught by MIT's free
+<a href="https://htdp.org/2019-02-24/part_preface.html#%28part._sec~3asystematic-design%29">How to design programs</a> textbook
+which teaches you to write down a <em>signature</em> (equating to the -spec line) and a <em>purpose statement</em>
+(equating to the %% @doc ... line) before starting to code. This helps making it clear in your mind what your
+function is going to produce and consume, and reminds you not to break its <em>contract</em> with existing code that uses
+it when you rewrite it.
+
+The `-spec ...` line is optional, but vital in my opinion to make your software decipherable. It virtually has a language of 
+its own explained in the
+<a href="https://erlang.org/doc/reference_manual/typespec.html">Types and Function Specifications</a> chapter of the official
+documentation.
+
 <h3>Modules</h3>
 
 The template/2 function is the first of many auxiliary functions common to the `foo_handler.erl` files that will grow as my
@@ -67,18 +79,6 @@ with Ctrl-O. The home page is made from an optional `apps/unit2/doc/overview.edo
 <a href="http://erlang.org/doc/apps/edoc/chapter.html">EDoc</a> documentation. For some reason, rebar3 does not include the doc/ subdirectory
 and its contents in its `_build` tree, so you need to remember to copy that yourself if you intend writing software useable by
 other people.
-
-I generally try to follow the recipe taught by MIT's free
-<a href="https://htdp.org/2019-02-24/part_preface.html#%28part._sec~3asystematic-design%29">How to design programs</a> textbook
-which teaches you to write down a <em>signature</em> (equating to the -spec line) and a <em>purpose statement</em>
-(equating to the %% @doc ... line) before starting to code. This helps making it clear in your mind what your
-function is going to produce and consume, and reminds you not to break its <em>contract</em> with existing code that uses
-it when you rewrite it.
-
-The `-spec ...` line is optional, but vital in my opinion to make your software decipherable. It virtually has a language of 
-its own explained in the
-<a href="https://erlang.org/doc/reference_manual/typespec.html">Types and Function Specifications</a> chapter of the official
-documentation.
 
 <h3>The beauty of keeping HTML HTML</h3>
 
@@ -270,7 +270,7 @@ I did this with nested maps:get/2 functions
   ...
 ```
 
-In this case, Name is now the binary <code><<"John Smit">></code> which <code>io_lib:format(Template, Args)</code> can handle.
+In this case, Name is now the binary <code><<"John Smith">></code> which <code>io_lib:format(Template, Args)</code> can handle.
 I've used two <code>~s</code> in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/priv/welcome.html">
 welcome.html</a>, once in the title and once in the body:
