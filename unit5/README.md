@@ -234,7 +234,7 @@ produces a very similar Proplist to the Json version:
 While the proplists produced by the Json and XML parsers are similar, it's important to note they're not identical,
 creating some tricky things to abstract them for the ETS table I intend putting their data in.
 
-The obvious difference is Json keys are strings (lists of character codes in Erlang) whereas XML keys are atoms.
+The obvious difference is Json keys are binary strings whereas XML keys are atoms.
 
 The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">lists vs atoms</a> section of the
 Erlang's documentation's Efficiency guide warns:
@@ -244,8 +244,30 @@ Therefore, converting arbitrary input strings to atoms can be dangerous in a sys
 </q>
 
 So my impression is it's better to convert XML's atoms to lists than Json's strings to atoms. I'm not sure
-if that I'm destroying the ETS table when I'm finished with it gets rid of its atoms or not, but better safe
+if by destroying the ETS table when I'm finished with it gets rid of its atoms or not, but better safe
 than sorry.
+
+Besides the issue of strings vs atoms, there's also the issue that the keys and values in the proplists are not
+identical:
+
+<table>
+<tr><th>Json key</th><th>XML key</th></tr>
+<tr><td><<"coord">></td><td>{city, ..., [{coord,[{lon,"-0.13"},{lat,"51.51"}],[]},...],...}</td></tr>
+<tr><td><<"weather">></td><td>weather</td></tr>
+<tr><td><<"base">></td><td></td></tr>
+<tr><td><<"visibility">></td><td>visibility</td></tr>
+<tr><td><<"wind">></td><td>wind</td></tr>
+<tr><td><<"clouds">></td><td>clouds</td></tr>
+<tr><td><<"dt">></td><td>lastupdate</td></tr>
+<tr><td><<"sys">></td><td>{city, ..., {country,[],["GB"]}, {sun,[...]},...}</td></tr>
+<tr><td><<"id">></td><td>{city, [{id,"2643743"},...], ...}</td></tr>
+<tr><td><<"name">></td><td>{city,[...,{name,"London"}]}, ...}</td></tr>
+<tr><td><<"cod">></td><td></td></tr>
+</table>
+
+Ultimately, the differences between Json and XML, at least in this example, are too big to make this an easy
+exercise, so I'm abandoning get_xml(), and can only wish any readers who have to use XML with Erlang good luck.
+
 
 <h2>ETS</h2>
 
