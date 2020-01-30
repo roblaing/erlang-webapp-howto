@@ -239,10 +239,9 @@ The obvious difference is Json keys are strings (lists of character codes in Erl
 The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">lists vs atoms</a> section of the
 Erlang's documentation's Efficiency guide warns:
 
-<quote>
-Atoms are not garbage-collected. Once an atom is created, it is never removed. ...
+<q> Atoms are not garbage-collected. Once an atom is created, it is never removed. ...
 Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.
-</quote>
+</q>
 
 So my impression is it's better to convert XML's atoms to lists than Json's strings to atoms. I'm not sure
 if that I'm destroying the ETS table when I'm finished with it gets rid of its atoms or not, but better safe
