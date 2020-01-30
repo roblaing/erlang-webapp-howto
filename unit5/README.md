@@ -51,12 +51,31 @@ sometimes XML &mdash; and then parsing it and rendering it on our site.
 I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts which your don't need
 if using its test URL as I'll do here.
 
+<h3>Caching</h3>
+
+OpenWeather asks users not to bombard its servers with constant requests, as could happen if `httpc:request(URL)`
+was placed in the web page handler of a busy site.
+
+Ideally we need a type of `cron` job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
+somewhere for handlers to read rather than constantly hitting the data supplier's servers.
+
+To be run as cron jobs, these data fetchers should possibly be made a separate application with their own run script.
+But for now I'll write helper functions get_json and get_xml in my webutil module which will be called once when the application starts.
+I intend to explore caching options further in Unit 6. The ASCIIChan project in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>, for instance, could probably be improved
+by getting the handler to access the list of art from a cache instead of making an SQL request every time, and updating the cache
+whenever fresh art is added to the database.
+
+In this tutorial I'm introducing Erlang Term Storage, <a href="https://erlang.org/doc/man/ets.html">ets</a>,
+to cache the data downloaded from OpenWeather so it can be rendered any number of times without needing
+another hit on the service provider.
+
 <h3>Json</h3>
 
 From the erl command line, if you run 
 ```erlang
 inets:start().  % Done automatically if inets added to the list of applications in resource file.
-ssl:start().    % Only discovered I needed this after getting an error for leaving it out.
+ssl:start().    % I only discovered I needed this after getting an error for leaving it out.
 {ok, {{Version, 200, ReasonPhrase}, Headers, Body}} = 
 httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22"),
 io:format("Body: ~p~n", [Body]).
@@ -65,7 +84,7 @@ This will show `Body` to be a string containing Json, so lots of escaped double 
 which can be gotten rid of in the output with `io:format("Body: ~s~n", [Body])`. I find the `~p` option handy when exploring so as to
 show if the returned data is a string, binary, atom, map...
 
-Using <a href="https://jsonlint.com/">https://jsonlint.com</a> to neaten up the indentation results in:
+Using <a href="https://jsonlint.com/">https://jsonlint.com</a> to neaten up the indentation, the returned Json looks like:
 
 ```json
 {
@@ -146,9 +165,6 @@ this <a href="https://erlang.org/doc/man/proplists.html">proplist</a>:
  {<<"name">>,<<"London">>},
  {<<"cod">>,200}]
 ```
-
-I now want to start using Erlang Term Storage (ETS) to cache data obtained from other websites, using
-<a href="https://erlang.org/doc/man/ets.html">ets</a>.
 
 That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
 The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Tab, {Key, Value}) -> true</a>
@@ -232,20 +248,6 @@ The body of this request is again a string, but containing XML, which pretty pri
    <lastupdate value="2017-01-30T15:50:00" />
 </current>
 ```      
-
-OpenWeather asks users not to bombard its servers with requests, as could happen if `httpc:request(URL)`
-was placed in the web page handler of a busy site.
-
-Ideally we need a type of `cron` job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
-somewhere for handlers to read rather than constantly hitting the data supplier's servers. I'm going to use
-Erlang's <a href="https://erlang.org/doc/man/ets.html">ets</a> module to cache the Json and XML file.
-
-To be run as cron jobs, these data fetchers should possibly be made a separate application with their own run script.
-But for now I'll write helper functions get_json and get_xml in my webutil module which will be called once when the application starts.
-I intend to explore caching options further in Unit 6. The ASCIIChan project in 
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>, for instance, could probably be improved
-by getting the handler to access the list of art from a cache instead of making an SQL request every time, and updating the cache
-whenever fresh art is added to the database.
 
 <h2>Routing</h2>
 
