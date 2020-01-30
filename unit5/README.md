@@ -166,6 +166,76 @@ this <a href="https://erlang.org/doc/man/proplists.html">proplist</a>:
  {<<"cod">>,200}]
 ```
 
+<h3>XML</h3>
+
+If you want XML instead of Json, Open Weather provides the `mode=xml` option in the URL's query string:
+```
+httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&mode=xml&appid=b6907d289e10d714a6e88b30761fae22").
+```
+The body of this request is again a string, but containing XML, which pretty printed looks like this:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<current>
+   <city id="2643743" name="London">
+      <coord lon="-0.13" lat="51.51" />
+      <country>GB</country>
+      <sun rise="2017-01-30T07:40:36" set="2017-01-30T16:47:56" />
+   </city>
+   <temperature value="280.15" min="278.15" max="281.15" unit="kelvin" />
+   <humidity value="81" unit="%" />
+   <pressure value="1012" unit="hPa" />
+   <wind>
+      <speed value="4.6" name="Gentle Breeze" />
+      <gusts />
+      <direction value="90" code="E" name="East" />
+   </wind>
+   <clouds value="90" name="overcast clouds" />
+   <visibility value="10000" />
+   <precipitation mode="no" />
+   <weather number="701" value="mist" icon="50d" />
+   <lastupdate value="2017-01-30T15:50:00" />
+</current>
+```
+The following magic incantations:
+
+```erlang]
+...
+{Element, _} = xmerl_scan:string(Body),
+{_, _, XML} = xmerl_lib:simplify_element(Element),
+Content = io_lib:format("~p~n", [XML]),
+...
+```
+
+produces a very similar Proplist to the Json version:
+
+```erlang
+[{city,[{id,"2643743"},{name,"London"}],
+       [{coord,[{lon,"-0.13"},{lat,"51.51"}],[]},
+        {country,[],["GB"]},
+        {sun,[{rise,"2017-01-30T07:40:36"},{set,"2017-01-30T16:47:56"}],[]}]},
+ {temperature,[{value,"280.15"},{min,"278.15"},{max,"281.15"},{unit,"kelvin"}],
+              []},
+ {humidity,[{value,"81"},{unit,"%"}],[]},
+ {pressure,[{value,"1012"},{unit,"hPa"}],[]},
+ {wind,[],
+       [{speed,[{value,"4.6"},{name,"Gentle Breeze"}],[]},
+        {gusts,[],[]},
+        {direction,[{value,"90"},{code,"E"},{name,"East"}],[]}]},
+ {clouds,[{value,"90"},{name,"overcast clouds"}],[]},
+ {visibility,[{value,"10000"}],[]},
+ {precipitation,[{mode,"no"}],[]},
+ {weather,[{number,"701"},{value,"mist"},{icon,"50d"}],[]},
+ {lastupdate,[{value,"2017-01-30T15:50:00"}],[]}]
+```
+
+<h2>Json vs XML</h2>
+
+While the proplists produced by the Json and XML parsers are similar, it's important to note they're not identical,
+creating some tricky things to abstract them for the ETS table I intend putting their data in.
+
+<h2>ETS</h2>
+
 That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
 The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Tab, {Key, Value}) -> true</a>
 function is an exception to Erlang's immutable variable rule. If `Key` already exists, its old value gets
@@ -217,6 +287,12 @@ And now my hander can extract keys from the ETS weather_table like so:
   [{<<"name">>, Name}] = ets:lookup(weather_table, <<"name">>)
 ```
 
+
+which just turned the verbose input into even more verbose, and to me unusable, output. I thought replicating the above Json example
+with XML would be easy, but no such luck, so if you have to use XML and Erlang, good luck.
+
+
+
 <h4>Date formating</h4>
 
 This Json objects includes a "dt" key with a value of 1485789600 &mdash; the number of seconds to that particular date 
@@ -247,49 +323,5 @@ following new route in the list:
      , {"/weather"       , weather_handler, []}
      ...
 ```
-
-<h3>XML</h3>
-
-If you want XML instead of Json, Open Weather provides the `mode=xml` option in the URL's query string:
-```
-httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&mode=xml&appid=b6907d289e10d714a6e88b30761fae22").
-```
-The body of this request is again a string, but containing XML, which pretty printed looks like this:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<current>
-   <city id="2643743" name="London">
-      <coord lon="-0.13" lat="51.51" />
-      <country>GB</country>
-      <sun rise="2017-01-30T07:40:36" set="2017-01-30T16:47:56" />
-   </city>
-   <temperature value="280.15" min="278.15" max="281.15" unit="kelvin" />
-   <humidity value="81" unit="%" />
-   <pressure value="1012" unit="hPa" />
-   <wind>
-      <speed value="4.6" name="Gentle Breeze" />
-      <gusts />
-      <direction value="90" code="E" name="East" />
-   </wind>
-   <clouds value="90" name="overcast clouds" />
-   <visibility value="10000" />
-   <precipitation mode="no" />
-   <weather number="701" value="mist" icon="50d" />
-   <lastupdate value="2017-01-30T15:50:00" />
-</current>
-```
-
-I got as far with the xmerl library as puting this output through
-
-```erlang]
-...
-XML = xmerl_scan:string(Body),
-Content = io_lib:format("~p~n", [XML]),
-...
-```
-which just turned this verbose input into even more verbose, and to me unusable, output. I thought replicating the above Json example
-with XML would be easy, but no such luck, so if you have to use XML and Erlang, good luck.
-
 
 
