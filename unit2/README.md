@@ -5,7 +5,7 @@ what's new here to your existing release. That way your computer won't have to d
 when you enter `rebar3 release`. Just remember to change `unitX` in the code to whatever you have called your
 project.
 
-I've seperated the units to keep each one small and simple.
+I've separated the units to keep each one small and simple.
 
 If you are starting afresh with `rebar3 new release unit2`, step1 is add cowboy as a dependency in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/rebar.config">rebar.config</a> 
@@ -42,7 +42,7 @@ project expands. I'm going to put these helpers in a separate module
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/webutil.erl">
 apps/unit2/src/webutil.erl</a>.
 
-The top of my module must include `-module(foo)` (which must match the filename foo.erl) and the functions I want to make
+The top of my module must include `-module(<ModuleName>)` (which must match the filename <ModuleName>.erl) and the functions I want to make
 public must be included in `-export(FunctionsList)` with the name of the function fullowed by `/` and the number of arguments
 it expects (arity to its friends). Unlike Prolog, zero arity functions in Erlang still require brackets as in foo().
 
@@ -64,7 +64,7 @@ eg `webutil:template("/var/www/index.html", ["Hello", "World"])`.
 
 Running `rebar3 edoc` will create a new subdirectory `apps/unit2/doc/` with an `index.html` file which you can simply load
 with Ctrl-O. The home page is made from an optional `apps/unit2/doc/overview.edoc` file explained in the
-<a href="http://erlang.org/doc/apps/edoc/chapter.html">EDoc</a>. For some reason, rebar3 does not include the doc/ subdirectory
+<a href="http://erlang.org/doc/apps/edoc/chapter.html">EDoc</a> documentation. For some reason, rebar3 does not include the doc/ subdirectory
 and its contents in its `_build` tree, so you need to remember to copy that yourself if you intend writing software useable by
 other people.
 
