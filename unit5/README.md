@@ -236,10 +236,21 @@ customise as in `<<"%A, %Y-%d-%m">>` which produces `<<"Monday, 2017-30-01">>`.
 Long story short, if you live in London, you'll need to get a proper `appid=...` value by registering 
 instead of using the test data to get a current weather forecast.
 
+<h2>Routing</h2>
+
+We need to modify the <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
+apps/unit5/src/unit5_app.erl</a> where `unit5` should be substitued with whatever you are calling your project, to include the 
+following new route in the list:
+
+```erlang
+     ...
+     , {"/weather"       , weather_handler, []}
+     ...
+```
 
 <h3>XML</h3>
 
-If your prefer XML to Json, Open Weather provides the `mode=xml` option in the URL's query string:
+If you want XML instead of Json, Open Weather provides the `mode=xml` option in the URL's query string:
 ```
 httpc:request("https://samples.openweathermap.org/data/2.5/weather?q=London,uk&mode=xml&appid=b6907d289e10d714a6e88b30761fae22").
 ```
@@ -267,18 +278,18 @@ The body of this request is again a string, but containing XML, which pretty pri
    <weather number="701" value="mist" icon="50d" />
    <lastupdate value="2017-01-30T15:50:00" />
 </current>
-```      
-
-<h2>Routing</h2>
-
-We need to modify the <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
-apps/unit5/src/unit5_app.erl</a> where `unit5` should be substitued with whatever you are calling your project, to include the 
-following new route in the list:
-
-```erlang
-     ...
-     , {"/weather"       , weather_handler, []}
-     ...
 ```
+
+I got as far with the xmerl library as puting this output through
+
+```erlang]
+...
+XML = xmerl_scan:string(Body),
+Content = io_lib:format("~p~n", [XML]),
+...
+```
+which just turned this verbose input into even more verbose, and to me unusable, output. I thought replicating the above Json example
+with XML would be easy, but no such luck, so if you have to use XML and Erlang, good luck.
+
 
 
