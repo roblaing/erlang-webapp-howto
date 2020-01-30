@@ -243,7 +243,7 @@ Erlang's documentation's Efficiency guide warns:
 Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.
 </q>
 
-So my impression is it's better to convert XML's atoms to lists than Json's strings to atoms. I'm not sure
+So my impression is it's better to convert XML's atoms to binary strings than Json's strings to atoms. I'm not sure
 if by destroying the ETS table when I'm finished with it gets rid of its atoms or not, but better safe
 than sorry.
 
@@ -326,13 +326,25 @@ And now my hander can extract keys from the ETS weather_table like so:
 which just turned the verbose input into even more verbose, and to me unusable, output. I thought replicating the above Json example
 with XML would be easy, but no such luck, so if you have to use XML and Erlang, good luck.
 
-
-
 <h4>Date formating</h4>
 
-This Json objects includes a "dt" key with a value of 1485789600 &mdash; the number of seconds to that particular date 
-since 1970 &mdash; which converting to something human readable is exasperating in most programing languages, and in
-Erlang more than most.
+Much as I dislike XML, I have to credit the XML proplist for having
+
+```erlang
+{lastupdate,[{value,"2017-01-30T15:50:00"}],[]}
+```
+
+in contrast to the Json version which has
+
+```erlang
+"dt": 1485789600
+```
+
+The "dt" key is presumably short for `datetime`, which Erlang's <a href="https://erlang.org/doc/man/calendar.html">Calendar</a>
+library defines as some mysterious tuple while everyone else defines it as the number of seconds since the start of 1970.
+
+Convering numbers like 1485789600 into to something human readable is exasperating in most programing languages, and in
+Erlang more so than most.
 
 I eventually discovered the magic incantation in tempo was 
 `{ok, Date} = tempo:format(iso8601, {unix, 1485789600})` which produced `<<"2017-01-30T15:20:00Z">>`, coincidently
