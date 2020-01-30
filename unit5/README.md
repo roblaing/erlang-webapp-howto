@@ -115,7 +115,7 @@ so if you want a live, current weather report, you'll need to get a propper `app
 instead of using the test data.
 
 `jsx:decode(Json)` barfs if the input text isn't binary, so `Json = list_to_binary(Body)` is needed to produce
-this <a href="https://erlang.org/doc/man/proplists.html">proplist:
+this <a href="https://erlang.org/doc/man/proplists.html">proplist</a>:
 
 ```erlang
 [{<<"coord">>,[{<<"lon">>,-0.13},{<<"lat">>,51.51}]},
