@@ -1,7 +1,7 @@
 <h1>Unit 5: Web Services</h1>
 
 This tutorial goes into the common task of getting data from another website &mdash; usually supplied as Json, but
-sometimes XML &mdash; and then parsing it and rendering it on our site.
+sometimes XML &mdash; and then parsing it and rendering it on your site.
 
 I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
 be skipped by using its test URL as I'll do here.
@@ -233,49 +233,76 @@ produces a very similar Proplist to the Json version:
  {lastupdate,[{value,"2017-01-30T15:50:00"}],[]}]
 ```
 
-<h2>Json vs XML</h2>
+<h2>Routing</h2>
 
-While the proplists produced by the Json and XML parsers are similar, it's important to note they're not identical,
-creating some tricky things to abstract them for the ETS table I intend putting their data in.
+We need to modify the <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
+apps/unit5/src/unit5_app.erl</a> where `unit5` should be substitued with whatever you are calling your project, to include the 
+following new route in the list:
 
-The obvious difference is Json keys are binary strings whereas XML keys are atoms.
+```erlang
+     ...
+     , {"/weather"       , weather_handler, []}
+     ...
+```
 
-The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">lists vs atoms</a> section of the
-Erlang's documentation's Efficiency guide warns:
+This implies a <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/weather_handler.erl">
+weather_handler.erl</a> file which I'll get to shortly.
 
-<q> Atoms are not garbage-collected. Once an atom is created, it is never removed. ...
-Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.
-</q>
+<h2>Adding ETS</h2>
 
-So my impression is it's better to convert XML's atoms to binary strings than Json's strings to atoms. I'm not sure
-if by destroying the ETS table when I'm finished with it gets rid of its atoms or not, but better safe
-than sorry.
+Besides the router, we need to add some other lines to our <myapp>_app.erl file to start and register an ETS table, 
+and then clean it up when the application stops.
 
-Besides the issue of strings vs atoms, there's also the issue that the keys and values in the proplists are not
-identical, nor are the ways their trees are structured (things which are parents in the Json version are children
-in the XML version and <em>vice versa</em>):
+```erlang
+-module(unit5_app).
+-behaviour(application).
+-export([start/2, stop/1]).
 
-<table>
-<tr><th>Json key</th><th>XML key</th></tr>
-<tr><td><<"coord">></td><td>{city, ..., [{coord,[{lon,"-0.13"},{lat,"51.51"}],[]},...],...}</td></tr>
-<tr><td><<"weather">></td><td>weather</td></tr>
-<tr><td><<"base">></td><td></td></tr>
-<tr><td><<"visibility">></td><td>visibility</td></tr>
-<tr><td><<"wind">></td><td>wind</td></tr>
-<tr><td><<"clouds">></td><td>clouds</td></tr>
-<tr><td><<"dt">></td><td>lastupdate</td></tr>
-<tr><td><<"sys">></td><td>{city, ..., {country,[],["GB"]}, {sun,[...]},...}</td></tr>
-<tr><td><<"id">></td><td>{city, [{id,"2643743"},...], ...}</td></tr>
-<tr><td><<"name">></td><td>{city,[...,{name,"London"}]}, ...}</td></tr>
-<tr><td><<"cod">></td><td></td></tr>
-</table>
+start(_StartType, _StartArgs) ->
+  ets:new(weather_table, [public, named_table]),
+  Dispatch = cowboy_router:compile(
+   [{'_', 
+     [ {"/"              , cowboy_static, {priv_file, unit5, "index.html"}}
+     , {"/weather"       , weather_handler, []}
+     , {"/styles/[...]"  , cowboy_static, {priv_dir,  unit5, "styles"}}
+     , {"/scripts/[...]" , cowboy_static, {priv_dir,  unit5, "scripts"}}
+     ] 
+    }
+   ]
+  ),
+  persistent_term:put(unit4_routes, Dispatch),
+  cowboy:start_clear(unit4_http_listener,
+   [{port, 3030}],
+   #{env => #{dispatch => {persistent_term, unit4_routes}}}
+  ),
+  webutil:get_json(),
+  unit4_sup:start_link().
 
-The differences between Json and XML, at least in this example, are too big to make this an easy
-exercise, and since this is a hobby project I'm doing for fun, I'm abandoning get_xml(), and can only wish any 
-readers who have to make both Json and XML work together good luck.
+stop(_State) ->
+  ets:delete(weather_table),  
+  ok = cowboy:stop_listener(unit4_http_listener).
+```
 
+Note the first line of code in the start/2 function is 
+<a href="https://erlang.org/doc/man/ets.html#new-2">ets:new(Name, Options) -> tid() | atom()</a>.
 
-<h2>ETS</h2>
+The default `type` option `set` is what I think I want (it implies no duplicate keys). 
+
+I'm guessing the default `protection` option needs to be changed to `public` so that processes outside
+of process launched by start can manipulate values.
+
+The `named_table` option means whatever name I give my ETS table gets 
+<a href="http://erlang.org/doc/man/erlang.html#register-2">registered</a>, ie its process ID becomes a global
+constant that, say, `get_json()`, can be on a first name basis with.
+
+To make my application aware of this, I need a small edit in the application resource file.
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5.app.src">
+apps/unit5/src/unit5.app.src</a> by changing `{registered, []}.` to `{registered, [weather_table]}`.
+
+<h3>Inserting data into the cache</h3>
+
+I'm calling `webutil:get_json()` in my start/2 file as a hack here. In a proper system it would be separate
+application run every half-an-hour or so to keep the weather report on my site up to date.
 
 That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
 The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Tab, {Key, Value}) -> true</a>
@@ -285,61 +312,50 @@ overwritten with the new value, making it ideal to regularly update our weather 
 We can insert the above proplist into an ETS table with this recursive function:
 
 ```erlang
-proplist_to_ets(TabId, []) -> ok;
+proplist_to_ets(_TabId, []) -> ok;
 proplist_to_ets(TabId, [{Key, Value}|Proplist]) ->
   ets:insert(TabId, {Key, Value}),
   proplist_to_ets(TabId, Proplist).
 ```
 
-Before I can use the table refered to as TabId, I need to have called 
-<a href="https://erlang.org/doc/man/ets.html#new-2">ets:new(Name, Options) -> tid() | atom()</a>,
-which I'm going to do first thing in my application's start/2 function.
+<h3>Json vs XML</h3>
 
-The default `type` option `set` is what I think I want (it implies no duplicate keys). 
+When I started this tutorial, I was hoping to write a `get_xml()` function that would be interchangeable with
+`get_json()`. While I've managed to turn both data formats supplied by OpenWeather into proplists than can 
+be inserted into the ETS cache via the above helper function.
 
-I'm guessing the default `protection` option needs to be changed to `public` so that my function can update
-the values.
+An obvious difference between them is that without type conversion, the keys from the Json data would be
+binary strings while from the XML data they would be atoms.
 
-The `named_table` option means whatever name I give my ETS table gets 
-<a href="http://erlang.org/doc/man/erlang.html#register-2">registered</a>, ie its process ID becomes a global
-constant that, say, `get_json()` and `get_xml()`, can be on a first name basis with.
+Researching which is better, I found this warning in the 
+<a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">
+efficiency guide</a> in the official documenation.
 
-A tuple in my application resource file I havent used yet is `{registered, []}`, so I had better insert my table name
-(I'm picking `weather_table`) to this list.
+<q>Atoms are not garbage-collected. Once an atom is created, it is never removed. ... 
+Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.</a>
 
-The start of the start function in my apps/unit5/src/unit5_app.erl file now looks like this:
+So my impression is it's better to convert XML's atoms to binary strings than Json's strings to atoms. 
+I'm not sure if by destroying the ETS table when I'm finished with it gets rid of its atoms or not, but better safe than sorry.
 
-```erlang
-start(_StartType, _StartArgs) ->
-  ets:new(weather_table, [public, named_table]),
-  ...
-```
-For the sake of good housekeeping, I'm going to expand my stop function to:
+Besides the issue of strings vs atoms, there's also the issue that the keys and values in the proplists are not identical, 
+nor are the ways their trees are structured (things which are parents in the Json version are children in the XML version and vice versa).
 
-```erlang
-stop(_State) ->
-  ets:delete(weather_table),
-  ok = cowboy:stop_listener(my_http_listener).
-```
+So I'll just use the Json data in my handler.
 
-And now my hander can extract keys from the ETS weather_table like so: 
+<h2>The handler</h2>
+
+Getting whatever the freshest data is from the cache is fairly straightforward:
 
 ```erlang
-  [{<<"name">>, Name}] = ets:lookup(weather_table, <<"name">>)
+[{<<"name">>, Name}] = ets:lookup(weather_table, <<"name">>)
 ```
-
-
-which just turned the verbose input into even more verbose, and to me unusable, output. I thought replicating the above Json example
-with XML would be easy, but no such luck, so if you have to use XML and Erlang, good luck.
-
-<h4>Date formating</h4>
+<h3>Date formating</h3>
 
 Much as I dislike XML, I have to credit the XML proplist for having
 
 ```erlang
 {lastupdate,[{value,"2017-01-30T15:50:00"}],[]}
 ```
-
 in contrast to the Json version which has
 
 ```erlang
@@ -362,19 +378,6 @@ Alternatively using `rfc1123` instead of `iso8601` produces `<<"Mon, 30 Jan 2017
 The tempo application is a wrapper for C's <a href="https://linux.die.net/man/3/strftime">strftime</a> function, so you can
 customise as in `<<"%A, %Y-%d-%m">>` which produces `<<"Monday, 2017-30-01">>`.
 
-Long story short, if you live in London, you'll need to get a proper `appid=...` value by registering 
-instead of using the test data to get a current weather forecast.
 
-<h2>Routing</h2>
-
-We need to modify the <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
-apps/unit5/src/unit5_app.erl</a> where `unit5` should be substitued with whatever you are calling your project, to include the 
-following new route in the list:
-
-```erlang
-     ...
-     , {"/weather"       , weather_handler, []}
-     ...
-```
 
 

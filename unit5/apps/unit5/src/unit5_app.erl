@@ -10,6 +10,7 @@
 -export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
+  ets:new(weather_table, [public, named_table]),
   Dispatch = cowboy_router:compile(
    [{'_', 
      [ {"/"              , cowboy_static, {priv_file, unit5, "index.html"}}
@@ -25,10 +26,12 @@ start(_StartType, _StartArgs) ->
    [{port, 3030}],
    #{env => #{dispatch => {persistent_term, unit4_routes}}}
   ),
+  webutil:get_json(),
   unit4_sup:start_link().
 
 stop(_State) ->
-    ok = cowboy:stop_listener(unit4_http_listener).
+  ets:delete(weather_table),  
+  ok = cowboy:stop_listener(unit4_http_listener).
 
 
 %% internal functions
