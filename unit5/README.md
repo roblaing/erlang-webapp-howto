@@ -236,7 +236,7 @@ produces this proplist with some key differences to the Json version:
 <h2>Routing</h2>
 
 We need to modify our <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
-apps/<code><myproject></code>/src/<code><myproject></code>_app.erl</a> to include the following new route in the list:
+apps/myproject/src/myproject_app.erl</a> to include the following new route in the list:
 
 ```erlang
      ...
@@ -249,7 +249,7 @@ weather_handler.erl</a> file which I'll get to shortly.
 
 <h2>Adding ETS</h2>
 
-Besides the router, we need to add a few other lines to our <myapp>_app.erl file to start and register an ETS table, 
+Besides the router, we need to add a few other lines to our `<myproject>`_app.erl file to start and register an ETS table, 
 and then free the memory it used when the application stops.
 
 ```erlang
