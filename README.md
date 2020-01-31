@@ -5,8 +5,10 @@ I'm adding Erlang to the list of languages &mdash; Python, Ruby, Node.js, [Prolo
 A reason I'm migrating my site <https://www.newsgames.biz> from SWI Prolog to Erlang is to make use of parallel computing, 
 something Erlang was designed from scratch to do. A snag with the commonly used scripting languages mentioned above is they
 have a <a href="https://en.wikipedia.org/wiki/Global_interpreter_lock">Global interpreter lock (GIL)</a> which means
-they can't do multithreading. SWI Prolog and other <em>functional</em> languages (as opposed to the horde of contemporary 
-"pop" languages which have painted themselves into a corner) can access the underlying tools to do it, but a language built
+they can't do multithreading. 
+
+While SWI Prolog and other <em>functional</em> languages (as opposed to the horde of contemporary 
+"pop" languages which have painted themselves into a corner) can access the underlying tools to do it, a language designed
 from the ground up for parallel computing is a more elegant option.
 
 Erlang occupies a small niche which its founder Joe Armstrong termed <em>Concurrency Oriented Programming</em>, hiding
