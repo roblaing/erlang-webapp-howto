@@ -29,44 +29,14 @@ create_hash(Binary) ->
   Bin = crypto:mac(hmac, sha256, Salt, Binary),
   [begin if N < 10 -> 48 + N; true -> 87 + N end end || <<N:4>> <= Bin].
 
--spec logged_in(Req :: cowboy_req:req()) -> Name::binary() | false.
-%% @doc if the user is logged in, return their name, else return false.
-logged_in(Req) ->
-  #{user_id := Hash} = cowboy_req:match_cookies([{user_id, [], false}], Req),
-  if
-    Hash =:= false -> false;
-    true ->
-      Query = io_lib:format("SELECT name FROM users WHERE id='~s'", [create_hash(Hash)]),
-      QueryMap = pgo:query(Query),
-      case maps:get(num_rows, QueryMap) of
-        0 -> false;
-        1 -> [{Name}] = maps:get(rows, QueryMap), 
-             Name
-      end
-  end.
-
--spec add_user(Req :: cowboy_req:req(), Name :: string(), Email :: string()) -> ok | {error, nocookie}.
-%% @doc Insert a row into users tables. Assumes the name entry has already been screened for duplicates.
-add_user(Req, Name, Email) ->
-  #{user_id := Hash} = cowboy_req:match_cookies([{user_id, [], false}], Req),
-  if
-    Hash =:= false -> {error, nocookie};
-    true ->
-      Id = create_hash(Hash),
-      EscapedName = string:replace(Name, "'", "''", all),
-      EscapedEmail = string:replace(Email, "'", "''", all),
-      Query = io_lib:format("INSERT INTO users (id, name, email) VALUES ('~s', '~s', '~s')", 
-        [Id, EscapedName, EscapedEmail]),
-      pgo:query(Query)
-  end.
-
+-spec get_json() -> ok.
+%% @doc Fetches a Json string from the web, converts it to a proplist and inserts it into an ETS table.
 get_json() ->
   {ok, {{_Version, 200, _ReasonPhrase}, _Headers, Body}} = 
   httpc:request(
     "https://samples.openweathermap.org/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22"),
   Json = list_to_binary(Body),
   Proplist = jsx:decode(Json),
-  % io:format("~p~n", [weather_table]),
   proplist_to_ets(weather_table, Proplist).
 
 proplist_to_ets(_TabId,[]) -> ok;

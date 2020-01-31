@@ -300,7 +300,8 @@ apps/unit5/src/unit5.app.src</a> by changing `{registered, []}.` to `{registered
 
 <h3>Inserting data into the cache</h3>
 
-I'm calling `webutil:get_json()` in my start/2 file as a hack here. In a proper system it would be separate
+I'm calling <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/webutil.erl">
+webutil:get_json()</a> near the end of my start/2 file as a hack here. In a proper system it would be separate
 application run every half-an-hour or so to keep the weather report on my site up to date.
 
 That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
