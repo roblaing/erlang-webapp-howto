@@ -343,6 +343,33 @@ nor are the ways their trees are structured (things which are parents in the Jso
 
 So I'll just use the Json data in my handler.
 
+<h2>Using Observer to View ETS tables</h2>
+
+One of the tools bundled with OTP is <a href="https://erlang.org/doc/apps/observer/users_guide.html">observer</a>
+which seems to a relatively recent addition. The O'Reily books on Erlang and OTP that I've been using to help me write
+these tutorials refer to <em>monitor</em> and <em>tv</em> (short for table viewer) which have been removed from newer versions and replaced
+with observer.
+
+To use observer, run `rebar3 shell` in your project root directory, which takes you to the erl command line after loading the application. 
+I found I needed to hit enter to get to a `1>` command line.
+
+At the command line, enter `observer:start().` which should launch a GUI app on your desktop. It has a bewildering choice of tabs 
+and menus. 
+
+![Observer Window](observer.png)
+
+To view what's in the <em>weather_table</em>, click on the <em>Table Viewer</em>. I found
+<em>weather_table</em> at the bottom of a long list I had to scroll down, partly because of the 10 <em>pgo_pool</em> ETS tables 
+created when I left the default number of PostgreSQL pools started by pgo.
+
+Double clicking on the <em>weather_table</em> will cause a window to pop up showing the contents of the ETS table 
+<em>spreadsheet</em> style. Observer even lets you edit the content of the table as if it was a spreadsheet.
+
+![weather_table](weather_table.png)
+
+Observer provides a lot of information helpful for debugging and optimising, which I hope to become more familiar with in due
+course.
+
 <h2>The handler</h2>
 
 I haven't extracted all the data from the supplied Json, but hopefully enough to make
