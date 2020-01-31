@@ -388,12 +388,12 @@ I got tripped up by a couple of things which I'll elaborate on here.
 
 Much as I dislike XML, I have to credit the XML proplist for having
 
-```erlang
-{lastupdate,[{value,"2017-01-30T15:50:00"}],[]}
+```xml
+<lastupdate value="2017-01-30T15:50:00" />
 ```
 in contrast to the Json version which has
 
-```erlang
+```json
 "dt": 1485789600
 ```
 
