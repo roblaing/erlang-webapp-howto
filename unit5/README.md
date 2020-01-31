@@ -63,7 +63,7 @@ was placed in the web page handler of a busy site.
 Ideally we need a type of cron job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
 somewhere for handlers to read rather than constantly hitting your data supplier's servers.
 
-Besides being polite to your data service provider, fetching new data in the backround while presenting the freshest available
+Besides being polite to your data provider, fetching new data in the backround while presenting the freshest available
 data from RAM to your site's visitors makes it load far quicker.
 
 To be run as cron jobs, these data fetchers should possibly be made a separate application with their own run script.
@@ -71,7 +71,7 @@ But for now I'll write a helper function in my webutil module which will be call
 
 In this tutorial I'm introducing Erlang Term Storage, <a href="https://erlang.org/doc/man/ets.html">ets</a>,
 to cache the data downloaded from OpenWeather so it can be rendered any number of times without needing
-another download from the service provider.
+another download from the data provider.
 
 I intend to explore Erlang's caching options further in Unit 6.  The ASCIIChan project in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>, for instance, could probably be improved
