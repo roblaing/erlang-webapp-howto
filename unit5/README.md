@@ -60,14 +60,13 @@ The edits required in <a href="https://github.com/roblaing/erlang-webapp-howto/b
 OpenWeather asks users not to bombard its servers with constant requests, as could happen if `httpc:request(URL)`
 was placed in the web page handler of a busy site.
 
-Ideally we need a type of cron job that gets fresh data with at least 10 minute gaps as requested by OpenWeather and cached 
-somewhere for handlers to read rather than constantly hitting your data supplier's servers.
-
 Besides being polite to your data provider, fetching new data in the backround while presenting the freshest available
 data from RAM to your site's visitors makes it load far quicker.
 
-To be run as cron jobs, these data fetchers should possibly be made a separate application with their own run script.
-But for now I'll write a helper function in my webutil module which will be called once when the application starts.
+Ideally we need a type of cron job that updates the cache with fresh data with at least 10 minute gaps as requested by OpenWeather,
+and Erlang appears to several third-party applications including <a href="https://github.com/erlware/erlcron">erlcron</a>
+for this kind of service,
+but for now I'll write a helper function in my webutil module, get_json(), which will be called once when the application starts.
 
 In this tutorial I'm introducing Erlang Term Storage, <a href="https://erlang.org/doc/man/ets.html">ets</a>,
 to cache the data downloaded from OpenWeather so it can be rendered any number of times without needing
@@ -346,7 +345,7 @@ So I'll just use the Json data in my handler.
 <h2>Using Observer to View ETS tables</h2>
 
 One of the tools bundled with OTP is <a href="https://erlang.org/doc/apps/observer/users_guide.html">observer</a>
-which seems to a relatively recent addition. The O'Reily books on Erlang and OTP that I've been using to help me write
+which seems to be a relatively recent addition. The O'Reilly books on Erlang and OTP that I've been using to help me write
 these tutorials refer to <em>monitor</em> and <em>tv</em> (short for table viewer) which have been removed from newer versions and replaced
 with observer.
 
