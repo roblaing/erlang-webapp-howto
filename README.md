@@ -47,10 +47,18 @@ the many other educational resources available to Erlang learners.
 Step 1 is (from whatever project root directory you are using) to invoke
 
 ```bash
+rebar3 new release <myproject>
+```
+
+I've used unit1, unit2,... as `<myproject>` name to keep each section small and separate, but the idea it to gradually
+develop one project called whatever you want step-by-step. The idea is to gradually develop a fully-fledged blog with
+user identification, inspired by a course Reddid founder Steve Huffman gave on Udacity a few years ago.
+
+```bash
 rebar3 new release unit1
 ```
 
-which will create a tree of subdirectories and skeleton files which looks like:
+will create a tree of subdirectories and skeleton files which looks like:
 
 ```
 unit1/
