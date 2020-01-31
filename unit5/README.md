@@ -349,6 +349,9 @@ Getting whatever the freshest data is from the cache is fairly straightforward:
 ```erlang
 [{<<"name">>, Name}] = ets:lookup(weather_table, <<"name">>)
 ```
+
+I got tripped up by a couple of things which I'll elaborate on here.
+
 <h3>Date formating</h3>
 
 Much as I dislike XML, I have to credit the XML proplist for having
@@ -378,6 +381,12 @@ Alternatively using `rfc1123` instead of `iso8601` produces `<<"Mon, 30 Jan 2017
 The tempo application is a wrapper for C's <a href="https://linux.die.net/man/3/strftime">strftime</a> function, so you can
 customise as in `<<"%A, %Y-%d-%m">>` which produces `<<"Monday, 2017-30-01">>`.
 
+<h3>Number formating</h3>
 
+The first glitch was my html_escape(Arglist) function crashes if any elements in the Arglist are numbers. The next snag
+was the supplied temperature value of 280.32 got about a dozen trailing zeroes when I converted it to Celsius by subracting
+273.15.
 
+Here I discovered Erlang's <a href="http://erlang.org/doc/man/erlang.html#float_to_list-2">float_to_list(Float, Options) -> string()</a>
+which solved both problems.
 
