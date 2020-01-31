@@ -322,10 +322,11 @@ proplist_to_ets(TabId, [{Key, Value}|Proplist]) ->
 
 When I started this tutorial, I was hoping to write a `get_xml()` function that would be interchangeable with
 `get_json()`. While I've managed to turn both data formats supplied by OpenWeather into proplists than can 
-be inserted into the ETS cache via the above helper function.
+be inserted into the ETS cache via the above helper function, unfortunately OpenWeather has made the
+hierarchies of the two formats too different to make that a simple exercise.
 
-An obvious difference between them is that without type conversion, the keys from the Json data would be
-binary strings while from the XML data they would be atoms.
+Besides having differently named keys in the outermost layer of their respective proplists, keys from the Json data 
+are binary strings while those from the XML data are atoms.
 
 Researching which is better, I found this warning in the 
 <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">
