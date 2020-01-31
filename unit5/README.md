@@ -279,7 +279,7 @@ start(_StartType, _StartArgs) ->
 
 stop(_State) ->
   ets:delete(weather_table),  
-ok = cowboy:stop_listener(unit4_http_listener).
+  ok = cowboy:stop_listener(unit4_http_listener).
 ```
 
 Note the first line of code in the start/2 function is 
