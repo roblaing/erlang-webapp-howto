@@ -236,7 +236,7 @@ produces this proplist with some key differences to the Json version:
 <h2>Routing</h2>
 
 We need to modify our <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
-apps/<myproject>/src/`<myproject>`_app.erl</a> to include the following new route in the list:
+apps/<code><myproject></code>/src/<code><myproject></code>_app.erl</a> to include the following new route in the list:
 
 ```erlang
      ...
