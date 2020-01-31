@@ -17,7 +17,7 @@ init(Req0, State) ->
   Min = float_to_list(proplists:get_value(<<"temp_min">>, Main) - 273.15,[{decimals,2}]),
   Max = float_to_list(proplists:get_value(<<"temp_max">>, Main) - 273.15,[{decimals,2}]),
   Pressure = io_lib:format("~p", [proplists:get_value(<<"pressure">>, Main)]),
-  Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/weather.html", webutil:html_escape(
+  Content = webutil:template(code:priv_dir(unit5) ++ "/weather.html", webutil:html_escape(
     [ Name
     , Date
     , Sunrise

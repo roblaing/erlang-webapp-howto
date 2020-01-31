@@ -14,7 +14,7 @@ secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> applic
 We also need a Json parser &mdash; which means adding a third-party application to the dependency list &mdash; and 
 an XML parser which comes included.
 
-This means we need to edit 
+Edit 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5.app.src">
 apps/unit5/src/unit5.app.src</a> to include several new additions to the applications list.
 
@@ -37,7 +37,7 @@ Adding inets to the above list automatically creates an httpc process when the `
 
 Erlang's standard library doesn't include a Json parser, so we need to pick one of the many third-party libraries available.
 I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is easy to add as dependency because 
-<a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, so we don't need extra 
+<a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, meaning we don't need extra 
 information on how to get them from their github or wherever homes.
 
 The standard library also doesn't include a way to convert the conventional way of representing time as data &mdash; 
@@ -211,7 +211,7 @@ Content = io_lib:format("~p~n", [XML]),
 ...
 ```
 
-produces a very similar Proplist to the Json version:
+produces this proplist with some key differences to the Json version:
 
 ```erlang
 [{city,[{id,"2643743"},{name,"London"}],
@@ -235,9 +235,8 @@ produces a very similar Proplist to the Json version:
 
 <h2>Routing</h2>
 
-We need to modify the <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
-apps/unit5/src/unit5_app.erl</a> where `unit5` should be substitued with whatever you are calling your project, to include the 
-following new route in the list:
+We need to modify our <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5_app.erl">
+`apps/<myproject>/src/<myproject>_app.erl`</a> to include the following new route in the list:
 
 ```erlang
      ...
@@ -250,8 +249,8 @@ weather_handler.erl</a> file which I'll get to shortly.
 
 <h2>Adding ETS</h2>
 
-Besides the router, we need to add some other lines to our <myapp>_app.erl file to start and register an ETS table, 
-and then clean it up when the application stops.
+Besides the router, we need to add a few other lines to our <myapp>_app.erl file to start and register an ETS table, 
+and then free the memory it used when the application stops.
 
 ```erlang
 -module(unit5_app).
@@ -280,7 +279,7 @@ start(_StartType, _StartArgs) ->
 
 stop(_State) ->
   ets:delete(weather_table),  
-  ok = cowboy:stop_listener(unit4_http_listener).
+ok = cowboy:stop_listener(unit4_http_listener).
 ```
 
 Note the first line of code in the start/2 function is 
@@ -343,6 +342,11 @@ nor are the ways their trees are structured (things which are parents in the Jso
 So I'll just use the Json data in my handler.
 
 <h2>The handler</h2>
+
+I haven't extracted all the data from the supplied Json, but hopefully enough to make
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/weather_handler.erl">
+apps/unit5/src/weather_handler.erl</a> illustrative.
+
 
 Getting whatever the freshest data is from the cache is fairly straightforward:
 
