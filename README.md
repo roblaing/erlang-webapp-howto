@@ -51,8 +51,8 @@ rebar3 new release <myproject>
 ```
 
 I've used unit1, unit2,... as `<myproject>` name to keep each section small and separate, but the idea it to gradually
-develop one project called whatever you want step-by-step. The idea is to gradually develop a fully-fledged blog with
-user identification, inspired by a course Reddid founder Steve Huffman gave on Udacity a few years ago.
+develop one project called whatever you want step-by-step, leading to a fully-fledged blog with
+user identification inspired by a course Reddid founder Steve Huffman gave on Udacity a few years ago.
 
 ```bash
 rebar3 new release unit1
