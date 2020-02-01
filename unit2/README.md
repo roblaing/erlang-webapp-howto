@@ -286,13 +286,12 @@ welcome_handler</a> which looks like this:
   streamid => 2,version => 'HTTP/1.1'}
 ```
 
-Extracting "John Smith" from this involves first getting the value of <code>bindings</code> from Req0 by calling
-<code>maps:get(bindings, Req0)</code> which returns the map <code>#{name => <<"John Smith">>}</code>, which I then
-have get the value of <code>name</code> from.
+Extracting values from nested maps in Erlang is very easy once you know how. In an earlier version of this document,
+I used a convoluted process of nesting `maps:get/2` functions as in `Name = maps:get(name, maps:get(bindings, Req0))`.
 
-I initially nested `maps:get/2` functions to extract `Name = maps:get(name, maps:get(bindings, Req0))` since I found
-Erlang's pattern matching for maps rule a bit confusing. Once I grasped that all you need to do is substitute `:=` for
-`=>` it became clear to me. A cool thing about Prologis languages is you can extract what you want from compound data
+But once once I grasped that all you need to do is substitute `:=` for `=>`, Erlang's map pattern matching rule became clear to me. 
+
+A cool thing about Prologis languages is you can extract what you want from compound data
 by simply using the original as a template and putting upper case variable names where you want to get values.
 
 ```erlang
