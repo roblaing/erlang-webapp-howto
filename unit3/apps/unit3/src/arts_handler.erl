@@ -4,12 +4,11 @@
 -export([init/2]).
 
 init(Req0=#{method := <<"GET">>}, State) ->
-  Rows = maps:get(rows, pgo:query("SELECT title, art FROM arts ORDER BY created DESC")),
+  {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
   Content = webutil:template(code:priv_dir(unit3) ++ "/arts.html",
     ["", "", "", "", title_art(Rows)]),
   Req = cowboy_req:reply(200,
-    #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
-     },
+    #{<<"content-type">> => <<"text/html; charset=UTF-8">>},
     Content,
     Req0
   ),
@@ -36,13 +35,12 @@ init(Req0=#{method := <<"POST">>}, State) ->
       Req = cowboy_req:reply(303, #{<<"location">> => <<"/arts">>}, Req0),
       {ok, Req, State};      
     true ->
-     Rows = maps:get(rows, pgo:query("SELECT title, art FROM arts ORDER BY created DESC")),
+     {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
      Content = webutil:template(code:priv_dir(unit3) ++ "/arts.html", 
        [Title, TitleError, Art, ArtError, title_art(Rows)]
       ),
       Req = cowboy_req:reply(200,
-        #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
-         },
+        #{<<"content-type">> => <<"text/html; charset=UTF-8">>},
         Content,
         Req0
       ),
