@@ -291,7 +291,7 @@ of process launched by start can manipulate values.
 
 The `named_table` option means whatever name I give my ETS table gets 
 <a href="http://erlang.org/doc/man/erlang.html#register-2">registered</a>, ie its process ID becomes a global
-constant that, say, `get_json()`, can be on a first name basis with.
+constant that say, `get_json()`, can be on a first name basis with it.
 
 To make my application aware of this, I need a small edit in the application resource file.
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5.app.src">
