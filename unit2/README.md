@@ -291,7 +291,7 @@ I used a convoluted process of nesting `maps:get/2` functions as in `Name = maps
 
 But once once I grasped that all you need to do is substitute `:=` for `=>`, Erlang's map pattern matching rule became clear to me. 
 
-A cool thing about Prologis languages is you can extract what you want from compound data
+A cool thing about Prologish languages is you can extract what you want from compound data
 by simply using the original as a template and putting upper case variable names where you want to get values.
 
 ```erlang
