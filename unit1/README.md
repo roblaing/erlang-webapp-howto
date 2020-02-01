@@ -36,7 +36,7 @@ of which the second one, `{deps, []}`, is the one we want to edit to:
 }.
 ```
 
-This simple edit will prompt rebar3 to download, install and build Cowboy (if it hasn't already) when you invoke `rebar3 release`.
+This simple edit will prompt rebar3 to download, build and install Cowboy (if it hasn't already) when you invoke `rebar3 release`.
 
 <h3>Quick digression into Erlang's data types</h3>
 
