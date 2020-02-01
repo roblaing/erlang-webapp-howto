@@ -72,7 +72,7 @@ In this tutorial I'm introducing Erlang Term Storage, <a href="https://erlang.or
 to cache the data downloaded from OpenWeather so it can be rendered any number of times without needing
 another download from the data provider.
 
-I intend to explore Erlang's caching options further in Unit 6.  The ASCIIChan project in 
+I intend to explore Erlang's caching options further in a later unit.  The ASCIIChan project in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>, for instance, could probably be improved
 by getting the handler to access the list of art from a cache instead of making an SQL request every time, and updating the cache
 whenever fresh art is added to the database.
@@ -344,30 +344,18 @@ So I'll just use the Json data in my handler.
 
 <h2>Using Observer to View ETS tables</h2>
 
-One of the tools bundled with OTP is <a href="https://erlang.org/doc/apps/observer/users_guide.html">observer</a>
-which seems to be a relatively recent addition. The O'Reilly books on Erlang and OTP that I've been using to help me write
-these tutorials refer to <em>monitor</em> and <em>tv</em> (short for table viewer) which have been removed from newer versions and replaced
-with observer.
-
-To use observer, run `rebar3 shell` in your project root directory, which takes you to the erl command line after loading the application. 
-I found I needed to hit enter to get to a `1>` command line.
-
-At the command line, enter `observer:start().` which should launch a GUI app on your desktop. It has a bewildering choice of tabs 
-and menus. 
+Erlang's Observer tool which I introduced in <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2#observer">
+Unit 2</a> has a tab <em>Table View</em> which looks something like this:
 
 ![Observer Window](observer.png)
 
-To view what's in the <em>weather_table</em>, click on the <em>Table Viewer</em>. I found
-<em>weather_table</em> at the bottom of a long list I had to scroll down, partly because of the 10 <em>pgo_pool</em> ETS tables 
+I found <em>weather_table</em> at the bottom of a long list I had to scroll down, partly because of the 10 <em>pgo_pool</em> ETS tables 
 created when I left the default number of PostgreSQL pools started by pgo.
 
 Double clicking on the <em>weather_table</em> will cause a window to pop up showing the contents of the ETS table 
 <em>spreadsheet</em> style. Observer even lets you edit the content of the table as if it was a spreadsheet.
 
 ![weather_table](weather_table.png)
-
-Observer provides a lot of information helpful for debugging and optimising, which I hope to become more familiar with in due
-course.
 
 <h2>The handler</h2>
 
@@ -400,7 +388,7 @@ in contrast to the Json version which has
 The "dt" key is presumably short for `datetime`, which Erlang's <a href="https://erlang.org/doc/man/calendar.html">Calendar</a>
 library defines as some mysterious tuple while everyone else defines it as the number of seconds since the start of 1970.
 
-Convering numbers like 1485789600 into to something human readable is exasperating in most programing languages, and in
+Converting numbers like 1485789600 into to something human readable is exasperating in most programing languages, and in
 Erlang more so than most.
 
 I eventually discovered the magic incantation in tempo was 
