@@ -144,7 +144,9 @@ Text in Erlang can be one of three things:
   1. Double quoted "Hello World" is under the hood a list of character codes [72,101,108,108,111,32,87,111,114,108,100]. 
      Since it's a list, you can concatenate these using Erlang's "Hello " ++ "World" notation.
   2. Single quoted 'Hello World' is an atom, and cannot be concatenated unless converted by <code>atom_to_list('Hello World')</code>
-     first.
+     first. The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html">Common Caveats</a> section of the official 
+     documentation advises against converting the other two text types to atoms without good reason, 
+     which I'll expand on quickly in <em>Introducing Observer</em>.
   3. Chevroned <<"Hello World">> is a <a href="https://erlang.org/doc/reference_manual/data_types.html#bit-strings-and-binaries">binary</a>.
      This is the format that <a href="https://erlang.org/doc/man/file.html#read_file-1">file:read_file("form.hml")</a> returns the HTML in
      form.html as, and also how Cowboy sends and receives http headers and bodies, which is apparently more efficient than traditional text.
@@ -159,6 +161,32 @@ in my HTML as `[72,101,...]`. Next I tried `~p`, which caused the surrounding do
 in the HTML output.
 
 Mercifully, `~s` appears to be the correct magic incantation, and so far appears to be working well.
+
+<h2 id="observer">Introducing Observer</h2>
+
+One of the tools bundled with OTP is <a href="https://erlang.org/doc/apps/observer/users_guide.html">observer</a>
+which seems to be a relatively recent addition. The O'Reilly books on Erlang and OTP that I've been using to help me write
+these tutorials refer to <em>monitor</em> and <em>tv</em> (short for table viewer) which have been removed from newer versions and replaced
+with observer.
+
+To use observer, run `rebar3 shell` in your project root directory, which takes you to the erl command line after loading the application. 
+I found I needed to hit enter to get to a `1>` command line.
+
+At the command line, enter `observer:start().` which should launch a GUI app on your desktop which looks something like this:
+![Observer Window](observer_atoms.png)
+
+The <em>System</em>, the default opening page, has an entry <em>Atoms</em> which I've attempted to highlight in the above screen shot,
+but my Gimp skills aren't that great. This says 2% of the available atoms have been.
+
+The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">list_to_atom/1</a> entry in the Efficiency Guide
+warns:
+
+<q>Atoms are not garbage-collected. Once an atom is created, it is never removed. The emulator terminates if the limit for the number of atoms (1,048,576 by default) is reached.
+
+Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.</q>
+
+Observer provides a lot of information helpful for debugging and optimising, which I hope to become more familiar with in due
+course.
 
 <h2>Adding routes</h2>
 
