@@ -327,15 +327,13 @@ hierarchies of the two formats too different to make that a simple exercise.
 Besides having differently named keys in the outermost layer of their respective proplists, keys from the Json data 
 are binary strings while those from the XML data are atoms.
 
-Researching which is better, I found this warning in the 
-<a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">
-efficiency guide</a> in the official documenation.
+A reminder again the <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">
+efficiency guide</a> advises against using atoms when a binary string or list will do because in Erlang 
+atoms are not garbage-collected, and once an atom is created, it is never removed. 
 
-<q>Atoms are not garbage-collected. Once an atom is created, it is never removed. ... 
-Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.</a>
-
-So my impression is it's better to convert XML's atoms to binary strings than Json's strings to atoms. 
-I'm not sure if by destroying the ETS table when I'm finished with it gets rid of its atoms or not, but better safe than sorry.
+I'm not sure if this applies to atoms in ETS tables once the table is destroyed, but it's probably a good
+idea to run the XML keys and values through <a href="http://erlang.org/doc/man/erlang.html#atom_to_binary-2">atom_to_binary(Atom, utf8)</a>
+before inserting them as `{Key, Value}` tuples into an ETS table.
 
 Besides the issue of strings vs atoms, there's also the issue that the keys and values in the proplists are not identical, 
 nor are the ways their trees are structured (things which are parents in the Json version are children in the XML version and vice versa).
