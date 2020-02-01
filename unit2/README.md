@@ -398,22 +398,19 @@ init(Req0=#{method := <<"POST">>}, State) ->
   if 
     NameError =:= "", EmailError =:= "", MessageError =:= "" ->
       Req = cowboy_req:reply(303,
-        #{ <<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))
-         },
-        Req0
-      );
+        #{<<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))},
+        Req0);
     true ->
       Content = webutil:template(code:priv_dir(unit2) ++ "/form.html", 
        [Name, NameError, Email, EmailError, Message, MessageError]
       ),
       Req = cowboy_req:reply(200,
-        #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
-         },
-        Content,
-        Req0
-      ),
+        #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, 
+        Content, 
+        Req0)
   end,
   {ok, Req, State}.
+
 ```
 
 <h4>Client-side form validation</h4>
