@@ -182,9 +182,7 @@ but my Gimp skills aren't that great. This says 2% of the available atoms have b
 The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">list_to_atom/1</a> entry in the Efficiency Guide
 warns:
 
-<q>Atoms are not garbage-collected. Once an atom is created, it is never removed. The emulator terminates if the limit for the number of atoms (1,048,576 by default) is reached.
-
-Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.</q>
+<q>Atoms are not garbage-collected. Once an atom is created, it is never removed. The emulator terminates if the limit for the number of atoms (1,048,576 by default) is reached. Therefore, converting arbitrary input strings to atoms can be dangerous in a system that runs continuously.</q>
 
 Observer provides a lot of information helpful for debugging and optimising, which I hope to become more familiar with in due
 course.
