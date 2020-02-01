@@ -47,6 +47,14 @@ its own explained in the
 <a href="https://erlang.org/doc/reference_manual/typespec.html">Types and Function Specifications</a> chapter of the official
 documentation.
 
+The `-spec ...` and `%% @doc ...` lines are used by Erlang's automated documentated generation system
+Running `rebar3 edoc` will create a new subdirectory `apps/unit2/doc/` with an `index.html` file which you can simply load
+with Ctrl-O. The home page is made from an optional `apps/unit2/doc/overview.edoc` file explained in the
+<a href="http://erlang.org/doc/apps/edoc/chapter.html">EDoc</a> documentation. For some reason, rebar3 does not include the doc/ subdirectory
+and its contents in its `_build` tree, so you need to remember to copy that yourself if you intend writing software useable by
+other people.
+
+
 <h3>Modules</h3>
 
 The template/2 function is the first of many auxiliary functions common to the `foo_handler.erl` files that will grow as my
@@ -73,12 +81,6 @@ As the number of helper functions grows, I need to remember to add them to the e
 
 I can then use these functions in other modules with Erlang's `Module:Function(...)` convention,
 eg `webutil:template("/var/www/index.html", ["Hello", "World"])`.
-
-Running `rebar3 edoc` will create a new subdirectory `apps/unit2/doc/` with an `index.html` file which you can simply load
-with Ctrl-O. The home page is made from an optional `apps/unit2/doc/overview.edoc` file explained in the
-<a href="http://erlang.org/doc/apps/edoc/chapter.html">EDoc</a> documentation. For some reason, rebar3 does not include the doc/ subdirectory
-and its contents in its `_build` tree, so you need to remember to copy that yourself if you intend writing software useable by
-other people.
 
 <h3>The beauty of keeping HTML HTML</h3>
 
@@ -289,7 +291,7 @@ welcome_handler</a> which looks like this:
 Extracting values from nested maps in Erlang is very easy once you know how. In an earlier version of this document,
 I used a convoluted process of nesting `maps:get/2` functions as in `Name = maps:get(name, maps:get(bindings, Req0))`.
 
-But once once I grasped that all you need to do is substitute `:=` for `=>`, Erlang's map pattern matching rule became clear to me. 
+But once I grasped that all you need to do is substitute `:=` for `=>`, Erlang's map pattern matching rule became clear to me. 
 
 A cool thing about Prologish languages is you can extract what you want from compound data
 by simply using the original as a template and putting upper case variable names where you want to get values.
