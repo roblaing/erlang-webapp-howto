@@ -175,8 +175,9 @@ I found I needed to hit enter to get to a `1>` command line.
 At the command line, enter `observer:start().` which should launch a GUI app on your desktop which looks something like this:
 ![Observer Window](observer_atoms.png)
 
-The <em>System</em>, the default opening page, has an entry <em>Atoms</em> which I've attempted to highlight in the above screen shot,
-but my Gimp skills aren't that great. This says 2% of the available atoms have been.
+The <em>System</em> tab, the default opening page, has an entry <em>Atoms</em> in the <em>System statistics / limit</em> box
+which I've attempted to highlight in the above screen shot,
+but my Gimp skills aren't that great. This says 2% of the available atoms have been used.
 
 The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html#list_to_atom-1">list_to_atom/1</a> entry in the Efficiency Guide
 warns:
