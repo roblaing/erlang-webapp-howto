@@ -299,9 +299,9 @@ apps/unit5/src/unit5.app.src</a> by changing `{registered, []}.` to `{registered
 
 <h3>Inserting data into the cache</h3>
 
-I calling <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/webutil.erl">
-webutil:get_json()</a> near the end of my start/2 function to get the initial data here. At this stage I haven't yet explored ways
-of getting the application to re-run it every hour or whevener to update the cache.
+I run <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/webutil.erl">
+webutil:get_json()</a> near the end of my start/2 function to get the initial data. At this stage I haven't yet explored ways
+of getting the application to re-run it every hour or whenener to update the cache.
 
 That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
 The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Tab, {Key, Value}) -> true</a>
