@@ -304,17 +304,17 @@ webutil:get_json()</a> near the end of my start/2 function to get the initial da
 of getting the application to re-run it every hour or whenener to update the cache.
 
 That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
-The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Tab, {Key, Value}) -> true</a>
+The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Table, {Key, Value}) -> true</a>
 function is an exception to Erlang's immutable variable rule. If `Key` already exists, its old value gets
 overwritten with the new value, making it ideal to regularly update our weather data.
 
 We can insert the above proplist into an ETS table with this recursive function:
 
 ```erlang
-proplist_to_ets(_TabId, []) -> ok;
-proplist_to_ets(TabId, [{Key, Value}|Proplist]) ->
-  ets:insert(TabId, {Key, Value}),
-  proplist_to_ets(TabId, Proplist).
+proplist_to_ets(_TableId, []) -> ok;
+proplist_to_ets(TableId, [{Key, Value}|Proplist]) ->
+  ets:insert(TableId, {Key, Value}),
+  proplist_to_ets(TableId, Proplist).
 ```
 
 <h3>Json vs XML</h3>
