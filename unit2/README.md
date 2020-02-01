@@ -337,19 +337,28 @@ address sometime, but not yet.
 <h4>Form page</h4>
 
 The <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>
-I wrote results from my battle to get to grips with Erlang's three string types and what can and cannot be used as a guard. For instance,
-<code>byte_size(Name) > 0</code> is a permissable guard, but when I tried to first convert Name from a binary to a character code list
-and use <code>string:length(Name) > 0</code>, the compiler threw an <em>illegal guard expression</em> error.
+is an example of using pattern matching in what Prolog calls the <em>head</em> of a rule, and in Erlang is the function's argument
+list. I want a different handler if it's a "GET" (ie a brand new request for a blank form) or a "POST" (ie a submitted form that
+needs to either be sent back for corrections or okayed).
 
-The idea of guards I kinda understand, they are based on the classic theories of 
-<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.97&rep=rep1&type=pdf">Edsger Dijkstra's guarded commands</a> along with
-various papers from Tony Hoare and other giants of computer science.
+This could alternatively be done with a <a href="http://erlang.org/doc/reference_manual/expressions.html#case">case</a> expression as in
 
-While I think guards are great, Erlang's implementation seems a bit arbitrary and frustrating to me.
+```erlang
+init(Req0, State) ->
+  case Req0 of ->
+     #{method := <<"GET">>} ->
+       ...
+       Req = <expression>; % Don't forget semicolon
+     #{method := <<"POST">>} ->
+       ...
+       Req = <expression>  % No comma, semicolon, or full stop
+  end,
+  {ok, Req, State}.         
+```
 
-After a battle, I got the following
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler.erl</a>
-which yielded the desired result of either redrawing the form with error messages or redirecting to a welcome page.
+But especially in this example where I'm doing validation on the server as a learning exercise, I think
+it's more readable to split the GET and POST responders into different init/2 functions, remembering
+to end the first one with a semicolon, and only the last with a full stop.
 
 ```erlang
 -module(form_handler).
