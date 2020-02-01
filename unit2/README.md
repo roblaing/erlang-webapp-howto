@@ -173,6 +173,7 @@ To use observer, run `rebar3 shell` in your project root directory, which takes 
 I found I needed to hit enter to get to a `1>` command line.
 
 At the command line, enter `observer:start().` which should launch a GUI app on your desktop which looks something like this:
+
 ![Observer Window](observer_atoms.png)
 
 The <em>System</em> tab, the default opening page, has an entry <em>Atoms</em> in the <em>System statistics / limit</em> box
@@ -289,11 +290,14 @@ Extracting "John Smith" from this involves first getting the value of <code>bind
 <code>maps:get(bindings, Req0)</code> which returns the map <code>#{name => <<"John Smith">>}</code>, which I then
 have get the value of <code>name</code> from.
 
-I did this with nested maps:get/2 functions
+I initially nested `maps:get/2` functions to extract `Name = maps:get(name, maps:get(bindings, Req0))` since I found
+Erlang's pattern matching for maps rule a bit confusing. Once I grasped that all you need to do is substitute `:=` for
+`=>` it became clear to me. A cool thing about Prologis languages is you can extract what you want from compound data
+by simply using the original as a template and putting upper case variable names where you want to get values.
 
 ```erlang
-  ...
-  Name = maps:get(name, maps:get(bindings, Req0)),
+init(Req0, State) ->
+  #{bindings := #{name := Name}} = Req0,
   ...
 ```
 
