@@ -1,5 +1,7 @@
 # Howto write simple web applications with Erlang
 
+*Robert Laing*
+
 I'm adding Erlang to the list of languages &mdash; Python, Ruby, Node.js, [Prolog](https://github.com/roblaing/swipl-webapp-howto)... &mdash; I've taught myself to write simple web applications with.
 
 A reason I'm migrating my site <https://www.newsgames.biz> from SWI Prolog to Erlang is to make use of parallel computing, 
