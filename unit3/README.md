@@ -1,5 +1,7 @@
 <h1>Unit 3: Linking to a database</h1>
 
+*Robert Laing*
+
 I like PostgreSQL, but even after whittling the choice down to one specific database, the choice of
 third-party libraries for Erlang remains bewildering. Fairly randomly, I've selected one called 
 <em>PG...Oh god not nother Postgres client in Erlang...</em>, <a href="https://github.com/erleans/pgo">pgo</a>.
