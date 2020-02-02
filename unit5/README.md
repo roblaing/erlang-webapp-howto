@@ -5,10 +5,8 @@
 This tutorial goes into the common task of getting data from another website &mdash; usually supplied as Json, but
 sometimes XML &mdash; and then parsing it and rendering it on your site.
 
-I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
-be skipped by using its test URL as I'll do here.
-
-For this we need a web client, which the standard OTP application <a href="http://erlang.org/doc/apps/inets/http_client.html">inets</a>
+To get data from a service provider, we need a web client, which the standard OTP application 
+<a href="http://erlang.org/doc/apps/inets/http_client.html">inets</a>
 includes as <a href="http://erlang.org/doc/apps/inets/http_client.html">httpc</a>. 
 To access `https://...` sites, httpc needs Erlang's 
 secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> application. 
@@ -16,9 +14,15 @@ secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> applic
 We also need a Json parser &mdash; which means adding a third-party application to the dependency list &mdash; and 
 an XML parser which comes included.
 
-Edit 
+I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
+be skipped by using its test URL as I'll do here, which provides data for London which is a couple of years old. 
+
+You'll need to register for a free account (giving you a unique <code>appid=<hexstring></code>) to make this exercise more
+interesting by giving you weather forecasts for wherever you live.
+
+Achieving this exercise required expanding the applications list in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5.app.src">
-apps/unit5/src/unit5.app.src</a> to include several new additions to the applications list.
+apps/unit5/src/unit5.app.src</a> with many new additions:
 
 ```erlang
   {applications,
@@ -66,7 +70,7 @@ Besides being polite to your data provider, fetching new data in the backround w
 data from RAM to your site's visitors makes it load far quicker.
 
 Ideally we need a type of cron job that updates the cache with fresh data with at least 10 minute gaps as requested by OpenWeather,
-and Erlang appears to several third-party applications including <a href="https://github.com/erlware/erlcron">erlcron</a>
+and Erlang has several third-party applications including <a href="https://github.com/erlware/erlcron">erlcron</a>
 for this kind of service,
 but for now I'll write a helper function in my webutil module, get_json(), which will be called once when the application starts.
 
