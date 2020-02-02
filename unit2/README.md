@@ -1,5 +1,7 @@
 <h1>Unit 2: Forms with validation and redirection</h2>
 
+*Robert Laing*
+
 The way I've structured these tutorials is you don't need to do `rebar3 new release unit2`, but rather just add
 what's new here to your existing release. That way your computer won't have to download and build Cowboy again
 when you enter `rebar3 release`. Just remember to change `unitX` in the code to whatever you have called your
@@ -47,7 +49,7 @@ its own explained in the
 <a href="https://erlang.org/doc/reference_manual/typespec.html">Types and Function Specifications</a> chapter of the official
 documentation.
 
-The `-spec ...` and `%% @doc ...` lines are used by Erlang's automated documentated generation system
+The `-spec ...` and `%% @doc ...` lines are used by Erlang's automated documentated generation system.
 Running `rebar3 edoc` will create a new subdirectory `apps/unit2/doc/` with an `index.html` file which you can simply load
 with Ctrl-O. The home page is made from an optional `apps/unit2/doc/overview.edoc` file explained in the
 <a href="http://erlang.org/doc/apps/edoc/chapter.html">EDoc</a> documentation. For some reason, rebar3 does not include the doc/ subdirectory
@@ -410,7 +412,6 @@ init(Req0=#{method := <<"POST">>}, State) ->
         Req0)
   end,
   {ok, Req, State}.
-
 ```
 
 <h4>Client-side form validation</h4>
@@ -445,7 +446,7 @@ Validating forms using JavaScript</a> for future reference.
 
 Since this tutorial is about Erlang, I haven't included client-side validation by default.
 
-To enable it, the form element needs to have an 
+To enable it, form.html needs to be edited to have an 
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onsubmit">onsubmit</a> 
 attribute added to the form element, calling a Javascript function which 
 returns true or false depending on whether the input data validates.
