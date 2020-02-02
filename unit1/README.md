@@ -1,5 +1,7 @@
 <h1>Unit 1: Basic, static page server</h1>
 
+*Robert Laing*
+
 If you haven't already, run `rebar3 new release <myproject>` where <em>unit1</em> is used as the placeholder for `<myproject>` here
 to get the following subdirectories and skeleton files:
 
