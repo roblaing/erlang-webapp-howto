@@ -1,5 +1,7 @@
 <h1>Unit 5: Web Services</h1>
 
+*Robert Laing*
+
 This tutorial goes into the common task of getting data from another website &mdash; usually supplied as Json, but
 sometimes XML &mdash; and then parsing it and rendering it on your site.
 
@@ -33,10 +35,10 @@ apps/unit5/src/unit5.app.src</a> to include several new additions to the applica
 ```
 
 Adding inets to the above list automatically creates an httpc process when the `unit5` application is started. 
-(One of the things that makes inet's httpd application confusing is it isn't started unless you make edits to explicitly include it.)
+(One of the things that makes inets's httpd application confusing is it isn't started unless you make edits to explicitly include it.)
 
 Erlang's standard library doesn't include a Json parser, so we need to pick one of the many third-party libraries available.
-I'm going with <a href="https://hex.pm/packages/jsx">jsx</a> which is easy to add as dependency because 
+I'm going with <a href="https://github.com/talentdeficit/jsx">jsx</a> which is easy to add as dependency because 
 <a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, meaning we don't need extra 
 information on how to get them from their github or wherever homes.
 
@@ -301,7 +303,7 @@ apps/unit5/src/unit5.app.src</a> by changing `{registered, []}.` to `{registered
 
 I run <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/webutil.erl">
 webutil:get_json()</a> near the end of my start/2 function to get the initial data. At this stage I haven't yet explored ways
-of getting the application to re-run it every hour or whenener to update the cache.
+of getting the application to re-run it every hour or whenever to update the cache.
 
 That the above data is in a proplist is handy since {Key, Value} tuples are what ETS data is stored as.
 The <a href="https://erlang.org/doc/man/ets.html#insert-2">ets:insert(Table, {Key, Value}) -> true</a>
