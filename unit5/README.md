@@ -14,12 +14,6 @@ secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> applic
 We also need a Json parser &mdash; which means adding a third-party application to the dependency list &mdash; and 
 an XML parser which comes included.
 
-I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
-be skipped by using its test URL as I'll do here, which provides data for London which is a couple of years old. 
-
-You'll need to register for a free account (giving you a unique <code>appid=<hexstring></code>) to make this exercise more
-interesting by giving you weather forecasts for wherever you live.
-
 Achieving this exercise required expanding the applications list in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit5/apps/unit5/src/unit5.app.src">
 apps/unit5/src/unit5.app.src</a> with many new additions:
@@ -63,7 +57,13 @@ The edits required in <a href="https://github.com/roblaing/erlang-webapp-howto/b
 
 <h3>Caching</h3>
 
-OpenWeather asks users not to bombard its servers with constant requests, as could happen if `httpc:request(URL)`
+I'm using <a href="https://openweathermap.org">openweathermap.org</a> which offers free accounts, but this step can
+be skipped by using its test URL as I'll do here, which provides data for London which is a couple of years old. 
+
+You'll need to register for a free account (giving you a unique <code>appid=<hexstring></code>) to make this exercise more
+interesting by giving you weather forecasts for wherever you live.
+
+OpenWeather, like all data providers, asks users not to bombard its servers with constant requests, as could happen if `httpc:request(URL)`
 was placed in the web page handler of a busy site.
 
 Besides being polite to your data provider, fetching new data in the backround while presenting the freshest available
