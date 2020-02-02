@@ -125,7 +125,7 @@ Checking if a user is logged in requires a three step series of checks:
 
  1. Is there a `<<"cookie">>` key in the headers map? If no cookie is set, the user is not logged in.
  2. Even if there is a cookie string, it could be junk put there by advertisers or browser plugins.
-    The semicolon separated text list of key1=value1; key2=value2,... 
+    The semicolon separated text list of key1=value1; key2=value2;... 
     needs to be parsed to find if there is a "user_id=". If there's no such key, the user is not logged in.
  3. Even if there is a "user_id=Hash", the Hash may not translate into a valid Id in the database, in which
     case the Hash was created from a wrong user name or password, so the user is not be logged in.
@@ -249,7 +249,7 @@ function validateLoginForm() {
 
 <h2>signup_handler</h2>
 
-Like Facebook and Twitter, user names have to be unique (though I haven't bothered to tell someone signing up as John Smith that he as to be
+Like Facebook and Twitter, user names have to be unique (though I haven't bothered to tell someone signing up as John Smith that he has to be
 johnsmith6982). 
 
 Again, I'm relying on the browser to check that the user name and password are at least six characters long, and that the password
@@ -275,5 +275,8 @@ add_user(Req, Name, Email) ->
 ```
 
 I initially tried to reduce the number of arguments by thinking I could call `{ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0)`
-if I passed Req0 as an argument, but discovered this only works in the handler's init/2 function. 
+if I passed Req0 as an argument, but discovered this only works in the handler's init/2 function.
+
+Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5">Unit 5</a>: Web Services.
+
 
