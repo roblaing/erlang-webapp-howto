@@ -1,5 +1,7 @@
 <h1>Unit 4: User authentication</h1>
 
+*Robert Laing*
+
 If you are starting this project afresh instead of continuing from Unit 3, make the necessary edits to
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/rebar.config">rebar.config</a>,
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/config/sys.config">config/sys.config</a>, and the
