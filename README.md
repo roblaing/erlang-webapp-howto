@@ -79,13 +79,16 @@ unit1/
     └── vm.args
 ```
 
-[Unit 1](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit1): Basic, static page server
+Unit 1: [Basic, static page server](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit1)
 
-[Unit 2](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2): Forms with validation and redirection
+Unit 2: [Forms with validation and redirection](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2)
 
-[Unit 3](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3): Linking to a database (PostgreSQL)
+Unit 3: [Linking to a database (PostgreSQL)](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3)
 
-[Unit 4](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit4): User authentication
+Unit 4: [User authentication](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit4) 
 
-[Unit 5](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5): Web services
+Unit 5: [Web services](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5)
+
+Unit 6: Ajax (coming soon)
+ 
 

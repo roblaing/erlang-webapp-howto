@@ -46,6 +46,10 @@ But we can't simply store this hash as the id in our database because if anyone 
 a cookie on their browser to masquerade as the user. So the hash created by Javascript in the browser needs to get rehashed
 using functions in OTP's <a href="https://erlang.org/doc/man/crypto.html">crypto</a> library.
 
+I've placed the Javascript functions which both the login and signup forms will use to create cookies in
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/userid_cookie.js">
+userid_cookie.js</a>.
+
 The important thing is that the same combination of login and password must create the same unique gibberish for the server
 to authenticate the user with. 
 
@@ -235,19 +239,6 @@ because I've kept the input validation in the browser
 to prevent submission of usernames or passwords shorter than six characters. But I still need a `onsubmit="return validateLoginForm()"`
 call to set the cookie. What I also do in this Javascript function is blank the password and salt values that get passed to the server.
 
-```js
-function validateLoginForm() {
-  const text = document.forms.login.elements.username.value +
-                 document.forms.login.elements.salt.value +
-                 document.forms.login.elements.password.value;
-  digestMessage(text).then(digestValue => {
-    document.cookie = 'user_id=' + hexString(digestValue);
-  });
-  document.forms.login.elements.password.value = '';
-  document.forms.login.elements.salt.value = '';
-  return true;  
-}
-```
 
 <h2>signup_handler</h2>
 
@@ -279,6 +270,9 @@ add_user(Req, Name, Email) ->
 I initially tried to reduce the number of arguments by thinking I could call `{ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0)`
 if I passed Req0 as an argument, but discovered this only works in the handler's init/2 function.
 
-Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5">Unit 5</a>: Web Services.
+I'll be refactoring the above example in Unit6, using Ajax instead of the HTML form method above, which resolves issues such as the 
+lost password entry and URI encoding.
+
+Next Unit 5 &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5">Web Services</a>. 
 
 
