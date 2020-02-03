@@ -20,7 +20,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
     0 -> webutil:add_user(Req0, Name, Email),
          Req = cowboy_req:reply(303, 
            #{<<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))}, Req0);  
-    1 -> Content = webutil:template(code:priv_dir(cowboy_eg) ++ "/signup_form.html", 
+    1 -> Content = webutil:template(code:priv_dir(unit4) ++ "/signup_form.html", 
                    webutil:html_escape([Name, "Sorry, that name is already taken. Please pick another.", Email])),
          Req = cowboy_req:reply(200, #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0)
   end,

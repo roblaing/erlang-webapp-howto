@@ -9,7 +9,7 @@
     <div class="login-area">
       <a class="login-link" href="/login">Login</a>
     </div>
-    <form name="signup" onsubmit="return validateSignupForm()" method="POST">
+    <form name="login" onsubmit="return validateSignupForm()" method="POST">
       <h2>Signup</h2>
       <ul>
         <li>
@@ -37,7 +37,8 @@
       <input type="hidden" id="salt" name="salt" 
              value="Some big secret that nobody should be able to read, but unfortunately anybody can">
     </form>
-    <script src="/scripts/login.js"></script>
+    <script src="/scripts/userid_cookie.js"></script>
+    <script src="/scripts/signup.js"></script>
   </body>
 </html>
 
