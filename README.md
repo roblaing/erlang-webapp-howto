@@ -89,6 +89,6 @@ Unit 4: [User authentication](https://github.com/roblaing/erlang-webapp-howto/tr
 
 Unit 5: [Web services](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5)
 
-Unit 6: Ajax (coming soon)
+Unit 6: [Ajax](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6)
  
 
