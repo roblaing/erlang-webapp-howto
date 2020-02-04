@@ -298,7 +298,7 @@ async function writeCookie() {
 
 My initial guess was I'd just need to prefix my
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/signup.js">
-`function validateSignupForm() {...}`</a> with `async` and put `awaiting` before `writeCookie()` inside the
+`function validateSignupForm() {...}`</a> with `async` and put `await` before `writeCookie()` inside the
 statements block.
 
 No such luck. All that achieved was getting the lines to blank the password and salt values ignored so that they were sent to the server.
