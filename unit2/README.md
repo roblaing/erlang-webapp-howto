@@ -290,6 +290,8 @@ welcome_handler</a> which looks like this:
   streamid => 2,version => 'HTTP/1.1'}
 ```
 
+<h4>How to read Erlang maps</h4>
+
 A cool thing about Prologish languages is you can extract what you want from compound data
 by simply using the original as a template and putting upper case variable names where you want to get values.
 
