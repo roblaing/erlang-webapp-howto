@@ -1,0 +1,18 @@
+{application, unit6,
+ [{description, "Simple example using Ajax"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, {unit6_app, []}},
+  {applications,
+   [ kernel
+   , stdlib
+   , cowboy
+   , pgo
+   , jsx
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
