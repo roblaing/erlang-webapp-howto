@@ -296,12 +296,12 @@ async function writeCookie() {
 }
 ```
 
-My initial guess was I'd just need two prefix my
+My initial guess was I'd just need to prefix my
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/signup.js">
 `function validateSignupForm() {...}`</a> with `async` and put `awaiting` before `writeCookie()` inside the
 statements block.
 
-But all that achieved was getting the lines to blank the password and salt values ignored so that they were sent to the server.
+No such luck. All that achieved was getting the lines to blank the password and salt values ignored so that they were sent to the server.
 I'll hopefully have more experience with Javascript's promises by the end of Unit 6, which introduces another promise, `fetch`.
 
 Next Unit 5 &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5">Web Services</a>. 
