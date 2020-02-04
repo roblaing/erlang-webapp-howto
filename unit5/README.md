@@ -414,3 +414,5 @@ was the supplied temperature value of 280.32 got about a dozen trailing zeroes w
 Here I discovered Erlang's <a href="http://erlang.org/doc/man/erlang.html#float_to_list-2">float_to_list(Float, Options) -> string()</a>
 which solved both problems.
 
+Next &mdash; Unit 6: [Ajax](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6)
+

@@ -107,7 +107,7 @@ document.getElementById("ajaxButton").onclick = function() {...}
 
 <h3>Changes to login_form.html</h3>
 
-Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button"><code><button></code></a>  
+Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">button></a>  
 to send its click event to our listening loop instead of the form element as before in Unit4 requires
 editing `type="submit"` to `type="button"`.
 
