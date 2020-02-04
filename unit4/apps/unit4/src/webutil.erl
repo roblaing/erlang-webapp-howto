@@ -3,7 +3,7 @@
 -export([ template/2
         , html_escape/1
         , logged_in/1
-        , add_user/3
+        , create_hash/1
         ]).
 
 -spec template(FileName :: file:filename(), ArgList :: [string()]) -> Html :: binary().
@@ -42,21 +42,6 @@ logged_in(Req) ->
         1 -> [{Name}] = maps:get(rows, QueryMap), 
              Name
       end
-  end.
-
--spec add_user(Req :: cowboy_req:req(), Name :: string(), Email :: string()) -> ok | {error, nocookie}.
-%% @doc Insert a row into users tables. Assumes the name entry has already been screened for duplicates.
-add_user(Req, Name, Email) ->
-  #{user_id := Hash} = cowboy_req:match_cookies([{user_id, [], false}], Req),
-  if
-    Hash =:= false -> {error, nocookie};
-    true ->
-      Id = create_hash(Hash),
-      EscapedName = string:replace(Name, "'", "''", all),
-      EscapedEmail = string:replace(Email, "'", "''", all),
-      Query = io_lib:format("INSERT INTO users (id, name, email) VALUES ('~s', '~s', '~s')", 
-        [Id, EscapedName, EscapedEmail]),
-      pgo:query(Query)
   end.
 
 

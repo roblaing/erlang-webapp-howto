@@ -80,8 +80,7 @@ Erlang function to translate the <em>Mac</em> binary (called a <em>digest</em> b
 Luckily a Google search revealed someone on <a href="https://stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex">
 stackoverflow</a> had written a nifty list comprehension for me to cut 'n paste.
 
-I put the function below in my `webutil` module file. Since it's only used by the `logged_in(Req)` function coming up next,
-I didn't add it to the export list.
+I put the function below in my `webutil` module file and added it to the export list.
 
 ```erlang
 -spec create_hash(Input::binary()) -> Hexdigest :: string().
@@ -239,7 +238,6 @@ because I've kept the input validation in the browser
 to prevent submission of usernames or passwords shorter than six characters. But I still need a `onsubmit="return validateLoginForm()"`
 call to set the cookie. What I also do in this Javascript function is blank the password and salt values that get passed to the server.
 
-
 <h2>signup_handler</h2>
 
 Like Facebook and Twitter, user names have to be unique (though I haven't bothered to tell someone signing up as John Smith that he has to be
@@ -248,30 +246,63 @@ johnsmith6982).
 Again, I'm relying on the browser to check that the user name and password are at least six characters long, and that the password
 entered a second time in the verify field matches.
 
-This involved adding another helper to my webutil module:
+<h3>Asynchronous race conditions, and Javascript's async/await hell</h3>
 
-```erlang
--spec add_user(Req :: cowboy_req:req(), Name :: string(), Email :: string()) -> ok | {error, nocookie}.
-%% @doc Insert a row into users tables. Assumes the name entry has already been screened for duplicates.
-add_user(Req, Name, Email) ->
-  #{user_id := Hash} = cowboy_req:match_cookies([{user_id, [], false}], Req),
-  if
-    Hash =:= false -> {error, nocookie};
-    true ->
-      Id = create_hash(Hash),
-      EscapedName = string:replace(Name, "'", "''", all),
-      EscapedEmail = string:replace(Email, "'", "''", all),
-      Query = io_lib:format("INSERT INTO users (id, name, email) VALUES ('~s', '~s', '~s')", 
-        [Id, EscapedName, EscapedEmail]),
-      pgo:query(Query)
-  end.
+In the course of redoing this exercise in Unit 6, using Ajax instead of the 
+
+```html
+<form name="signup" onsubmit="return validateSignupForm()" method="POST">
+...
+</form>
 ```
 
-I initially tried to reduce the number of arguments by thinking I could call `{ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0)`
-if I passed Req0 as an argument, but discovered this only works in the handler's init/2 function.
+method used here, I tripped over my first asynchronous race condition trap.
 
-I'll be refactoring the above example in Unit6, using Ajax instead of the HTML form method above, which resolves issues such as the 
-lost password entry and URI encoding.
+I assumed that when the signup_handler's init/2 received a "POST" request, the cookie would be present
+and correct in the `Req0` map. This turned out to be a bad assumption, since the 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/userid_cookie.js">
+userid_cookie.js</a> script would sometimes have completed writing the "user_id=..." cookie by the time the form
+responded, sometimes not.
+
+The reason is the Javascript crypto library's `digest` along with the function to convert the digest to a hexstring both
+return what Javascript terms a
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">promise</a>.
+
+```js
+async function hexString(buffer) {
+  const byteArray = new Uint8Array(buffer);
+  const hexCodes = [...byteArray].map(value => {
+    const hexCode = value.toString(16);
+    const paddedHexCode = hexCode.padStart(2, "0");
+    return paddedHexCode;
+  });
+  return hexCodes.join("");
+}
+
+async function digestMessage(message) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(message);
+  return window.crypto.subtle.digest("SHA-256", data);
+}
+
+async function writeCookie() {
+  const text = document.getElementById("username").value +
+               document.getElementById("salt").value +
+               document.getElementById("password").value;
+  const digestValue = await digestMessage(text);
+  const hex = await hexString(digestValue);
+  document.cookie = "user_id=" + hex;
+  return hex;
+}
+```
+
+My initial guess was I'd just need two prefix my
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/signup.js">
+`function validateSignupForm() {...}`</a> with `async` and put `awaiting` before `writeCookie()` inside the
+statements block.
+
+But all that achieved was getting the lines to blank the password and salt values ignored so that they were sent to the server.
+I'll hopefully have more experience with Javascript's promises by the end of Unit 6, which introduces another promise, `fetch`.
 
 Next Unit 5 &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5">Web Services</a>. 
 
