@@ -290,19 +290,23 @@ welcome_handler</a> which looks like this:
   streamid => 2,version => 'HTTP/1.1'}
 ```
 
-Extracting values from nested maps in Erlang is very easy once you know how. In an earlier version of this document,
-I used a convoluted process of nesting `maps:get/2` functions as in `Name = maps:get(name, maps:get(bindings, Req0))`.
-
-But once I grasped that all you need to do is substitute `:=` for `=>`, Erlang's map pattern matching rule became clear to me. 
-
 A cool thing about Prologish languages is you can extract what you want from compound data
 by simply using the original as a template and putting upper case variable names where you want to get values.
+
+Doing this with maps has a couple of quirks which took me some time to grasp. 
+You need to substitute `:=` for `=>`. A nice thing is you can ignore everything in the pattern execept for the `Key := Value`
+pairs you are interested in.
 
 ```erlang
 init(Req0, State) ->
   #{bindings := #{name := Name}} = Req0,
   ...
 ```
+
+In an earlier version of this document,
+I used a convoluted process of nesting `maps:get/2` functions as in `Name = maps:get(name, maps:get(bindings, Req0))`
+to achieve the above. In `case` statements I still find the need for the `maps:get/2` function, but otherwise the 
+pattern matching way makes code more legible.
 
 In this case, Name is now the binary <code><<"John Smith">></code> which <code>io_lib:format(Template, Args)</code> can handle.
 I've used two <code>~s</code> in 
@@ -516,5 +520,5 @@ and my modified form.html looks like this:
 </html>
 ```
 
-Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Unit 3</a>: Linking to a database.
+Next &mdash; Unit 3: <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit3">Linking to a database</a>.
  
