@@ -255,6 +255,6 @@ title_art(Rows) ->
 ", webutil:html_escape([Title, Art])) end, "", Rows).
 ```
 
-Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit4">Unit 4</a>: User authentication.
+Next &mdash; Unit 4: <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit4">User authentication</a>.
 
 
