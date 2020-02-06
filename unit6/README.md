@@ -107,15 +107,15 @@ document.getElementById("ajaxButton").onclick = function() {...}
 
 <h3>Changes to login_form.html</h3>
 
-Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">button></a>  
+Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">button</a>  
 to send its click event to our listening loop instead of the form element as before in Unit4 requires
 editing `type="submit"` to `type="button"`.
 
 The button also needs an id so the Javascript code can reference it.
 
 Since we are no longer using the browser's form functions as in Unit 4, the opening `<form ...>` and closing `</form>` 
-parent tags could be removed, though I've kept them (removing the no longer used attributed in the opening form tag).
-so as not to have to change the style sheet I took from the Mozilla tutorial.
+have to be removed. It thought I could simply remove the attributes in the opening form tag so I didn't have to
+so as not to have to change the style sheet I took from the Mozilla tutorial, but that breaks the button.
 
 <h2>Changes to login.js</h2>
 

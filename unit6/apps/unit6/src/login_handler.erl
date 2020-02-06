@@ -13,10 +13,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
   {ok, [{JString, true}], _} = cowboy_req:read_urlencoded_body(Req0),
   Proplist = jsx:decode(JString),
   Hash = proplists:get_value(<<"user_id">>, Proplist),
-  Id = webutil:create_hash(Hash),
-  Query = io_lib:format("SELECT name FROM users WHERE id = '~s'", [Id]),
-  PGMap = pgo:query(Query),
-  #{num_rows := Rows} = PGMap,
+  #{num_rows := Rows} = pgo:query("SELECT name FROM users WHERE id = $1::text", [webutil:create_hash(Hash)]),
   case Rows of
     0 -> Content = jsx:encode([{<<"logged_in">>, false}]);
     1 -> Content = jsx:encode([{<<"logged_in">>, true}])

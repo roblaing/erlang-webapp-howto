@@ -25,8 +25,8 @@ html_escape(ArgList) ->
 %% @doc Rehash the hexdigest read from browser cookie and return as a new hexdigest.
 create_hash(Binary) ->
   Salt = "Some very long randomly generated string",
-  Bin = crypto:mac(hmac, sha256, Salt, Binary),
-  [begin if N < 10 -> 48 + N; true -> 87 + N end end || <<N:4>> <= Bin].
+  <<I:256>> = crypto:mac(hmac, sha256, Salt, Binary),
+  string:lowercase(integer_to_binary(I, 16)).
 
 -spec logged_in(Req :: cowboy_req:req()) -> Name::binary() | false.
 %% @doc if the user is logged in, return their name, else return false.
@@ -35,11 +35,11 @@ logged_in(Req) ->
   if
     Hash =:= false -> false;
     true ->
-      Query = io_lib:format("SELECT name FROM users WHERE id='~s'", [create_hash(Hash)]),
-      QueryMap = pgo:query(Query),
-      case maps:get(num_rows, QueryMap) of
+      #{num_rows := NumRows, rows := Rows} = 
+        pgo:query("SELECT name FROM users WHERE id=$1::text", [create_hash(Hash)]),
+      case NumRows of
         0 -> false;
-        1 -> [{Name}] = maps:get(rows, QueryMap), 
+        1 -> [{Name}] = Rows,
              Name
       end
   end.
