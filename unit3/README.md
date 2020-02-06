@@ -110,11 +110,11 @@ jgs\__/'---'\__/
 ```
 
 The reason is it contains single quotes, which are dangerous within SQL strings which are bounded by single quotes. 
-To escape single quotes not intended to end the string, they must be preceeded by a single quote. I achieved this
-in 
+To escape single quotes not intended to end the string, they must be preceeded by a single quote. 
+
+My original solution in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit3/apps/unit3/src/arts_handler.erl">arts_handler</a>
 like so:
-
 
 ```erlang
       ...
@@ -123,6 +123,13 @@ like so:
       Query = io_lib:format("INSERT INTO arts (title, art) VALUES ('~s', '~s')", [EscapedTitle, EscapedArt]),
       pgo:query(Query),
       ...
+```
+
+pgo's author Tristan Sloughter subsequently advised me in a tweet to rather use pgo:query/2 which uses $N addressed arguments
+as in 
+
+```erlang
+pgo:query("INSERT INTO arts (title, art) VALUES ($1::text, $2::text)", [Title, Art]),
 ```
 
 Most of arts_handler is nearly indentical to Unit 2's

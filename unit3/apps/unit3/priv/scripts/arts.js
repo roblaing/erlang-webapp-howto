@@ -10,7 +10,7 @@ function validateForm() {
     document.getElementById('art_error').textContent = "Pleaser enter some art";
     valid = false;  
   } else {
-    document.getElementById('mail_error').textContent = "";
+    document.getElementById('art_error').textContent = "";
   }
   return valid;
 }

@@ -4,11 +4,12 @@
 -export([init/2]).
 
 init(Req0=#{method := <<"GET">>}, State) ->
-  {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
+  #{rows := Rows} = pgo:query("SELECT title, art FROM arts ORDER BY created DESC"),
   Content = webutil:template(code:priv_dir(unit3) ++ "/arts.html",
     ["", "", "", "", title_art(Rows)]),
   Req = cowboy_req:reply(200,
-    #{<<"content-type">> => <<"text/html; charset=UTF-8">>},
+    #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
+     },
     Content,
     Req0
   ),
@@ -28,19 +29,17 @@ init(Req0=#{method := <<"POST">>}, State) ->
   end,
   if
     TitleError =:= "", ArtError =:= "" ->
-      EscapedTitle = string:replace(Title, "'", "''", all),
-      EscapedArt = string:replace(Art, "'", "''", all),
-      Query = io_lib:format("INSERT INTO arts (title, art) VALUES ('~s', '~s')", [EscapedTitle, EscapedArt]),
-      pgo:query(Query),
+      pgo:query("INSERT INTO arts (title, art) VALUES ($1::text, $2::text)", [Title, Art]),
       Req = cowboy_req:reply(303, #{<<"location">> => <<"/arts">>}, Req0),
       {ok, Req, State};      
     true ->
-     {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
+     #{rows := Rows} = pgo:query("SELECT title, art FROM arts ORDER BY created DESC"),
      Content = webutil:template(code:priv_dir(unit3) ++ "/arts.html", 
        [Title, TitleError, Art, ArtError, title_art(Rows)]
       ),
       Req = cowboy_req:reply(200,
-        #{<<"content-type">> => <<"text/html; charset=UTF-8">>},
+        #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
+         },
         Content,
         Req0
       ),
@@ -57,4 +56,6 @@ title_art(Rows) ->
 ~s
     </pre>
 ", webutil:html_escape([Title, Art])) end, "", Rows).
+
+
 
