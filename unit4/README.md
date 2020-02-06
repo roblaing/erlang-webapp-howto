@@ -88,6 +88,14 @@ Note I had to convert the hexstring to lower case to match the existing data sin
 instead of <em>a..f</em>. I'm not sure whether upper or lower case is more correct for hexadecimals, but it's a snag to 
 watch out for when using them as database IDs.
 
+<h3>Bit syntax</h3>
+
+I hadn't encountered something like Erlang's <<I:256>> before, and found an explanation in
+<a href="http://erlang.org/doc/reference_manual/expressions.html#bit-syntax-expressions">Expressions</a> section of the
+official documentation. Besided the colon followed by a 2<sup>n</sup> value to say `<<Binary>>` should be chopped up into a list
+`<<Value1, Value2, Value3,...>>` of 2<sup>n</sup> sized values, there's also the `Value1/Type`notation, as in 
+`<< "That's what she said! ", Msg/binary >>` which I encountered in Unit 7.
+
 <h2>Routing</h2>
 
 My routing section in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/src/unit4_app.erl">
