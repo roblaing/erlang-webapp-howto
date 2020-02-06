@@ -145,11 +145,11 @@ logged_in(Req) ->
   if
     Hash =:= false -> false;
     true ->
-      Query = io_lib:format("SELECT name FROM users WHERE id='~s'", [create_hash(Hash)]),
-      QueryMap = pgo:query(Query),
-      case maps:get(num_rows, QueryMap) of
+      #{num_rows := NumRows, rows := Rows} = 
+        pgo:query("SELECT name FROM users WHERE id=$1::text", [create_hash(Hash)]),
+      case NumRows of
         0 -> false;
-        1 -> [{Name}] = maps:get(rows, QueryMap), 
+        1 -> [{Name}] = Rows,
              Name
       end
   end.
