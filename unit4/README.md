@@ -46,10 +46,6 @@ But we can't simply store this hash as the id in our database because if anyone 
 a cookie on their browser to masquerade as the user. So the hash created by Javascript in the browser needs to get rehashed
 using functions in OTP's <a href="https://erlang.org/doc/man/crypto.html">crypto</a> library.
 
-I've placed the Javascript functions which both the login and signup forms will use to create cookies in
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/userid_cookie.js">
-userid_cookie.js</a>.
-
 The important thing is that the same combination of login and password must create the same unique gibberish for the server
 to authenticate the user with. 
 
@@ -69,27 +65,28 @@ and the database id should be
 
 Both are strings containing hexadecimals. The Javascript functions `hexString(buffer)` and `digestMessage(message)` to create
 the cookie are in my 
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/login.js">
-apps/unit4/priv/scripts/login.js</a> file and based on Mozilla's
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/userid_cookie.js">
+userid_cookie.js</a> file and based on Mozilla's
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest">examples</a>.
 
 The options listed for Erlang's <a href="https://erlang.org/doc/man/crypto.html#mac-4">
 mac(Type, SubType, Key, Data) -> Mac | descriptive_error()</a> are exhaustive, but I couldn't find a builtin
 Erlang function to translate the <em>Mac</em> binary (called a <em>digest</em> by hashing libraries) into a hexadecimal string.
 
-Luckily a Google search revealed someone on <a href="https://stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex">
-stackoverflow</a> had written a nifty list comprehension for me to cut 'n paste.
-
-I put the function below in my `webutil` module file and added it to the export list.
+I initially used a list comprehension found on <a href="https://stackoverflow.com/questions/3768197/erlang-ioformatting-a-binary-to-hex">
+stackoverflow</a>, but pgo (and other modules) author Tristan Sloughter gave me this more elegant solution using
+<a href="http://erlang.org/doc/man/erlang.html#integer_to_binary-2">integer_to_binary(Integer, Base) -> binary()</a>:
 
 ```erlang
--spec create_hash(Input::binary()) -> Hexdigest :: string().
-%% @doc Rehash the hexdigest read from browser cookie and return as a new hexdigest.
 create_hash(Binary) ->
   Salt = "Some very long randomly generated string",
-  Bin = crypto:mac(hmac, sha256, Salt, Binary),
-  [begin if N < 10 -> 48 + N; true -> 87 + N end end || <<N:4>> <= Bin].
+  <<I:256>> = crypto:mac(hmac, sha256, Salt, Binary),
+  string:lowercase(integer_to_binary(I, 16)).
 ```
+
+Note I had to convert the hexstring to lower case to match the existing data since integer_to_binary/2 writes <em>A..F</em>
+instead of <em>a..f</em>. I'm not sure whether upper or lower case is more correct for hexadecimals, but it's a snag to 
+watch out for when using them as database IDs.
 
 <h2>Routing</h2>
 

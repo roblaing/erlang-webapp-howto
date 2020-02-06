@@ -13,9 +13,7 @@ init(Req0=#{method := <<"POST">>}, State) ->
   {ok, PostVals, _} = cowboy_req:read_urlencoded_body(Req0),
   Name = proplists:get_value(<<"username">>, PostVals),
   Email = proplists:get_value(<<"email">>, PostVals),
-  EscapedName = string:replace(Name, "'", "''", all),
-  Query = io_lib:format("SELECT name FROM users WHERE name='~s'", [EscapedName]),
-  QueryMap = pgo:query(Query),
+  QueryMap = pgo:query("SELECT name FROM users WHERE name=$1::text", [Name]),
   case maps:get(num_rows, QueryMap) of
     0 -> add_user(Req0, Name, Email),
          Req = cowboy_req:reply(303, 
@@ -34,10 +32,7 @@ add_user(Req, Name, Email) ->
     Hash =:= false -> {error, nocookie};
     true ->
       Id = webutil:create_hash(Hash),
-      EscapedName = string:replace(Name, "'", "''", all),
-      EscapedEmail = string:replace(Email, "'", "''", all),
-      Query = io_lib:format("INSERT INTO users (id, name, email) VALUES ('~s', '~s', '~s')", 
-        [Id, EscapedName, EscapedEmail]),
-      pgo:query(Query)
+      pgo:query("INSERT INTO users (id, name, email) VALUES ($1::text, $2::text, $3::text)", 
+        [Id, Name, Email])
   end.
 
