@@ -274,6 +274,12 @@ so lets rather end with
 ```erlang
   gun:ws_send(Pid, close).
 ```
+or better yet, the
+<a href="https://tools.ietf.org/html/rfc6455#section-7.4.1">1000 normal closure</a> code
+with whatever closing text.
+```erlang
+  gun:ws_send(Pid, {close, 1000, <<"Bye">>}).
+```
 
 which the server responds to with
 ```prolog
@@ -281,31 +287,7 @@ which the server responds to with
 ```
 and no error messages.
 
-Pulling this together, my ping.erl file looks like
 
-```erlang
--module(ping).
--export([client/0, ping/3]).
-
-client() ->
-  {ok, Pid} = gun:open("localhost", 3031),
-  {ok, _} = gun:await_up(Pid),
-  StreamRef = gun:ws_upgrade(Pid, "/pong"),
-  {upgrade, [<<"websocket">>], _} = gun:await(Pid, StreamRef),
-  ping(3, Pid, StreamRef),
-  gun:ws_send(Pid, close).
-
-ping(0, _, _) ->
-  io:format("Ping finished~n", []);
-  
-ping(N, Pid, StreamRef) ->
-  Message = list_to_binary(io_lib:format("Sent Ping ~s", [N])),
-  io:format("~p~n", [Message]),
-  gun:ws_send(Pid, {text, Message}),
-  {ws, Frame} = gun:await(Pid, StreamRef),
-  io:format("Received ~p~n", [Frame]),
-  ping(N - 1, Pid, StreamRef).
-```
 
 <h3>The pong (SWI Prolog) websocket server</h3>
 
