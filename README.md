@@ -91,4 +91,5 @@ Unit 5: [Web services](https://github.com/roblaing/erlang-webapp-howto/tree/mast
 
 Unit 6: [Ajax](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6)
  
+Unit 7: [Interlanguage communication via websocket](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7)
 

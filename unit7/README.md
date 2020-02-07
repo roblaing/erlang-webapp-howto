@@ -1,4 +1,4 @@
-<h1>Interlanguage communication via websocket</h2>
+<h1>Interlanguage communication via websocket</h1>
 
 In the story so far, I've "glued" a Javascript browser and PostgreSQL database together with an Erlang web server.
 
@@ -123,7 +123,7 @@ ping(N, Pid, StreamRef) ->
   gun:ws_send(Pid, [{text, Message}]),
   {ws, Frame} = gun:await(Pid, StreamRef),
   io:format("Received ~p~n", [Frame]),
-ping(N - 1, Pid, StreamRef).
+  ping(N - 1, Pid, StreamRef).
 ```
 
 After running `rebar3 release` and then `rebar3 shell` calling the client from the erl REPL
