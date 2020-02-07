@@ -131,4 +131,5 @@ methods, which looks fairly alien to me.
 
 A key difference between `XMLHttpRequest` and `fetch` is their respective ways of handling timeouts, which I'm ignoring for now.
 
+Next &mdash; Unit 7: [Interlanguage communication via websocket](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7)
 
