@@ -21,18 +21,30 @@ The easiest way to get Erlang to interact with other programs on the same Linux 
 a technology I'm completely unfamiliar with, but which is supported by just about every programing language, including
 SWI Prolog, Erlang, and Javascript.
 
-<h2>With websocket, the client becomes the server</h2>
+<h2>Ping-pong between Erlang and SWI Prolog</h2>
 
-I initially grappled with how to write a websocket server with Cowboy before grasping I had the problem the wrong way round &mdash;
-I didn't want my web server to be a websocket server, but a websocket client.
+To learn the basics, I've rewritten the Erlang official documentation's introductory example of
+<a href="https://erlang.org/doc/getting_started/conc_prog.html#distributed-programming">
+messaging ping and pong</a> between different programs, possibly on different computers, N times.
+
+I only subsequently read RFC 6455 far enough to learn <em>ping</em> and <em>pong</em> are an unfortunate choice of names
+for an introductory websocket tutorial because they are among its few reserved words. Please note I'm just using
+"ping" and "pong" as arbitrary text here, not as frame control opcodes as eplained in
+<a href="https://tools.ietf.org/html/rfc6455#section-5.5.2">ping</a> and
+<a href="https://tools.ietf.org/html/rfc6455#section-5.5.3">pong</a>.
+
+In this example I'm using Erlang as my websocket client and SWI Prolog as my websocket server. 
+The reason is my longer term ambition is to be able to query a Prolog database from another language 
+via a socket as one can SQL databases.
 
 Just as the <em>99s</em> team have written Cowboy as a replacement for the builtin library inets's 
 <a href="http://erlang.org/doc/apps/inets/http_server.html">httpd</a>, they have written
 <a href="https://ninenines.eu/docs/en/gun/2.0/guide/">Gun</a> as a replacement for inets's
-<a href="http://erlang.org/doc/apps/inets/http_client.html">httpc</a> which is a client for
-traditional HTTP/1.1, whereas Gun is also a client for websocket and HTTP/2.
+<a href="http://erlang.org/doc/apps/inets/http_client.html">httpc</a>.
+Whereas Erlang's builtin client httpc only handles HTTP/1.1, Gun can be used as a client for websocket and HTTP/2.
 
-Anyways, we need to add another dependency to rebar.config:
+This means adding another dependency to 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/rebar.config">rebar.config</a>:
 
 ```erlang
 ...
@@ -40,154 +52,308 @@ Anyways, we need to add another dependency to rebar.config:
 ...
 ```
 
-and add it to the applications list in the applications resource file.
+and rembering to also add it to the applications list in the application resource file,
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/src/unit7.app.src">
+apps/unit7/src/unit7.app.src</a>
 
-<h2>SWI-Prolog websocket server</h2>
+Once I'd figured things out, the required code for both the client and server was fairly short, and what
+the program does is fairly dull &mdash; just prints out ping and pong messages on the respective terminals
+that Erlang and SWI Prolog are running on. In the next unit I hope to start communicating with Javascript,
+creating a web-based query tool to SWI Prolog. 
 
-Starting with the example in the official SWI Prolog 
-<a href="http_open_websocket(+URL, -WebSocket, +Options)">websocket</a> documentation, I created
-swipl_server.pl as follows:
+But in the meanwhile, 
+
+![Ping](ping.png)
+
+![Pong](pong.png)
+
+
+<h3>The ping (Erlang) websocket client</h3>
+
+To "upgrade" from plain vanilla http/1.1 to websocket the client and server have to perform an
+<a href="https://tools.ietf.org/html/rfc6455#section-1.3">opening handshake</a>.
+
+Doing this with Gun requires calling the following functions in this order:
+
+<h4>Step 1: Open connection</h4>
+
+<a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.open/">
+gun:open(Host, Port, Opts) -> {ok, pid()} | {error, Reason}</a>
+
+In my example, I'm going to call
+
+```erlang
+  {ok, Pid} = gun:open("localhost", 3031),
+```
+
+With the SWI Prolog websocket server's port set to 3031 (keeping my Erlang http server's port as 3030).
+
+<h4>Step 2: Ask for an upgrade to websocket</h4>
+
+<a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.await_up/">
+gun:await_up(ConnPid, Timeout, MonitorRef) -> {ok, Protocol} | {error, Reason}</a>
+
+If Timeout is left out, it defaults to 5000 miliseconds and MonitorRef is automatically created by Gun.
+
+I'll be using a shortened version with the default 5 second timeout:
+
+```erlang
+  {ok, _} = gun:await_up(Pid),
+```
+The ignored Protocol returned variable in this case would be <em>http</em>. Other servers might return <em>http2</em> or <em>sockets</em>.
+
+<h4>Step 3: Upgrade to websocket</h4>
+
+<a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.ws_upgrade/">
+gun:ws_upgrade(ConnPid, Path, Headers, WsOpts) -> StreamRef</a>
+
+Path is the route set up on the SWI Prolog server, so in this example I'll call `pong`, so with port 3031 selected, the
+server's URL would be `ws://localhost:3031/pong`
+
+If I wanted to include http request headers such as the following taken from the example in the RFC:
+
+```http
+Sec-WebSocket-Protocol: chat, superchat
+Sec-WebSocket-Version: 13
+```
+
+I would make Headers a proplist:
+
+```erlang
+[ {<<"sec-websocket-protocol">>, <<"chat, superchat">>}
+, {<<"sec-websocket-version">>, <<"13">>}
+]
+```
+
+WsOpts is a map, and an example in the documentation is `#{compress => false}`.
+
+In my case, I'm not using extra headers or options, so this can be abreviated to:
+
+```erlang
+  StreamRef = gun:ws_upgrade(Pid, "/pong"),
+```
+
+StreamRef looks something like `#Ref<0.596962980.3933732865.48581>`
+
+<h4>Step 4: Get response from server</h4>
+
+<a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.await/">
+gun:await(ConnPid, StreamRef, Timeout, MonitorRef) -> Result</a>
+
+As with gun:await_up in Step 2, Timeout and MonitorRef can be left out (causing a default timeout of 5 seconds).
+
+```erlang
+  {upgrade, [<<"websocket">>], _Headers} = gun:await(Pid, StreamRef),
+```
+
+The ignored third element in the Result tuple looks something like:
+
+```erlang
+[ {<<"upgrade">>,<<"websocket">>}
+, {<<"connection">>,<<"Upgrade">>}
+, {<<"sec-websocket-accept">>,<<"XXw/nNAZ45OQePJ6JBRRoiRH3qk=">>}
+]
+
+Indicating the server responded with an http header looking something like this:
+
+```http
+GET /pong HTTP/1.1
+Host: localhost
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: XXw/nNAZ45OQePJ6JBRRoiRH3qk=
+```
+
+and we've completed our opening handshake.
+
+<h4>Step 5: Send pings, receive pongs</h4>
+
+<a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.ws_send/">
+ws_send(ConnPid, Frames) -> ok</a>
+
+In my example
+
+```erlang
+  gun:ws_send(Pid, [{text, <<"Sent Ping 1">>}]),
+```
+
+Besides <em>text</em> the first argument in the Frames tuple can be <em>binary</em> to denote the data type
+in the second argument.
+
+Putting {text, <<"Sent Ping 1">>} in a list is optional, but it makes it clearer this could be a list such as
+`[{text, <<"Sent Ping 2">>},{text, <<"Sent Ping 1">>}, close]`
+
+A third reserved word,
+<a href="https://tools.ietf.org/html/rfc6455#section-5.5.1">close</a> is used in the final Step 6.
+
+The pong response from the server is received by gun:await/2 which we already met in Step 4. The difference here
+is the result tuple looks like `{ws, Frame}` instead of `{upgrade, Protocols, Headers}`.
+
+```erlang
+  {ws, Frame} = gun:await(Pid, StreamRef),
+```
+
+<h4>Step 6: Close the connection</h4>
+
+The Gun User Guide uses
+<a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.close/">gun:close(ConnPid)</a>
+which it warns will "brutally close the connection".
+
+What this does on the SWI Prolog server side is cause it to barf
 
 ```prolog
-:- use_module(library(http/websocket)).
+% [Thread 9] Got websocket{data:end_of_file,opcode:close}
+ERROR: [Thread 9] Socket error: Broken pipe
+```
+
+so lets rather end with
+```erlang
+  gun:ws_send(Pid, close).
+```
+
+which the server responds to with
+```prolog
+% [Thread 9] Got websocket{code:1000,data:"",format:string,opcode:close}
+```
+and no error messages.
+
+Pulling this together, my ping.erl file looks like
+
+```erlang
+-module(ping).
+-export([client/0, ping/3]).
+
+client() ->
+  {ok, Pid} = gun:open("localhost", 3031),
+  {ok, _} = gun:await_up(Pid),
+  StreamRef = gun:ws_upgrade(Pid, "/pong"),
+  {upgrade, [<<"websocket">>], _} = gun:await(Pid, StreamRef),
+  ping(3, Pid, StreamRef),
+  gun:ws_send(Pid, close).
+
+ping(0, _, _) ->
+  io:format("Ping finished~n", []);
+  
+ping(N, Pid, StreamRef) ->
+  Message = list_to_binary(io_lib:format("Sent Ping ~s", [N])),
+  io:format("~p~n", [Message]),
+  gun:ws_send(Pid, {text, Message}),
+  {ws, Frame} = gun:await(Pid, StreamRef),
+  io:format("Received ~p~n", [Frame]),
+  ping(N - 1, Pid, StreamRef).
+```
+
+<h3>The pong (SWI Prolog) websocket server</h3>
+
+<h4>Step 1: Create an http server</h4>
+
+Writing a websocket server in prolog is not very different from a plain vanilla http/1.1 server, which I've written
+<a href="https://github.com/roblaing/swipl-webapp-howto">tutorials</a> on.
+
+SWI Prolog's <a href="https://www.swi-prolog.org/pldoc/doc/_SWI_/library/http/thread_httpd.pl">thread_http</a>
+library has a function `http_server(:Goal, :Options)` which achieves this in a few lines of code:
+
+```prolog
 :- use_module(library(http/thread_httpd)).
 :- use_module(library(http/http_dispatch)).
 
-:- http_handler(root(ws),
-                http_upgrade_to_websocket(echo, []),
-                [spawn([])]).
-
-server(Port) :-
+start_server(Port) :-
     http_server(http_dispatch, [port(Port)]).
-
-echo(WebSocket) :-
-    ws_receive(WebSocket, Message),
-    debug(websocket, 'Got ~p', [Message]),
-    ws_send(WebSocket, Message),
-    (   Message.opcode == close
-    ->  true
-    ;   echo(WebSocket)
-    ).
 ```
 
-Then from a swipl REPL, I entered the following:
+<h4>Step 2: Link a route to a handler</h4>
+
+The <a href="https://www.swi-prolog.org/pldoc/man?section=httpdispatch">http_dispatch</a> library in turn has a function
+<a href="https://www.swi-prolog.org/pldoc/doc_for?object=http_handler/3">http_handler(+Path, :Closure, +Options)</a>
+to link routes and handlers.
+
+To make `pong/` a route, set the first argument `+PATH` to `root(pong)`. Alternatively that could be written `'/root'`,
+but using SWI Prolog's <a href="https://www.swi-prolog.org/pldoc/man?section=httppath">path abstraction</a> as in `root(pong)`
+seems to be the preferred style with security advantages.
+
+Usually the second argument, `:Closure`, would be something like `my_handler` without any arguments, refering to a predicate
+
 ```prolog
-?- consult("swipl_server.pl").
-true.
+my_handler(Request) :-
+  ...
+```
+where <em>Request</em> contains the key-value pairs from the http header in the Prologish format of `[key1(value1), key2(value2),...]`
 
-?- debug(websocket).
-true.
+But to "upgrade" from plain vanilla http/1.1 to webserver, we don't directly set `:Closure` to `my_handler`, but instead fill that slot with
+<a href="https://www.swi-prolog.org/pldoc/doc_for?object=http_upgrade_to_websocket/3">http_upgrade_to_websocket(:Goal, +Options, +Request)</a>
+which is part of the <a href="https://www.swi-prolog.org/pldoc/man?section=websocket">websocket</a> library, meaning we must add near the top
+of the file:
 
-?- server(3031).
-% Started server at http://localhost:3031/
-true.
+```prolog
+:- use_module(library(http/websocket)).
+```
+The first argument in http_upgrade_to_websocket, `:Goal`, is now where `my_handler` goes, and its third argument, `+Request`, 
+vanishes here but magically reappears later in `my_handler(Request) :- ...`.
+
+The http_handler's third argument, `+Options` is set to `[spawn([])]`, causing `my_handler` to be run in a separate thread.
+
+Pulling this together for my example, my route-handler combo looks like:
+
+```prolog
+:- http_handler(root(pong), http_upgrade_to_websocket(pong_handler,[]), [spawn([])]).
 ```
 
-SWI Prolog's <a href="https://www.swi-prolog.org/pldoc/doc_for?object=debug/3">debug/3</a> predicate is similar to 
-Erlang's io:format/2, but only prints messages to the terminal if it is "switched on" by having whatever atom is used as
-the first argument (called <em>Topic</em> in the documentation, and <em>websocket</em> in this example) called by debug/1.
+<h4>Step 3: Write the handler</h4>
 
-<h2>Erlang websocket client</h2>
+SWI Prolog's websocket library has 
+<a href="https://www.swi-prolog.org/pldoc/doc_for?object=ws_receive/3">ws_receive(+Request, -Message:dict, +Options)</a>
+which is similar to `{ws, Frame} = gun:await(Pid, StreamRef)`, and
+<a href="https://www.swi-prolog.org/pldoc/doc_for?object=ws_send/2">ws_send(+Request, +Frames)</a> which is similar
+to `gun:ws_send(Pid, Frames)`.
 
-Opening a separate tab in my bash terminal emulator, and in the root of the Unit 7 project, I ran `rebar3 shell` (having
-already run `rebar3 release` to get Gun installed), and then ran the following commands, with the debug output from the
-swipl terminal besides it:
+Though Erlang's ancestry is Prolog, its proplists are not the Prolog convention. We don't need to translate their 
+respective websocket frames, the way they send frames respectively is a bit different:
 
 <table>
-
-<tr>
-<td><pre><code>
-1> {ok, ConnPid} = gun:open("localhost", 3031).
-{ok,<0.252.0>}
-</code></pre></td>
-</td>
-<td><pre><code>
-</code></pre></td>
+<tr><th>Prolog Frames</th><th>Erlang Frames</th></tr>
+<tr><td>[text("Ping 2"), text("Ping 1"), close(1000, "Bye")]</td>
+    <td>[{text, <<"Ping 2">>}, {text, <<"Ping 1">>}, {close, 1000, <<"Bye">>}]</td>
 </tr>
-
-<tr>
-<td><pre><code>
-2> {ok, Protocol} = gun:await_up(ConnPid).
-{ok,http}
-</code></pre></td>
-</td>
-<td><pre><code>
-</code></pre></td>
-</tr>
-
-<tr>
-<td><pre><code>
-3> StreamRef = gun:ws_upgrade(ConnPid, "/ws").
-#Ref<0.596962980.3933732865.48581>
-</code></pre></td>
-</td>
-<td><pre><code>
-?- % [Thread 9] ws_receive(<stream>(0x7f93d00266c0,0x7f93d0028980)): OpCode=9, RSV=0
-</code></pre>
-... repeated every few seconds
-</td>
-</tr>
-
-<tr>
-<td><pre><code>
-4> {upgrade, [<<"websocket">>], _} = gun:await(ConnPid, StreamRef).
-{upgrade,[<<"websocket">>],
-         [{<<"upgrade">>,<<"websocket">>},
-          {<<"connection">>,<<"Upgrade">>},
-          {<<"sec-websocket-accept">>,
-           <<"XXw/nNAZ45OQePJ6JBRRoiRH3qk=">>}]}
-</code></pre></td>
-</td>
-<td><pre><code>
-</code></pre></td>
-</tr>
-
-<tr>
-<td><pre><code>
-5> Frame = {text, <<"Hello!">>}.
-{text,<<"Hello!">>}
-6> gun:ws_send(ConnPid, Frame).
-ok
-</code></pre></td>
-</td>
-<td>
-<pre><code>
-% [Thread 9] ws_receive(<stream>(0x7f93d00266c0,0x7f93d0028980)) --> 
-websocket{data:"Hello!",format:string,opcode:text}
-</code></pre>
-... repeated every few seconds
-<pre><code>
-% [Thread 9] Got websocket{data:"Hello!",format:string,opcode:text}
-% [Thread 9] ws_receive(<stream>(0x7f16380266c0,0x7f1638028980)): OpCode=9, RSV=0
-</code></pre>
-... repeated every few seconds
-</td>
-</tr>
-
-<tr>
-<td><pre><code>
-7> {ws, Frame} = gun:await(ConnPid, StreamRef).
-{ws,{text,<<"Hello!">>}}
-</code></pre></td>
-</td>
-<td><pre><code>
-% [Thread 9] ws_receive(<stream>(0x7f16380266c0,0x7f1638028980)): OpCode=9, RSV=0
-</code></pre>
-... repeated every few seconds
-</td>
-</tr>
-
-<tr>
-<td><pre><code>
-8> gun:close(ConnPid).
-ok
-</code></pre></td>
-</td>
-<td><pre><code>
-% [Thread 9] Got websocket{data:end_of_file,opcode:close}
-ERROR: [Thread 9] Socket error: Broken pipe
-</code></pre></td>
-</tr>
-
 </table>
+
+An alternative to `text` supported by both SWI Prolog and Gun is `binary`. Whereas SWI Prolog allows `string` as a synonym
+for `text`, and gives the options of `json`, `prolog` and SWI Prolog dictionaries, they are not supported by Gun.
+
+The second argument of `ws_receive`, `-Message:dict`, is a SWI Prolog dictionary which looks like
+`websocket{data:"Hello!", format:string, opcode:text}`.
+
+RFC 6455 lists six <a href=https://tools.ietf.org/html/rfc6455#section-11.8">opcodes</a>, each of which has a literal and a
+hexadecimal value:
+
+<table>
+<tr><th>Hex</th><th>Name</th></tr>
+<tr><td>0</td><td>continuation</td></tr>
+<tr><td>1</td><td>text</td></tr>
+<tr><td>2</td><td>binary</td></tr>
+<tr><td>8</td><td>close</td></tr>
+<tr><td>9</td><td>ping</td></tr>
+<tr><td>A</td><td>pong</td></tr>
+</table>
+
+The unused 3-7 and B-F are reserved for the time being.
+
+(A reminder again, the ping and pong opcodes are not related to the arbitrary text getting sent back and forth in this simple
+example).
+
+The only important opcode in this simple example is `close` which breaks the recursive listening loop:
+
+```prolog
+pong_handler(Request) :-
+  ws_receive(Request, Message),
+  debug(websocket, "Got ~p~n", [Message]),
+  format("Received ~p~n", [Message.data]),
+  ws_send(Request, text("Pong")),
+  (   Message.opcode == close
+  ->  format("Pong finished~n")
+  ;   format("Sent Pong~n"),
+      pong_handler(Request)
+  ).
+```
+
+
 
