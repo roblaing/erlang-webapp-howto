@@ -217,6 +217,7 @@ The ignored third element in the Result tuple looks something like:
 , {<<"connection">>,<<"Upgrade">>}
 , {<<"sec-websocket-accept">>,<<"XXw/nNAZ45OQePJ6JBRRoiRH3qk=">>}
 ]
+```
 
 Indicating the server responded with an http header looking something like this:
 
