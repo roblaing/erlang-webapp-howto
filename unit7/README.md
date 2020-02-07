@@ -9,7 +9,7 @@ Hypothetically, Prolog comes glued on. One of Erlang's original creators, Robert
 
 But I didn't get far with Erlog. The executable `bin/erlog` gave a crash report instead of launching a Prolog REPL on my machine,
 which I'm guessing is because I'm using a recent OTP version, 22, whereas Erlog's documentation says it was
-developed with Erlang versions R14B02 - 17.
+developed for a fairly old Erlang version.
 
 And in any event I couldn't figure out from Erlog's sparse documentation how to use it as a "library language" from the Erlang REPL.
 
@@ -61,11 +61,75 @@ the program does is fairly dull &mdash; just prints out ping and pong messages o
 that Erlang and SWI Prolog are running on. In the next unit I hope to start communicating with Javascript,
 creating a web-based query tool to SWI Prolog. 
 
-But in the meanwhile, 
+For the impatient, I'll start with the finished SWI Prolog server code,
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/priv/pong.pl">
+apps/unit7/priv/pong.pl</a> and push the notes I took as I figured things out to the bottom.
 
-![Ping](ping.png)
+```prolog
+:- use_module(library(http/websocket)).
+:- use_module(library(http/thread_httpd)).
+:- use_module(library(http/http_dispatch)).
+
+:- http_handler(root(pong), http_upgrade_to_websocket(pong_handler, []), [spawn([])]).
+
+server(Port) :-
+  http_server(http_dispatch, [port(Port)]).
+
+pong_handler(Request) :-
+  ws_receive(Request, Message),
+  debug(websocket, "Got ~p~n", [Message]),
+  format("Received ~p~n", [Message.data]),
+  ws_send(Request, text("Pong")),
+  (   Message.opcode == close
+  ->  format("Pong finished~n")
+  ;   format("Sent Pong~n"),
+      pong_handler(Request)
+  ).
+```
+
+Loading this from the swipl REPL can be done by `consult('pong.pl').` assuming you are in the same directory as
+the file, and then firing up the server with `server(3031)` or whatever you want to use as a port number.
+
+A handy feature in SWI Prolog I only recently discovered are its debug messages. To switch this on,
+enter `debug(websocket).` since websocket is the name given in `debug(websocket, "Got ~p~n", [Message]),`
+to view what the server is receiving from the client.
+
+After the Erlang client has been run, your terminal screen should look something like:
 
 ![Pong](pong.png)
+
+The Erlang client
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/src/ping.erl">
+apps/unit7/src/ping.erl</a> looks like:
+
+```erlang
+-module(ping).
+-export([client/0, ping/3]).
+
+client() ->
+  {ok, Pid} = gun:open("localhost", 3031),
+  {ok, _} = gun:await_up(Pid),
+  StreamRef = gun:ws_upgrade(Pid, "/pong"),
+  {upgrade, [<<"websocket">>], _} = gun:await(Pid, StreamRef),
+  ping(3, Pid, StreamRef),
+  gun:ws_send(Pid, {close, 1000, <<"Bye">>}).
+
+ping(0, _, _) ->
+  io:format("Ping finished~n", []);
+  
+ping(N, Pid, StreamRef) ->
+  Message = list_to_binary(io_lib:format("Ping ~s", [integer_to_list(N)])),
+  io:format("Sent ~p~n", [Message]),
+  gun:ws_send(Pid, [{text, Message}]),
+  {ws, Frame} = gun:await(Pid, StreamRef),
+  io:format("Received ~p~n", [Frame]),
+ping(N - 1, Pid, StreamRef).
+```
+
+After running `rebar3 release` and then `rebar3 shell` calling the client from the erl REPL
+as `ping:client().` should produce something like:
+
+![Ping](ping.png)
 
 
 <h3>The ping (Erlang) websocket client</h3>
