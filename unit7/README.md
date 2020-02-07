@@ -368,7 +368,7 @@ for `text`, and gives the options of `json`, `prolog` and SWI Prolog dictionarie
 The second argument of `ws_receive`, `-Message:dict`, is a SWI Prolog dictionary which looks like
 `websocket{data:"Hello!", format:string, opcode:text}`.
 
-RFC 6455 lists six <a href=https://tools.ietf.org/html/rfc6455#section-11.8">opcodes</a>, each of which has a literal and a
+RFC 6455 lists six <a href="https://tools.ietf.org/html/rfc6455#section-11.8">opcodes</a>, each of which has a literal and a
 hexadecimal value:
 
 <table>
