@@ -171,7 +171,7 @@ The ignored Protocol returned variable in this case would be <em>http</em>. Othe
 <a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.ws_upgrade/">
 gun:ws_upgrade(ConnPid, Path, Headers, WsOpts) -> StreamRef</a>
 
-Path is the route set up on the SWI Prolog server, so in this example I'll call `pong`, so with port 3031 selected, the
+Path is the route set up on the SWI Prolog server, so in this example I'll call `"/pong"`, so with port 3031 selected, the
 server's URL would be `ws://localhost:3031/pong`
 
 If I wanted to include http request headers such as the following taken from the example in the RFC:
@@ -204,7 +204,7 @@ StreamRef looks something like `#Ref<0.596962980.3933732865.48581>`
 <a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.await/">
 gun:await(ConnPid, StreamRef, Timeout, MonitorRef) -> Result</a>
 
-As with gun:await_up in Step 2, Timeout and MonitorRef can be left out (causing a default timeout of 5 seconds).
+As with gun:await_up in Step 2, Timeout and MonitorRef can be left out (setting a default timeout of 5 seconds).
 
 ```erlang
   {upgrade, [<<"websocket">>], _Headers} = gun:await(Pid, StreamRef),
@@ -219,7 +219,7 @@ The ignored third element in the Result tuple looks something like:
 ]
 ```
 
-Indicating the server responded with an http header looking something like this:
+Indicating the server responded with an http header looks something like this:
 
 ```http
 GET /pong HTTP/1.1
@@ -248,7 +248,7 @@ in the second argument.
 Putting {text, <<"Sent Ping 1">>} in a list is optional, but it makes it clearer this could be a list such as
 `[{text, <<"Sent Ping 2">>},{text, <<"Sent Ping 1">>}, close]`
 
-A third reserved word,
+The reserved word,
 <a href="https://tools.ietf.org/html/rfc6455#section-5.5.1">close</a> is used in the final Step 6.
 
 The pong response from the server is received by gun:await/2 which we already met in Step 4. The difference here
@@ -284,7 +284,7 @@ with whatever closing text.
 
 which the server responds to with
 ```prolog
-% [Thread 9] Got websocket{code:1000,data:"",format:string,opcode:close}
+% [Thread 9] Got websocket{code:1000,data:"Bye",format:string,opcode:close}
 ```
 and no error messages.
 
