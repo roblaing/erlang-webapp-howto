@@ -1,8 +1,0 @@
-[{<<"cowlib">>,
-  {git,"https://github.com/ninenines/cowlib",
-       {ref,"e7852121a01e511b002e3af2851b7b8780ca1902"}},
-  1},
- {<<"gun">>,
-  {git,"https://github.com/ninenines/gun",
-       {ref,"bd6425ab87428cf4c95f4d23e0a48fd065fbd714"}},
-  0}].

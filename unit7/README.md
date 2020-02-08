@@ -402,5 +402,66 @@ pong_handler(Request) :-
   ).
 ```
 
+<h2>Erlang server, Prolog client</h2>
 
+Following the above, I proceeded to flip the problem around, making Erlang (using Cowboy) the server and SWI Prolog the client.
 
+I battled to understand the documentation for
+<a href="https://ninenines.eu/docs/en/cowboy/2.7/manual/cowboy_websocket/">cowboy_websocket</a>, but kinda got
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/src/pong_handler.erl">
+apps/unit7/src/pong_handler.erl</a> to work as follows.
+
+```erlang
+-module(pong_handler).
+-behaviour(cowboy_websocket).
+
+-export([init/2]).
+-export([websocket_handle/2]).
+-export([websocket_info/2]).
+-export([terminate/3]).
+
+init(Req, State) ->
+  {cowboy_websocket, Req, State}.
+
+% Responds to Frames from client
+% InFrame    :: ping | pong | {text | binary | ping | pong, binary()}
+websocket_handle(InFrame, State) ->
+  io:format("Received ~p~n", [InFrame]),
+  io:format("Sent Pong~n", []),
+  {[{text, <<"Pong">>}], State}.
+
+% Sends frames to client
+websocket_info(_Info, State) ->
+  {[{text, <<"I've no idea what this does">>}], State}.
+
+terminate({remote, _Code, Message}, PartialReq, State) -> 
+  io:format("Received ~p~n", [Message]),
+  ok.
+```
+
+The SWI Prolog client
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/priv/ping.pl">
+apps/unit7/priv/ping.pl</a> is very similar to its Erlang equivalent (probably a bit more elegant because
+I have many more hours of SWI Prolog under my belt).
+
+```prolog
+:- use_module(library(http/websocket)).
+
+client :-
+  http_open_websocket('ws://localhost:3030/pong', Request, []),
+  debug(websocket, "Got ~p~n", [Request]),
+  ping(3, Request),
+  ws_close(Request, 1000, "Bye").
+
+ping(0, _) :-
+  format("Ping finished~n", []).
+
+ping(N, Request) :-
+  format(string(Message), "Ping ~d", [N]),
+  format("Sent ~p~n", [Message]),
+  ws_send(Request, text(Message)),
+  ws_receive(Request, Frames),
+  format("Received ~p~n", [Frames]),  
+  succ(M, N),
+  ping(M, Request).
+```
