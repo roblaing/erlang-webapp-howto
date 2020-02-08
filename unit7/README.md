@@ -219,11 +219,10 @@ The ignored third element in the Result tuple looks something like:
 ]
 ```
 
-Indicating the server responded with an http header looks something like this:
+Indicating the server responded with an http header something like this:
 
 ```http
-GET /pong HTTP/1.1
-Host: localhost
+HTTP/1.1 101 Switching Protocols
 Upgrade: websocket
 Connection: Upgrade
 Sec-WebSocket-Accept: XXw/nNAZ45OQePJ6JBRRoiRH3qk=
