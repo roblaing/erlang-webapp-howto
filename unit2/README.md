@@ -65,7 +65,7 @@ project expands. I'm going to put these helpers in a separate module
 apps/unit2/src/webutil.erl</a>.
 
 The top of my module must include `-module(<ModuleName>)` (which must match the filename `<ModuleName>.erl`) and the functions I want to make
-public must be included in `-export(FunctionsList)` with the name of the function fullowed by `/` and the number of arguments
+public must be included in `-export(FunctionsList)` with the name of the function followed by `/` and the number of arguments
 it expects (arity to its friends). Unlike Prolog, zero arity functions in Erlang still require brackets as in foo().
 
 ```erlang
@@ -296,7 +296,7 @@ A cool thing about Prologish languages is you can extract what you want from com
 by simply using the original as a template and putting upper case variable names where you want to get values.
 
 Doing this with maps has a couple of quirks which took me some time to grasp. 
-You need to substitute `:=` for `=>`. A nice thing is you can ignore everything in the pattern execept for the `Key := Value`
+You need to substitute `:=` for `=>`. A nice thing is you can ignore everything in the pattern except for the `Key := Value`
 pairs you are interested in.
 
 ```erlang
@@ -307,8 +307,7 @@ init(Req0, State) ->
 
 In an earlier version of this document,
 I used a convoluted process of nesting `maps:get/2` functions as in `Name = maps:get(name, maps:get(bindings, Req0))`
-to achieve the above. In `case` statements I still find the need for the `maps:get/2` function, but otherwise the 
-pattern matching way makes code more legible.
+to achieve the above. 
 
 In this case, Name is now the binary <code><<"John Smith">></code> which <code>io_lib:format(Template, Args)</code> can handle.
 I've used two <code>~s</code> in 
@@ -338,7 +337,7 @@ This means I need to remember to use my Name variable twice in the Args list my 
 
 Note the above 
 <a href="https://erlang.org/doc/man/code.html#priv_dir-1">code:priv_dir(ApplicationName)</a>
-assumes welcome.html is in priv/ subdirectory of the application. Alternatively, you can use the full pathname.
+assumes welcome.html is in the `<myapp>/priv` subdirectory. Alternatively, you can use the full pathname.
 
 Calling the welcome URL without a name, ie <code>http://localhost:3030/welcome</code> leads to a 404 error, which I only know from
 having pressed F12 in Firefox to open the developer screen. The browser screen itself is simply blank &mdash; problems I need to
