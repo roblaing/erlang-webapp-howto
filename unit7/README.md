@@ -353,8 +353,9 @@ which is similar to `{ws, Frame} = gun:await(Pid, StreamRef)`, and
 <a href="https://www.swi-prolog.org/pldoc/doc_for?object=ws_send/2">ws_send(+Request, +Frames)</a> which is similar
 to `gun:ws_send(Pid, Frames)`.
 
-Though Erlang's ancestry is Prolog, its proplists are not the Prolog convention. We don't need to translate their 
-respective websocket frames, the way they send frames respectively is a bit different:
+Though Erlang's ancestry is Prolog, its proplists with curly bracketed tuples don't fit into the Prolog convention. 
+While we don't need to translate their respective websocket frames, flipping between the server and client code
+requires one to remember the difference:
 
 <table>
 <tr><th>Prolog Frames</th><th>Erlang Frames</th></tr>
