@@ -314,7 +314,7 @@ The <a href="https://www.swi-prolog.org/pldoc/man?section=httpdispatch">http_dis
 <a href="https://www.swi-prolog.org/pldoc/doc_for?object=http_handler/3">http_handler(+Path, :Closure, +Options)</a>
 to link routes and handlers.
 
-To make `pong/` a route, set the first argument `+PATH` to `root(pong)`. Alternatively that could be written `'/root'`,
+To make `/pong` a route, set the first argument `+PATH` to `root(pong)`. Alternatively that could be written `'/pong'`,
 but using SWI Prolog's <a href="https://www.swi-prolog.org/pldoc/man?section=httppath">path abstraction</a> as in `root(pong)`
 seems to be the preferred style with security advantages.
 
