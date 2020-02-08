@@ -33,9 +33,10 @@ for an introductory websocket tutorial because they are among its few reserved w
 <a href="https://tools.ietf.org/html/rfc6455#section-5.5.2">ping</a> and
 <a href="https://tools.ietf.org/html/rfc6455#section-5.5.3">pong</a>.
 
-In this example I'm using Erlang as my websocket client and SWI Prolog as my websocket server. 
+In the first example, I'm using Erlang as my websocket client and SWI Prolog as my websocket server. 
 The reason is my longer term ambition is to be able to query a Prolog database from another language 
-via a socket as one can SQL databases.
+via a socket as one can SQL databases. I've added an example of switching this around, using Erlang
+as the server and SWI Prolog as the client, at the bottom.
 
 Just as the <em>99s</em> team have written Cowboy as a replacement for the builtin library inets's 
 <a href="http://erlang.org/doc/apps/inets/http_server.html">httpd</a>, they have written
@@ -430,7 +431,7 @@ websocket_handle(InFrame, State) ->
   io:format("Sent Pong~n", []),
   {[{text, <<"Pong">>}], State}.
 
-% Sends frames to client
+% This has to be here, but isn't used.
 websocket_info(_Info, State) ->
   {[{text, <<"I've no idea what this does">>}], State}.
 

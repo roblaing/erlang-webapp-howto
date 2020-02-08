@@ -16,7 +16,7 @@ websocket_handle(InFrame, State) ->
   io:format("Sent Pong~n", []),
   {[{text, <<"Pong">>}], State}.
 
-% Sends frames to client
+% This has to be here, but isn't used.
 websocket_info(_Info, State) ->
   {[{text, <<"I've no idea what this does">>}], State}.
 
