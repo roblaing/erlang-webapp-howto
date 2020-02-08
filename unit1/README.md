@@ -236,7 +236,7 @@ stop(_State) ->
 The first line of code after comments in every Erlang module is `-module(Modulename).` where Modulename is an atom matching the filename
 without the .erl suffix.
 
-The `-export([Function1/N,...]).` allows the functions in the module to be called as `Modulename:Function(Arg1, ..., ArgN)` by other modules.
+The `-export([Function1/N,...]).` allows the functions in the module to be called as `Modulename:Function1(Arg1, ..., ArgN)` by other modules.
 Functions not included in the export list are private to that specific module.
 
 All we typically want to do with web servers is start and stop them, which Erlang along with rebar3 makes very easy with a script 
@@ -245,7 +245,8 @@ All we typically want to do with web servers is start and stop them, which Erlan
 <h3>Module:start/2</h3>
 
 There is rather sketchy documentation for the <a href="http://erlang.org/doc/apps/kernel/application.html#Module:start-2">start/2</a>
-function required by modules which have selected `-behaviour(application)`. The underscores to the two arguments in the start function
+function required by modules which have selected `-behaviour(application)`. The leading underscores &mdash; as in `_StartType`
+and `_StartArgs` &mdash; to the two arguments in the start function
 follow a Prolog convention of telling the compiler to ignore arguments which are not used in the body of the function. This happens
 in Prologish languages because the same `function_name(Arg1, Arg2, ...)` can be used to handle different cases, and some of these cases
 may not need arguments which others do.
@@ -312,7 +313,10 @@ Here we link our application to a port number. For some reason (some long forgot
 3030 instead of the more conventional 8080. I assume one should be able to pick whatever port number as an argument passed 
 by the start script to the unused StartArgs, but I don't know how, so am leaving it hardwired in the code for now.
 
-As mentioned above, Cowboy gives you a choice of an http or https listener.
+As mentioned above, Cowboy gives you a choice of an http listener
+<a href="https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy.start_clear/">cowboy:start_clear/3</a>
+or and https listener <a href="https://ninenines.eu/docs/en/cowboy/2.6/manual/cowboy.start_tls/">
+cowboy:start_tls/3</a>.
 
 ```erlang
 start(_StartType, _StartArgs) ->
@@ -370,7 +374,7 @@ While debugging fresh code, the safest option is probably:
 This launches the http daemon and leaves you at the erl REPL command line to see any error messages or warnings that appear when
 you point your browser to `http://localhost:3030` (assuming you haven't picked a different port number).
 
-Once in production, use
+Once working, use
 
 ```
 ./_build/default/rel/unit1/bin/unit1 start
@@ -383,6 +387,10 @@ and
 ```
 
 To start and stop the web server.
+
+Once the project is developed, we want to
+<a href="https://adoptingerlang.org/docs/production/releases/#building-a-production-release">build a production release</a> putting
+this script somewhere $PATH can find it, but I haven't got that far yet.
 
 <h3>A quick rant about documentation systems</h3>
 
@@ -404,6 +412,6 @@ appearing on a web browser, carefully documenting these inputs and outputs is ev
 set of tools to do so, but I don't know how to use them when the input arguments are simply ignored and the function's result comes from a badly
 documented auxiliary function.
 
-Next &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2">Unit 2</a>: Forms with validation and redirection.
+Next &mdash; Unit 2: <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2">Forms with validation and redirection</a>.
 
 
