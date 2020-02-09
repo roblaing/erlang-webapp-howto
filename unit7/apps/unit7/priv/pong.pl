@@ -11,10 +11,11 @@ pong_handler(Request) :-
   ws_receive(Request, Message),
   debug(websocket, "Got ~p~n", [Message]),
   format("Received ~p~n", [Message.data]),
-  ws_send(Request, text("Pong")),
   (   Message.opcode == close
-  ->  format("Pong finished~n")
-  ;   format("Sent Pong~n"),
+  ->  ws_send(Request, close(1000, "Bye")),
+      format("Pong finished~n")
+  ;   ws_send(Request, text("Pong")),
+      format("Sent Pong~n"),
       pong_handler(Request)
   ).
 

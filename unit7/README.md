@@ -80,10 +80,11 @@ pong_handler(Request) :-
   ws_receive(Request, Message),
   debug(websocket, "Got ~p~n", [Message]),
   format("Received ~p~n", [Message.data]),
-  ws_send(Request, text("Pong")),
   (   Message.opcode == close
-  ->  format("Pong finished~n")
-  ;   format("Sent Pong~n"),
+  ->  ws_send(Request, close(1000, "Bye")),
+      format("Pong finished~n")
+  ;   ws_send(Request, text("Pong")),
+      format("Sent Pong~n"),
       pong_handler(Request)
   ).
 ```
@@ -97,7 +98,7 @@ to view what the server is receiving from the client.
 
 After the Erlang client has been run, your terminal screen should look something like:
 
-![Pong](pong.png)
+![Prolog Server](prolog_server.png)
 
 The Erlang client
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/src/ping.erl">
@@ -113,7 +114,7 @@ client() ->
   StreamRef = gun:ws_upgrade(Pid, "/pong"),
   {upgrade, [<<"websocket">>], _} = gun:await(Pid, StreamRef),
   ping(3, Pid, StreamRef),
-  gun:ws_send(Pid, {close, 1000, <<"Bye">>}).
+  gun:shutdown(Pid).
 
 ping(0, _, _) ->
   io:format("Ping finished~n", []);
@@ -130,7 +131,7 @@ ping(N, Pid, StreamRef) ->
 After running `rebar3 release` and then `rebar3 shell` calling the client from the erl REPL
 as `ping:client().` should produce something like:
 
-![Ping](ping.png)
+![Erlang Client](erlang_client.png)
 
 
 <h3>The ping (Erlang) websocket client</h3>
@@ -288,7 +289,8 @@ which the server responds to with
 ```
 and no error messages.
 
-
+I've used <a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.shutdown/">shutdown(ConnPid) -> ok</a>
+which sends the client a close opcode and waits for a responding close message before closing the stream.
 
 <h3>The pong (SWI Prolog) websocket server</h3>
 
@@ -395,10 +397,11 @@ pong_handler(Request) :-
   ws_receive(Request, Message),
   debug(websocket, "Got ~p~n", [Message]),
   format("Received ~p~n", [Message.data]),
-  ws_send(Request, text("Pong")),
   (   Message.opcode == close
-  ->  format("Pong finished~n")
-  ;   format("Sent Pong~n"),
+  ->  ws_send(Request, close(1000, "Bye")),
+      format("Pong finished~n")
+  ;   ws_send(Request, text("Pong")),
+      format("Sent Pong~n"),
       pong_handler(Request)
   ).
 ```
@@ -433,12 +436,27 @@ websocket_handle(InFrame, State) ->
 
 % This has to be here, but isn't used.
 websocket_info(_Info, State) ->
-  {[{text, <<"I've no idea what this does">>}], State}.
+  {[], State}.
 
-terminate({remote, _Code, Message}, PartialReq, State) -> 
+terminate({remote, _Code, Message}, _PartialReq, _State) -> 
   io:format("Received ~p~n", [Message]),
+  io:format("Pong finished~n", []),
   ok.
 ```
+
+Something that tripped me up was websocket_handle/2 ignores the `close` opcode (it does however accept 
+the `ping` and `pong` opcodes), leaving it to the cowboy_websocket behaviour's <em>optional</em>
+`terminate(Reason, PartialReq, State) -> ok` with Reason = `{remote, cow_ws:close_code(), binary()}`
+if the client sends 1000 or whatever closing code and a "Bye" or whatever message.
+
+The cowboy_websocket behaviour also has an <em>optional</em> `websocket_init(State) -> CallResult`
+which I've left out, and a required `websocket_info(Info, State) -> CallResult` whose purpose I
+can't figure out.
+
+For both examples above `{text, <<"Pong">>}` can be replaced with `{binary, <<"Pong">>}` on the Erlang side
+and `text("Pong")` can be substituted with `binary("Pong")` on the Prolog side.
+
+![Erlang Server](erlang_server.png)
 
 The SWI Prolog client
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/priv/ping.pl">
@@ -466,3 +484,6 @@ ping(N, Request) :-
   succ(M, N),
   ping(M, Request).
 ```
+
+![Pong Server](pong_server.png)
+

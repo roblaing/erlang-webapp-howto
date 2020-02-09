@@ -18,9 +18,10 @@ websocket_handle(InFrame, State) ->
 
 % This has to be here, but isn't used.
 websocket_info(_Info, State) ->
-  {[{text, <<"I've no idea what this does">>}], State}.
+  {[], State}.
 
-terminate({remote, _Code, Message}, PartialReq, State) -> 
+terminate({remote, _Code, Message}, _PartialReq, _State) -> 
   io:format("Received ~p~n", [Message]),
+  io:format("Pong finished~n", []),
   ok.
 

@@ -7,7 +7,7 @@ client() ->
   StreamRef = gun:ws_upgrade(Pid, "/pong"),
   {upgrade, [<<"websocket">>], _} = gun:await(Pid, StreamRef),
   ping(3, Pid, StreamRef),
-  gun:ws_send(Pid, {close, 1000, <<"Bye">>}).
+  gun:shutdown(Pid).
 
 ping(0, _, _) ->
   io:format("Ping finished~n", []);
