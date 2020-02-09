@@ -29,7 +29,7 @@ messaging ping and pong</a> between different programs, possibly on different co
 
 I only subsequently read RFC 6455 far enough to learn <em>ping</em> and <em>pong</em> are an unfortunate choice of names
 for an introductory websocket tutorial because they are among its few reserved words. Please note I'm just using
-"ping" and "pong" as arbitrary text here, not as frame control opcodes as eplained in
+"ping" and "pong" as arbitrary call and response text here, not as frame control opcodes as eplained in
 <a href="https://tools.ietf.org/html/rfc6455#section-5.5.2">ping</a> and
 <a href="https://tools.ietf.org/html/rfc6455#section-5.5.3">pong</a>.
 
