@@ -369,6 +369,9 @@ requires one to remember the difference:
 An alternative to `text` supported by both SWI Prolog and Gun is `binary`. Whereas SWI Prolog allows `string` as a synonym
 for `text`, and gives the options of `json`, `prolog` and SWI Prolog dictionaries, they are not supported by Gun.
 
+Substituting `{text, <<"Ping 1">>}` with `{binary, <<"Ping 1">>}` on the Erlang side
+and `text("Pong")` with `binary("Pong")` on the Prolog side works fine, and may be more efficient.
+
 The second argument of `ws_receive`, `-Message:dict`, is a SWI Prolog dictionary which looks like
 `websocket{data:"Hello!", format:string, opcode:text}`.
 
@@ -452,9 +455,6 @@ if the client sends 1000 or whatever closing code and a "Bye" or whatever messag
 The cowboy_websocket behaviour also has an <em>optional</em> `websocket_init(State) -> CallResult`
 which I've left out, and a required `websocket_info(Info, State) -> CallResult` whose purpose I
 can't figure out.
-
-For both examples above `{text, <<"Pong">>}` can be replaced with `{binary, <<"Pong">>}` on the Erlang side
-and `text("Pong")` can be substituted with `binary("Pong")` on the Prolog side.
 
 ![Erlang Server](erlang_server.png)
 
