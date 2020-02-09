@@ -485,5 +485,5 @@ ping(N, Request) :-
   ping(M, Request).
 ```
 
-![Pong Server](pong_server.png)
+![Prolog Client](prolog_client.png)
 
