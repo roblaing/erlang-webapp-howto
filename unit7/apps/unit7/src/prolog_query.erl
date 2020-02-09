@@ -12,7 +12,7 @@ client() ->
   Q2 = <<"findall(Child, parent(bob, Child), Children)">>,
   io:format("Asked ~p~n", [Q2]),
   io:format("Answer ~p~n", [pl_query(Q2, Pid, StreamRef)]),
-  gun:ws_send(Pid, {close, 1000, <<"Bye">>}).
+  gun:shutdown(Pid).
 
 pl_query(Prolog, Pid, StreamRef) ->
   gun:ws_send(Pid, [{binary, Prolog}]),

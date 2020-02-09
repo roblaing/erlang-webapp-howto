@@ -506,7 +506,7 @@ ping(N, Request) :-
 <h2>Basic Prolog server daemon</h2>
 
 Going back to using Prolog as a server, I've addapted the first simple example to a first step in using SWI Prolog
-as a daemon which can respond to queries via websock akin to how SQL databases do.
+as a daemon which can respond to queries via websocket akin to how SQL databases do.
 
 My exploration of Erlog re-introduced me to the 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/priv/family.pl">family database</a> 
@@ -576,7 +576,7 @@ client() ->
   Q2 = <<"findall(Child, parent(bob, Child), Children)">>,
   io:format("Asked ~p~n", [Q2]),
   io:format("Answer ~p~n", [pl_query(Q2, Pid, StreamRef)]),
-  gun:ws_send(Pid, {close, 1000, <<"Bye">>}).
+  gun:shutdown(Pid).
 
 pl_query(Prolog, Pid, StreamRef) ->
   gun:ws_send(Pid, [{binary, Prolog}]),
