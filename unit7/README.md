@@ -33,6 +33,8 @@ for an introductory websocket tutorial because they are among its few reserved w
 <a href="https://tools.ietf.org/html/rfc6455#section-5.5.2">ping</a> and
 <a href="https://tools.ietf.org/html/rfc6455#section-5.5.3">pong</a>.
 
+<h2>Prolog server, Erlang client</h2>
+
 In the first example, I'm using Erlang as my websocket client and SWI Prolog as my websocket server. 
 The reason is my longer term ambition is to be able to query a Prolog database from another language 
 via a socket as one can SQL databases. I've added an example of switching this around, using Erlang
@@ -500,4 +502,97 @@ ping(N, Request) :-
 ```
 
 ![Prolog Client](prolog_client.png)
+
+<h2>Basic Prolog server daemon</h2>
+
+Going back to using Prolog as a server, I've addapted the first simple example to a first step in using SWI Prolog
+as a daemon which can respond to queries via websock akin to how SQL databases do.
+
+My exploration of Erlog re-introduced me to the 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/priv/family.pl">family database</a> 
+in the introductory example in Ivan Bratko's textbook <em>Prolog Programming for Artificial Intelligence</em> which I'm 
+going to use as my example database here.
+
+An addaption I've made from the top example is to run the Prolog database as a Unix daemon using the
+<a href="https://www.swi-prolog.org/pldoc/doc/_SWI_/library/http/http_unix_daemon.pl">http_unix_daemon</a>
+library.
+
+Instead of printing things to a console, I now start the Prolog server with
+
+```bash
+swipl ws_server.pl --port=3031 --pidfile=http.pid --workers=4
+```
+
+and stop it with
+
+```bash
+kill $(cat http.pid)
+```
+
+My <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/priv/ws_server.pl">
+ws_server.pl</a> file looks like:
+
+```prolog
+:- use_module(library(http/websocket)).
+:- use_module(library(http/http_unix_daemon)).
+
+:- initialization http_daemon.
+
+:- consult('family.pl').
+
+:- http_handler(root(family), http_upgrade_to_websocket(family_handler, []), [spawn([])]).
+
+family_handler(Request) :-
+  ws_receive(Request, Message),
+  (   Message.opcode == close
+  ->  ws_send(Request, close(1000, "normal closure"))
+  ;   query(Message.data, Answer),
+      ws_send(Request, binary(Answer)),
+      family_handler(Request)
+  ).
+
+query(QueryString, AnswerString) :-
+  term_string(Term, QueryString, [variable_names(VNames)]),
+  call(Term),
+  last(VNames, Answer),
+  term_string(Answer, AnswerString).
+```
+
+My Erlang client <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/src/prolog_query.erl">
+prolog_query.erl</a> to run some queries via websocket looks like:
+
+```erlang
+-module(prolog_query).
+-export([client/0, pl_query/3]).
+
+client() ->
+  {ok, Pid} = gun:open("localhost", 3031),
+  {ok, _} = gun:await_up(Pid),
+  StreamRef = gun:ws_upgrade(Pid, "/family"),
+  {upgrade, [<<"websocket">>], _} = gun:await(Pid, StreamRef),
+  Q1 = <<"findall(Parent, parent(Parent, bob), Parents)">>,
+  io:format("Asked ~p~n", [Q1]),
+  io:format("Answer ~p~n", [pl_query(Q1, Pid, StreamRef)]),
+  Q2 = <<"findall(Child, parent(bob, Child), Children)">>,
+  io:format("Asked ~p~n", [Q2]),
+  io:format("Answer ~p~n", [pl_query(Q2, Pid, StreamRef)]),
+  gun:ws_send(Pid, {close, 1000, <<"Bye">>}).
+
+pl_query(Prolog, Pid, StreamRef) ->
+  gun:ws_send(Pid, [{binary, Prolog}]),
+  {ws, {binary, Answer}} = gun:await(Pid, StreamRef),
+  Answer.
+```
+
+Running `prolog:query:client().` from `rebar3 shell` produces:
+
+```erlang
+1> prolog_query:client().
+Asked <<"findall(Parent, parent(Parent, bob), Parents)">>
+Answer <<"'Parents'=[pam,tom]">>
+Asked <<"findall(Child, parent(bob, Child), Children)">>
+Answer <<"'Children'=[ann,pat]">>
+ok
+2> 
+``` 
 
