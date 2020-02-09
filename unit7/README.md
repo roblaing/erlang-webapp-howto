@@ -584,7 +584,7 @@ pl_query(Prolog, Pid, StreamRef) ->
   Answer.
 ```
 
-Running `prolog:query:client().` from `rebar3 shell` produces:
+Running `prolog_query:client().` from `rebar3 shell` produces:
 
 ```erlang
 1> prolog_query:client().
