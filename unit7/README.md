@@ -453,8 +453,22 @@ the `ping` and `pong` opcodes), leaving it to the cowboy_websocket behaviour's <
 if the client sends 1000 or whatever closing code and a "Bye" or whatever message.
 
 The cowboy_websocket behaviour also has an <em>optional</em> `websocket_init(State) -> CallResult`
-which I've left out, and a required `websocket_info(Info, State) -> CallResult` whose purpose I
-can't figure out.
+which I've left out.
+
+If I wanted the server instead of the client to initiate messaging, I could do it with something like
+this example based on the Cowboy User Guide's
+<a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/ws_handlers/#_post_upgrade_initialization">
+post-upgrade initialization</a> section:
+
+```erlang
+websocket_init(State) ->
+  {[{text, <<"Ping">>}], State}.
+```
+
+There is a <em>required</em> `websocket_info(Info, State) -> CallResult` whose purpose I
+can't figure out from the explanation in the
+<a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/ws_handlers/#_receiving_erlang_messages">
+Receiving Erlang messages</a> section since I'm not sure who supplies `Info`.
 
 ![Erlang Server](erlang_server.png)
 
