@@ -11,12 +11,7 @@ There is little new Erlang code in this unit, but I've had to dive deep into Jav
 
 <h2>Javascript websocket client</h2>
 
-One of the things that makes Javascript programming difficult is it's a language designed by committee full of synonyms,
-and Googling answers brings up lots of opinions and conflicting advice on which of the many ways of achieving the same
-thing is best. Though I've settled on <a href="https://developer.mozilla.org/en-US/">MDN</a> as my <em>Oxford Dictionary</em>
-of Javascript, to me it remains a maze of twisty little passages, all alike.
-
-A style rule I'm addopting is to write all my <em>nodes</em> as  
+A style rule I'm addopting to make Javascript more Erlangish is to write all my <em>nodes</em> as  
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">
 event listeners</a> using this basic pattern:
 
