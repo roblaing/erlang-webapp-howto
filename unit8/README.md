@@ -112,7 +112,13 @@ Another is I find the documentation on Web Components incomprehensible.
 
 Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
 
-We simply put a &lt;template id="mytemplate"&gt;...&lt;/template&gt; section in our html file which text editors, <em>tidy</em>,
+We simply put a 
+```html
+<template id="mytemplate">
+...
+</template>
+``` 
+section in our html file which text editors, <em>tidy</em>,
 etc see as <em>normal</em> html. Browsers don't render it, so in a sense templates are treaded like comments except syntax
 highlighters and linters do see it as valid html.
 
