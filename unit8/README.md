@@ -1,23 +1,24 @@
 <h1>Tying everything together into a blog</h1>
 
 I'm finishing this series of tutorials by redoing the blog project in the Udacity <a href="https://classroom.udacity.com/courses/cs253">
-Web Development</a> but in an Erlangish way instead of the original Python.
+Web Development</a> course, but in an Erlangish way instead of the original Google App Engine with Python.
 
 Now that I've grasped the basics of websocket, I'm viewing the browser much as an Erlang node which sends and receives Json messages.
 
-There is little new Erlang code in this code, but I've had to dive deep into Javascript, abandoning Unit 2's 
+There is little new Erlang code in this unit, but I've had to dive deep into Javascript, abandoning Unit 2's 
 <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2">basic form technique</a> and Unit 6's
 <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6">Ajax</a>.
 
 <h2>Javascript websocket client</h2>
 
 One of the things that makes Javascript programming difficult is it's a language designed by committee full of synonyms,
-and Googling answers brings up lots of opinions and conflicting advice on which of the many ways of achieving exactly the same
+and Googling answers brings up lots of opinions and conflicting advice on which of the many ways of achieving the same
 thing is best. Though I've settled on <a href="https://developer.mozilla.org/en-US/">MDN</a> as my <em>Oxford Dictionary</em>
 of Javascript, to me it remains a maze of twisty little passages, all alike.
 
 A style rule I'm addopting is to write all my <em>nodes</em> as  
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">event listeners</a> using this basic pattern:
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">
+event listeners</a> using this basic pattern:
 
 ```javascript
 <target>.addEventListener("EventType", (event) => {
@@ -27,7 +28,7 @@ A style rule I'm addopting is to write all my <em>nodes</em> as
 
 <h3>Opening the websocket connection</h3>
 
-The palaver with the opening handshake, upgrade etc is easily done by creating a global
+The palaver with the opening handshake, upgrade etc is easily done in Javascript by creating a global
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">WebSocket</a> object, which I'll call `websocket`.
 
 ```javascript
@@ -45,7 +46,7 @@ our `<target>.addEventListener("EventType", ...)`.
 
 For `"EventType"` we have a choice of 
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event">beforeunload</a> or
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/unload_event"unload</a>. I'm going with
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/unload_event">unload</a>. I'm going with
 unload to keep the connection open until the last moment.
 
 ```javascript
