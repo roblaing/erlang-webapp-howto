@@ -110,9 +110,10 @@ is well supported by modern browsers. MDN's
 section describes it as part of the 
 <a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a> family to be used with the
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot">&lt;slot&gt;</a> element, which in turn relies on the
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow">Element.attachShadow()</a> method which only 
-very recent versions of Firefox and Chrome of support, and Microsoft's Edge doesn't. Besides browser compatability problems,
-I personally find Web Components overly complex.
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow">Element.attachShadow()</a> method.
+
+One snag with &lt;slot&gt; is only very recent versions of Firefox and Chrome of support it, and Microsoft's Edge don't. 
+Another is I find the documentation on Web Components incomprehensible.
 
 Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
 
