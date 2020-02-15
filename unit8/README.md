@@ -112,7 +112,7 @@ section describes it as part of the
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot">&lt;slot&gt;</a> element, which in turn relies on the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow">Element.attachShadow()</a> method.
 
-One snag with &lt;slot&gt; is only very recent versions of Firefox and Chrome of support it, and Microsoft's Edge don't. 
+One snag with &lt;slot&gt; is only very recent versions of Firefox and Chrome support it, and Microsoft browsers don't. 
 Another is I find the documentation on Web Components incomprehensible.
 
 Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
@@ -166,8 +166,8 @@ anyone masquerading by somehow stealing someone else's cookie.
 My method of creating a unique ID is hopefully overkill: I create a string by concatenating
 <a href="http://erlang.org/doc/man/erlang.html#now-0">now()</a> to get a precise instant in time, 
 <a href="http://erlang.org/doc/man/erlang.html#make_ref-0">make_ref()</a> to get a "reference unique among connected nodes", and
-<a href="http://erlang.org/doc/man/erlang.html#node-0">node()</a> in case some disconnected node created the same make_ref/0
-in the same instant.
+<a href="http://erlang.org/doc/man/erlang.html#node-0">node()</a> in case some other node created the same make_ref/0
+at precisely the same instant.
 
 This string is then hashed with
 
@@ -179,7 +179,7 @@ Uuid = integer_to_binary(I, 16),
 ```
 Furthermore, I check this key isn't already in ETS, and get a different key if it is.
 
-The client and server just pass this uuid back and forth, with no need to wire already known data like the user name &mdash; unless
+The client and server just pass this uuid back and forth, with no need to wire already known data such as the user name &mdash; unless
 the server wants the browser to say its user name to verify the uuid is not a lucky guess by a hacker.
 
 
