@@ -1,15 +1,41 @@
 <h1>Tying everything together into a blog</h1>
 
+A wonderful online resource I only recently discovered is
+<a href="http://aosabook.org/en/index.html">The Architecture of Open Source Applications</a> which provides a compendium of examples
+by experienced designers on how they tackled various projects. 
+
+One of the "small examples" in the series is similar to what I'm doing here:
+<a href="http://aosabook.org/en/500L/an-event-driven-web-framework.html">An Event-Driven Web Framework</a>. The article's author
+Leo Zovic first lists the various ways in which servers and clients can message each other
+&mdash; besides websocket which I'm using here, there's Ajax which I used in 
+<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6">Unit 6</a>, 
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a> and 
+<a href="https://www.ibm.com/developerworks/library/wa-reverseajax1/index.html">Comet</a>, also knows as "reverse Ajax" or 
+the "long poll" technique.
+
+Zovic warned that all these "long-lived connections" approaches could cause problems if the site gets too popular because each connection
+equates to a thread, and threads are only "cheap" in a small, select group of programming languages:
+
+<q>There are programming environments such as Racket, Erlang, and Haskell that provide thread-like constructs that are "lightweight" enough to consider the first option.</q> 
+
+For his chosen programming language, Common Lisp, Zovic opted for an <em>event-driven</em> pattern, which I wasn't aware differs from a
+<em>thread-based</em> pattern:
+
+<q>This nomenclature is a bit confusing, and has its origin in early operating-systems research. It refers to how communication is done between multiple concurrent processes. In a thread-based system, communication is done through a synchronized resource such as shared memory. In an event-based system, processes generally communicate through a queue where they post items that describe what they have done or what they want done, which is maintained by our single thread of execution. Since these items generally describe desired or past actions, they are referred to as 'events'.</q>
+
 I'm finishing this series of tutorials by redoing the blog project in the Udacity <a href="https://classroom.udacity.com/courses/cs253">
 Web Development</a> course, but in an Erlangish way instead of the original Google App Engine with Python.
 
-Now that I've grasped the basics of websocket, I'm viewing the browser much as an Erlang node which sends and receives Json messages.
+I started this exercise before reading Zovic's warning about Websocket, but since I'm using one of the three languages he says can viably handle
+this approach, decided to stick with it.
 
-There is little new Erlang code in this unit, but I've had to dive deep into Javascript, abandoning Unit 2's 
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit2">basic form technique</a> and Unit 6's
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6">Ajax</a>.
+<h2>Javascript style</h2>
 
-<h2>Javascript websocket client</h2>
+Something that frustrates me about Javascript &mdash; and I'm guessing most others &mdash; is it's a language designed by committee,
+cluttered with synonymous ways of achieving anything. Googling the "best" way to approach anything leads to a swamp of conflicting advice.
+
+A cool thing about the language is its constant evolution, and I discovered all kinds of new ways to do things during this exercise
+including the &lt;template&gt; element which I'll get to later.
 
 A style rule I'm addopting to make Javascript more Erlangish is to write all my <em>nodes</em> as  
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">
@@ -20,6 +46,8 @@ event listeners</a> using this basic pattern:
   <response to event goes here...> 
 });
 ```
+
+<h2>Javascript websocket client</h2>
 
 <h3>Opening the websocket connection</h3>
 
