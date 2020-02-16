@@ -59,7 +59,7 @@ and greater than signs in
 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
 
 I find trying to keep up with JQuery, TypeScript, Angular, React... whatever is top of the pops this week exhausting, and
-sticking to a minimal <em>patois</em> plain vanilla Javascript keeps things manageable.
+sticking to a minimal <em>patois</em> of plain vanilla Javascript keeps things manageable.
 
 <h3>Client-side templating</h3>
 
@@ -109,10 +109,10 @@ let template = document.querySelector("section > template").content;
 then do substitutions of data received from the server with lines like:
 
 ```javascript
-template.querySelector("div.post-title").textContent = post.title;
+template.querySelector("h2.post-title").textContent = post.title;
 ```
 
-Selecting `textContent` as opposed to `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
+Using `textContent` instead of `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
 Cross-site scripting</a> problems without any need to substitute `<` with `&lt;`.
 
 The filled in template can then be inserted into the
@@ -128,7 +128,8 @@ iteratively to render a template filled in with different values any number of t
 
 One gotcha was using a button in a template for a form I only wanted displayed if the user was logged in. I found
 the solution in this article <a href="https://css-tricks.com/crafting-reusable-html-templates/">Crafting Reusable HTML Templates</a>.
-It turned out the button had to be linked to an event listeners in the template block, not in the external Javascript file.
+It turned out the Javascript linking the button to an event listener had to be in a &lt;script&gt; section within the 
+&lt;template&gt; block, not in the external Javascript file where it would be seen as `null`.
 
 <h2>Javascript websocket client</h2>
 
