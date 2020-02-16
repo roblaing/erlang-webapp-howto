@@ -9,7 +9,7 @@ One of the "small examples" in the series is similar to what I'm doing here:
 Leo Zovic first lists the various ways in which servers and clients can message each other
 &mdash; besides websocket which I'm using here, there's Ajax which I used in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6">Unit 6</a>, 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a> and 
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a>, and 
 <a href="https://www.ibm.com/developerworks/library/wa-reverseajax1/index.html">Comet</a>, also knows as "reverse Ajax" or 
 the "long poll" technique.
 
@@ -31,13 +31,11 @@ this approach, decided to stick with it.
 
 <h2>Javascript style</h2>
 
-Something that frustrates me about Javascript &mdash; and I'm guessing most others &mdash; is it's a language designed by committee,
-cluttered with synonymous ways of achieving anything. Googling the "best" way to approach anything leads to a swamp of conflicting advice.
+Something that frustrates me about Javascript &mdash; and I'm guessing many others &mdash; is it's a language designed by committee,
+cluttered with synonymous ways of doing anything. Googling the "best" way leads to a swamp of conflicting advice, so I've settled
+on the examples in <a href="https://developer.mozilla.org/en-US/">MDN</a> as my reference.
 
-A cool thing about the language is its constant evolution, and I discovered all kinds of new ways to do things during this exercise
-including the &lt;template&gt; element which I'll get to later.
-
-A style rule I'm addopting to make Javascript more Erlangish is to write all my <em>nodes</em> as  
+A style rule I'm adopting to make Javascript more Erlangish is to write all my <em>nodes</em> as  
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">
 event listeners</a> using this basic pattern:
 
@@ -45,6 +43,54 @@ event listeners</a> using this basic pattern:
 <target>.addEventListener("EventType", (event) => {
   <response to event goes here...> 
 });
+```
+
+<h3>Client-side templating</h3>
+
+A cool, albeit frustrating, thing about Javascript is its rapid evolution, and I discovered all kinds of new ways to do things during this exercise,
+including the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">&lt;template&gt;</a>
+element, allowing me to ditch my server-side text substitution hack. MDN's 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots">Using templates and slots</a>
+section describes it as part of the 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a> family to be used with the
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot">&lt;slot&gt;</a> element, which in turn relies on the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow">Element.attachShadow()</a> method.
+
+One snag with &lt;slot&gt; is only very recent versions of Firefox and Chrome support it, and Microsoft browsers don't. 
+Another is I find the documentation on Web Components incomprehensible.
+
+Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
+
+We simply put a 
+```html
+<template id="mytemplate">
+...
+</template>
+``` 
+section in our html file which text editors, <em>tidy</em>,
+etc see as <em>normal</em> html. Browsers don't render it, so in a sense templates are treaded like comments except syntax
+highlighters and linters do see it as valid html.
+
+Javascript can then extract what's inside the template with:
+
+```javascript
+let template = document.querySelector("template#templateId").content;
+```
+
+then do substitutions of data received from the server with lines like:
+
+```javascript
+template.querySelector("div.post-title").textContent = post.title;
+```
+
+Selecting `textContent` as opposed to `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
+Cross-site scripting</a> problems without any need to substitute `<` with `&lt;`.
+
+Finally, the template can be inserted into the relevant position in the html with:
+
+```javascript
+let html = template.cloneNode(true);
+document.getElementById("content").appendChild(html);
 ```
 
 <h2>Javascript websocket client</h2>
@@ -122,54 +168,6 @@ and then lots of extra lines of code are needed for translation, so I've just ke
 websocket.addEventListener("error", (event) => {
   window.alert('WebSocket error: ', event);
 });
-```
-
-<h3>Client-side templating</h3>
-
-Something I only became aware of doing this exercise was html's relatively new
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">&lt;template&gt;</a> element, which
-is well supported by modern browsers. MDN's 
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots">Using templates and slots</a>
-section describes it as part of the 
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a> family to be used with the
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot">&lt;slot&gt;</a> element, which in turn relies on the
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow">Element.attachShadow()</a> method.
-
-One snag with &lt;slot&gt; is only very recent versions of Firefox and Chrome support it, and Microsoft browsers don't. 
-Another is I find the documentation on Web Components incomprehensible.
-
-Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
-
-We simply put a 
-```html
-<template id="mytemplate">
-...
-</template>
-``` 
-section in our html file which text editors, <em>tidy</em>,
-etc see as <em>normal</em> html. Browsers don't render it, so in a sense templates are treaded like comments except syntax
-highlighters and linters do see it as valid html.
-
-Javascript can then extract what's inside the template with:
-
-```javascript
-let template = document.getElementById("mytemplate").content;
-```
-
-then do substitutions of data received from the server with lines like:
-
-```javascript
-template.querySelector("div.post-title").textContent = post.title;
-```
-
-Selecting `textContent` as opposed to `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
-Cross-site scripting</a> problems without any need to substitute `<` with `&lt;`.
-
-Finally, the template can be inserted into the relevant position in the html with:
-
-```javascript
-let html = template.cloneNode(true);
-document.getElementById("content").appendChild(html);
 ```
 
 <h2>Erlang websocket server</h2>
