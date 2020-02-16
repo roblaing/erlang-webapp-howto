@@ -77,13 +77,19 @@ We simply put
 ```html
 <section>
 <template>
-...
+  <header class="post-heading">
+    <h2 class="post-title">Title</h2>
+    <span class="post-date">Date</span>
+  </header>
+  <pre class="post-content">Art</pre>
 </template>
 </section>
 ``` 
 code in our html file which text editors, <em>tidy</em>,
 etc see as <em>normal</em> html. Browsers don't render it, so in a sense templates are treaded like comments except syntax
-highlighters and linters do see it as valid html.
+highlighters and linters do see it as valid html. I've kept &lt;section&gt; and &lt;template&gt; at the same indentation level
+since the &lt;template&gt; element will effectively get substituted into the &lt;section&gt; element in the rendered page.
+
 
 Javascript can then extract what's inside the given section's template child with
 
@@ -191,6 +197,10 @@ websocket.addEventListener("error", (event) => {
 
 <h2>Erlang websocket server</h2>
 
+Cowboy's User Guide recommends in websocket's
+<a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/ws_handlers/#_saving_memory">saving memory</a> section to add
+the optional <em>hibernate</em> atom to the tuple returned by its various handlers to save memory, which I've done.
+
 <h3>User Authentication with websocket and Web Storage</h3>
 
 Instead of writing the user's ID hash as a cookie, I can turn to another of the myriad of web APIs
@@ -210,7 +220,7 @@ database hits are required for authentication until the user logs out and back i
 anyone masquerading by somehow stealing someone else's cookie.
 
 My method of creating a unique ID is hopefully overkill: I create a string by concatenating
-<a href="http://erlang.org/doc/man/erlang.html#now-0">now()</a> to get a precise instant in time, 
+<a href="https://erlang.org/doc/man/erlang.html#system_time-1">erlang:system_time(millisecond)</a> to get a precise instant in time, 
 <a href="http://erlang.org/doc/man/erlang.html#make_ref-0">make_ref()</a> to get a "reference unique among connected nodes", and
 <a href="http://erlang.org/doc/man/erlang.html#node-0">node()</a> in case some other node created the same make_ref/0
 at precisely the same instant.
@@ -227,8 +237,6 @@ Furthermore, I check this key isn't already in ETS, and get a different key if i
 
 The client and server just pass this uuid back and forth, with no need to wire already known data such as the user name &mdash; unless
 the server wants the browser to say its user name to verify the uuid is not a lucky guess by a hacker.
-
-
 
 <h2>SQL table</h2>
 
