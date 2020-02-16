@@ -29,10 +29,11 @@ Web Development</a> course, but in an Erlangish way instead of the original Goog
 I started this exercise before reading Zovic's warning about Websocket, but since I'm using one of the three languages he says can viably handle
 this approach, decided to stick with it.
 
-There is little new Erlang in this exercise, which mainly involves pushing the work of html templating etc to the browser, thereby
-increasing the lines of Javascript code while reducing the lines of Erlang code.
+There is little new Erlang in this exercise, which mainly involves pushing the work such as html templating from the server to browser, thereby
+reducing the lines of Erlang code while increasing the lines of Javascript code.
 
-I no longer use a cookie for user authentication, instead storing whatever key-value pairs I need in 
+The switch to getting the client and server to communicate by short Json messages means I no longer use a cookie for user authentication.
+Instead I'm storing whatever key-value pairs I need in 
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> on the browser and ETS on the server,
 joined by a unique ID replaced every login session to give it little value to hackers.
 
@@ -51,6 +52,14 @@ event listeners</a> using this basic pattern:
   <response to event goes here...> 
 });
 ```
+
+To access the `<target>` when it's an `element`, as opposed to `window` or `document`, I'm going to standardise on
+`document.querySelector("CSS Selector")` which involves refreshing my memory of when to use dots, hashes, square brackets,
+and greater than signs in
+<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
+
+I find trying to keep up with JQuery, TypeScript, Angular, React... whatever is top of the pops this week exhausting, and
+sticking to a minimal <em>patois</em> plain vanilla Javascript keeps things manageable.
 
 <h3>Client-side templating</h3>
 
@@ -117,6 +126,9 @@ As in this example,
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild">Node.appendChild()</a> can be used
 iteratively to render a template filled in with different values any number of times.
 
+One gotcha was using a button in a template for a form I only wanted displayed if the user was logged in. I found
+the solution in this article <a href="https://css-tricks.com/crafting-reusable-html-templates/">Crafting Reusable HTML Templates</a>.
+It turned out the button had to be linked to an event listeners in the template block, not in the external Javascript file.
 
 <h2>Javascript websocket client</h2>
 
