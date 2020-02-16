@@ -99,7 +99,6 @@ etc see as <em>normal</em> html. Browsers don't render it, so in a sense templat
 highlighters and linters do see it as valid html. I've kept &lt;section&gt; and &lt;template&gt; at the same indentation level
 since the &lt;template&gt; element will effectively get substituted into the &lt;section&gt; element in the rendered page.
 
-
 Javascript can then extract what's inside the given section's template child with
 
 ```javascript
@@ -122,14 +121,19 @@ rendered html page using:
 let html = template.cloneNode(true);
 document.querySelector("nav").appendChild(html);
 ```
-As in this example, 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild">Node.appendChild()</a> can be used
-iteratively to render a template filled in with different values any number of times.
+As in this example, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild">Node.appendChild()</a> 
+can be used iteratively to render a template filled in with different values any number of times.
 
 One gotcha was using a button in a template for a form I only wanted displayed if the user was logged in. I found
 the solution in this article <a href="https://css-tricks.com/crafting-reusable-html-templates/">Crafting Reusable HTML Templates</a>.
 It turned out the Javascript linking the button to an event listener had to be in a &lt;script&gt; section within the 
-&lt;template&gt; block, not in the external Javascript file where it would be seen as `null`.
+&lt;template&gt; block, not in the external Javascript file where it was seen as `null`.
+
+Another gotcha was thinking I could create a Javascript websocket once when the home page opened, and use it until the page closed.
+The result was a race condition when clicking the submit button sometimes got the post added to the datbase, and othertimes ignored
+because the connection between the browser and the server had mysteriously died without warning.
+
+This prompted me to rewrite my code to assume short-lived websockets, created when needed and then closed.
 
 <h2>Javascript websocket client</h2>
 
@@ -148,13 +152,7 @@ haven't advanced as far as a remote server with a proper domain name yet.
 <h3>Closing the websocket connection</h3>
 
 To get the browser to signal to the server the websocket connection can be closed because the user has moved to another website
-or closed the tab, we can use <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window">window</a> as
-our `<target>.addEventListener("EventType", ...)`.
-
-For `"EventType"` we have a choice of 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/beforeunload_event">beforeunload</a> or
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/unload_event">unload</a>. I'm going with
-unload to keep the connection open until the last moment.
+or closed the tab, we can use 
 
 ```javascript
 window.addEventListener("unload", (event) => {
