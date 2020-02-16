@@ -61,81 +61,22 @@ and greater than signs in
 I find trying to keep up with JQuery, TypeScript, Angular, React... whatever is top of the pops this week exhausting, and
 sticking to a minimal <em>patois</em> of plain vanilla Javascript keeps things manageable.
 
-<h3>Client-side templating</h3>
+<h2>Javascript websocket client</h2>
 
-A cool, albeit frustrating, thing about Javascript is its rapid evolution, and I discovered all kinds of new ways to do things during this exercise,
-including the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">&lt;template&gt;</a>
-element, allowing me to ditch my server-side text substitution hack. MDN's 
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots">Using templates and slots</a>
-section describes it as part of the 
-<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a> family to be used with the
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot">&lt;slot&gt;</a> element, which in turn relies on the
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow">Element.attachShadow()</a> method.
-
-One snag with &lt;slot&gt; is only very recent versions of Firefox and Chrome support it, and Microsoft browsers don't. 
-Another is I find the documentation on Web Components incomprehensible.
-
-Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
-
-Templating this way encourages using 
-<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines">
-section elements</a> &lt;nav&gt;, &lt;article&gt;, &lt;section&gt;, 
-&lt;aside&gt;, &lt;header&gt;, and &lt;footer&gt;. 
-
-We simply put
-```html
-<section>
-<template>
-  <header class="post-heading">
-    <h2 class="post-title">Title</h2>
-    <span class="post-date">Date</span>
-  </header>
-  <pre class="post-content">Art</pre>
-</template>
-</section>
-``` 
-code in our html file which text editors, <em>tidy</em>,
-etc see as <em>normal</em> html. Browsers don't render it, so in a sense templates are treaded like comments except syntax
-highlighters and linters do see it as valid html. I've kept &lt;section&gt; and &lt;template&gt; at the same indentation level
-since the &lt;template&gt; element will effectively get substituted into the &lt;section&gt; element in the rendered page.
-
-Javascript can then extract what's inside the given section's template child with
-
-```javascript
-let template = document.querySelector("section > template").content;
-```
-
-then do substitutions of data received from the server with lines like:
-
-```javascript
-template.querySelector("h2.post-title").textContent = post.title;
-```
-
-Using `textContent` instead of `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
-Cross-site scripting</a> problems without any need to substitute `<` with `&lt;`.
-
-The filled in template can then be inserted into the
-rendered html page using:
-
-```javascript
-let html = template.cloneNode(true);
-document.querySelector("nav").appendChild(html);
-```
-As in this example, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild">Node.appendChild()</a> 
-can be used iteratively to render a template filled in with different values any number of times.
-
-One gotcha was using a button in a template for a form I only wanted displayed if the user was logged in. I found
-the solution in this article <a href="https://css-tricks.com/crafting-reusable-html-templates/">Crafting Reusable HTML Templates</a>.
-It turned out the Javascript linking the button to an event listener had to be in a &lt;script&gt; section within the 
-&lt;template&gt; block, not in the external Javascript file where it was seen as `null`.
-
-Another gotcha was thinking I could create a Javascript websocket once when the home page opened, and use it until the page closed.
-The result was a race condition when clicking the submit button sometimes got the post added to the datbase, and othertimes ignored
-because the connection between the browser and the server had mysteriously died without warning.
+My first attempt involved opening a websocket when the page was loaded and then assuming I could keep it open until the page was
+unloaded. The result was clicking the submit button sometimes succeeded in getting the post added to the database, and othertimes 
+ignored because the connection between the browser and the server had mysteriously died without warning.
 
 This prompted me to rewrite my code to assume short-lived websockets, created when needed and then closed.
 
-<h2>Javascript websocket client</h2>
+To initially populate the page with posts, I moved the websocket as a short-lived variable with its methods into:
+
+```javascript
+window.addEventListener("DOMContentLoaded", (event) => {
+  let websocket = new WebSocket("ws://localhost:3030/blog");
+  ...
+});
+```
 
 <h3>Opening the websocket connection</h3>
 
@@ -143,7 +84,7 @@ The palaver with the opening handshake, upgrade etc is easily done in Javascript
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">WebSocket</a> object, which I'll call `websocket`.
 
 ```javascript
-const websocket = new WebSocket("ws://localhost:3030/blog");
+let websocket = new WebSocket("ws://localhost:3030/blog");
 ```
 
 According to the documentation, your browser is likely to insist on a secure `wss://...` address unless it's a localhost connection, but I 
@@ -151,7 +92,7 @@ haven't advanced as far as a remote server with a proper domain name yet.
 
 <h3>Closing the websocket connection</h3>
 
-To get the browser to signal to the server the websocket connection can be closed because the user has moved to another website
+I originally got the browser to signal to the server the websocket connection can be closed because the user has moved to another website
 or closed the tab, we can use 
 
 ```javascript
@@ -248,6 +189,76 @@ Furthermore, I check this key isn't already in ETS, and get a different key if i
 
 The client and server just pass this uuid back and forth, with no need to wire already known data such as the user name &mdash; unless
 the server wants the browser to say its user name to verify the uuid is not a lucky guess by a hacker.
+
+
+
+<h3>Client-side templating</h3>
+
+A cool, albeit frustrating, thing about Javascript is its rapid evolution, and I discovered all kinds of new ways to do things during this exercise,
+including the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template">&lt;template&gt;</a>
+element, allowing me to ditch my server-side text substitution hack. MDN's 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots">Using templates and slots</a>
+section describes it as part of the 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Web_Components">Web Components</a> family to be used with the
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/slot">&lt;slot&gt;</a> element, which in turn relies on the
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/attachShadow">Element.attachShadow()</a> method.
+
+One snag with &lt;slot&gt; is only very recent versions of Firefox and Chrome support it, and Microsoft browsers don't. 
+Another is I find the documentation on Web Components incomprehensible.
+
+Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
+
+Templating this way encourages using 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines">
+section elements</a> &lt;nav&gt;, &lt;article&gt;, &lt;section&gt;, 
+&lt;aside&gt;, &lt;header&gt;, and &lt;footer&gt;. 
+
+We simply put
+```html
+<section>
+<template>
+  <header class="post-heading">
+    <h2 class="post-title">Title</h2>
+    <span class="post-date">Date</span>
+  </header>
+  <pre class="post-content">Art</pre>
+</template>
+</section>
+``` 
+code in our html file which text editors, <em>tidy</em>,
+etc see as <em>normal</em> html. Browsers don't render it, so in a sense templates are treaded like comments except syntax
+highlighters and linters do see it as valid html. I've kept &lt;section&gt; and &lt;template&gt; at the same indentation level
+since the &lt;template&gt; element will effectively get substituted into the &lt;section&gt; element in the rendered page.
+
+Javascript can then extract what's inside the given section's template child with
+
+```javascript
+let template = document.querySelector("section > template").content;
+```
+
+then do substitutions of data received from the server with lines like:
+
+```javascript
+template.querySelector("h2.post-title").textContent = post.title;
+```
+
+Using `textContent` instead of `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
+Cross-site scripting</a> problems without any need to substitute `<` with `&lt;`.
+
+The filled in template can then be inserted into the
+rendered html page using:
+
+```javascript
+let html = template.cloneNode(true);
+document.querySelector("nav").appendChild(html);
+```
+As in this example, <a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild">Node.appendChild()</a> 
+can be used iteratively to render a template filled in with different values any number of times.
+
+One gotcha was using a button in a template for a form I only wanted displayed if the user was logged in. I found
+the solution in this article <a href="https://css-tricks.com/crafting-reusable-html-templates/">Crafting Reusable HTML Templates</a>.
+It turned out the Javascript linking the button to an event listener had to be in a &lt;script&gt; section within the 
+&lt;template&gt; block, not in the external Javascript file where it was seen as `null`.
 
 <h2>SQL table</h2>
 
