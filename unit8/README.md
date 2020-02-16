@@ -29,6 +29,13 @@ Web Development</a> course, but in an Erlangish way instead of the original Goog
 I started this exercise before reading Zovic's warning about Websocket, but since I'm using one of the three languages he says can viably handle
 this approach, decided to stick with it.
 
+There is little new Erlang in this exercise, which mainly involves pushing the work of html templating etc to the browser, thereby
+increasing the lines of Javascript code while reducing the lines of Erlang code.
+
+I no longer use a cookie for user authentication, instead storing whatever key-value pairs I need in 
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> on the browser and ETS on the server,
+joined by a unique ID replaced every login session to give it little value to hackers.
+
 <h2>Javascript style</h2>
 
 Something that frustrates me about Javascript &mdash; and I'm guessing many others &mdash; is it's a language designed by committee,
@@ -86,12 +93,20 @@ template.querySelector("div.post-title").textContent = post.title;
 Selecting `textContent` as opposed to `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
 Cross-site scripting</a> problems without any need to substitute `<` with `&lt;`.
 
-Finally, the template can be inserted into the relevant position in the html with:
+Templating this way encourages using 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines">
+section elements</a> &lt;nav&gt;, &lt;article&gt;, &lt;section&gt;, 
+&lt;aside&gt;, &lt;header&gt;, and &lt;footer&gt;. The filled in template can then be inserted into the
+rendered html page using:
 
 ```javascript
 let html = template.cloneNode(true);
-document.getElementById("content").appendChild(html);
+document.querySelector("nav").appendChild(html);
 ```
+As in this example, 
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Node/appendChild">Node.appendChild()</a> can be used
+iteratively to render a template filled in with different values any number of times.
+
 
 <h2>Javascript websocket client</h2>
 
