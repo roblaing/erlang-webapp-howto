@@ -68,20 +68,27 @@ Another is I find the documentation on Web Components incomprehensible.
 
 Fortunately, just using &lt;template&gt; while ignoring &lt;slot&gt; and its associated shadow DOM is pretty easy.
 
-We simply put a 
+Templating this way encourages using 
+<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines">
+section elements</a> &lt;nav&gt;, &lt;article&gt;, &lt;section&gt;, 
+&lt;aside&gt;, &lt;header&gt;, and &lt;footer&gt;. 
+
+We simply put
 ```html
-<template id="mytemplate">
+<section>
+<template>
 ...
 </template>
+</section>
 ``` 
-section in our html file which text editors, <em>tidy</em>,
+code in our html file which text editors, <em>tidy</em>,
 etc see as <em>normal</em> html. Browsers don't render it, so in a sense templates are treaded like comments except syntax
 highlighters and linters do see it as valid html.
 
-Javascript can then extract what's inside the template with:
+Javascript can then extract what's inside the given section's template child with
 
 ```javascript
-let template = document.querySelector("template#templateId").content;
+let template = document.querySelector("section > template").content;
 ```
 
 then do substitutions of data received from the server with lines like:
@@ -93,10 +100,7 @@ template.querySelector("div.post-title").textContent = post.title;
 Selecting `textContent` as opposed to `innerHTML` sorts out <a href="https://developer.mozilla.org/en-US/docs/Glossary/Cross-site_scripting">
 Cross-site scripting</a> problems without any need to substitute `<` with `&lt;`.
 
-Templating this way encourages using 
-<a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_HTML_sections_and_outlines">
-section elements</a> &lt;nav&gt;, &lt;article&gt;, &lt;section&gt;, 
-&lt;aside&gt;, &lt;header&gt;, and &lt;footer&gt;. The filled in template can then be inserted into the
+The filled in template can then be inserted into the
 rendered html page using:
 
 ```javascript
