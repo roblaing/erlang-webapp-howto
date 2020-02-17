@@ -38,7 +38,7 @@ for an introductory websocket tutorial because they are among its few reserved w
 In the first example, I'm using Erlang as my websocket client and SWI Prolog as my websocket server. 
 The reason is my longer term ambition is to be able to query a Prolog database from another language 
 via a socket as one can SQL databases. I've added an example of switching this around, using Erlang
-as the server and SWI Prolog as the client, at the bottom.
+as the server and SWI Prolog as the client, after this.
 
 Just as the <em>99s</em> team have written Cowboy as a replacement for the builtin library inets's 
 <a href="http://erlang.org/doc/apps/inets/http_server.html">httpd</a>, they have written
@@ -61,8 +61,7 @@ apps/unit7/src/unit7.app.src</a>
 
 Once I'd figured things out, the required code for both the client and server was fairly short, and what
 the program does is fairly dull &mdash; just prints out ping and pong messages on the respective terminals
-that Erlang and SWI Prolog are running on. In the next unit I hope to start communicating with Javascript,
-creating a web-based query tool to SWI Prolog. 
+that Erlang and SWI Prolog are running on. 
 
 For the impatient, I'll start with the finished SWI Prolog server code,
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit7/apps/unit7/priv/pong.pl">
@@ -292,7 +291,7 @@ which the server responds to with
 and no error messages.
 
 I've used <a href="https://ninenines.eu/docs/en/gun/2.0/manual/gun.shutdown/">shutdown(ConnPid) -> ok</a>
-which sends the client a close opcode and waits for a responding close message before closing the stream.
+which sends the server a close opcode and waits for a responding close message before closing the stream.
 
 <h3>The pong (SWI Prolog) websocket server</h3>
 
@@ -424,10 +423,12 @@ apps/unit7/src/pong_handler.erl</a> to work as follows.
 -module(pong_handler).
 -behaviour(cowboy_websocket).
 
--export([init/2]).
--export([websocket_handle/2]).
--export([websocket_info/2]).
--export([terminate/3]).
+-export([ init/2
+        , websocket_handle/2
+        , websocket_info/2
+        , terminate/3
+        ]
+).
 
 init(Req, State) ->
   {cowboy_websocket, Req, State}.
@@ -443,8 +444,8 @@ websocket_handle(InFrame, State) ->
 websocket_info(_Info, State) ->
   {[], State}.
 
-terminate({remote, _Code, Message}, _PartialReq, _State) -> 
-  io:format("Received ~p~n", [Message]),
+terminate({remote, Code, Message}, _PartialReq, _State) -> 
+  io:format("Received ~p ~p~n", [Code, Message]),
   io:format("Pong finished~n", []),
   ok.
 ```
