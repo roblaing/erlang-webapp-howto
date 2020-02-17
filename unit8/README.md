@@ -1,9 +1,3 @@
-Redirect to permalink page when blog is sent
-
-replace \n with <br>
-
-https://classroom.udacity.com/courses/cs253/lessons/48587898/concepts/486660700923
-
 <h1>Tying everything together into a blog</h1>
 
 A wonderful online resource I only recently discovered is
@@ -265,16 +259,4 @@ the solution in this article <a href="https://css-tricks.com/crafting-reusable-h
 It turned out the Javascript linking the button to an event listener had to be in a &lt;script&gt; section within the 
 &lt;template&gt; block, not in the external Javascript file where it was seen as `null`.
 
-<h2>SQL table</h2>
-
-```sql
-CREATE TABLE IF NOT EXISTS posts 
-  ( id            SERIAL PRIMARY KEY
-  , author        TEXT REFERENCES users (name)
-  , subject       TEXT NOT NULL
-  , content       TEXT NOT NULL
-  , created       TIMESTAMP DEFAULT current_timestamp
-  , last_modified TIMESTAMP DEFAULT current_timestamp
-  );
-```
 
