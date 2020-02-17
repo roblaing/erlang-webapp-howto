@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles/main.css">
+  </head>
+  <body>
+    <div class="login-area">
+      <a class="login-link" href="/signup">Signup</a>
+    </div>
+    <h1><a href="/" class="main-title">ASCIIChan</a></h1>
+    <h2>Login</h2>
+    <ul>
+      <li>
+        <label for="username">Name:</label>
+        <input type="text" id="username" name="username" required minlength="6">
+      </li>
+      <li>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required minlength="6">
+      </li>
+      <li class="button">
+        <button id="loginButton" type="button">Login</button>
+      </li>
+    </ul>
+    <input type="hidden" id="salt" name="salt" 
+           value="Some big secret that nobody should be able to read, but unfortunately anybody can">
+    <span class="error" id="login_error"></span>
+    <script src="/scripts/userid_cookie.js"></script>
+    <script src="/scripts/login.js"></script>
+  </body>
+</html>
+

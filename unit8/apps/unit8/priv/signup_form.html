@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="/styles/main.css">
+  </head>
+  <body>
+    <div class="login-area">
+      <a class="login-link" href="/login">Login</a>
+    </div>
+    <h1><a href="/" class="main-title">ASCIIChan</a></h1>
+    <h2>Signup</h2>
+    <ul>
+      <li>
+        <label for="username">Name:</label>
+        <input type="text" id="username" name="username" required minlength="6">
+        <span class="error" id="error_username"></span>
+      </li>
+      <li>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required minlength="6">
+      </li>
+      <li>
+        <label for="verify">Verify:</label>
+        <input type="password" id="verify" name="verify" required minlength="6">
+        <span class="error" id="error_verify"></span>
+      </li>
+      <li>
+        <label for="email">Email (optional):</label>
+        <input type="text" id="email" name="email">
+      </li>
+      <li class="button">
+        <button id="signupButton" type="button">Subscribe</button>
+      </li>
+    </ul>
+    <input type="hidden" id="salt" name="salt" 
+           value="Some big secret that nobody should be able to read, but unfortunately anybody can">
+    <script src="/scripts/userid_cookie.js"></script>
+    <script src="/scripts/signup.js"></script>
+  </body>
+</html>
+

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>ASCIIChan</title>
+    <link type="text/css" rel="stylesheet" href="/styles/main.css" />
+  </head>
+  <body>
+    <h1><a href="/" class="main-title">ASCIIChan</a></h1>
+
+    <nav class="login-area">
+    <template>
+      <a class="login-link" href="/login">login</a> | <a class="login-link" href="/signup">signup</a>
+    </template>
+    </nav>
+
+    <section id="newpost">
+    <template>
+      <script>
+        const sendButton = document.querySelector("#sendButton");
+        sendButton.addEventListener("click", (event) => {
+          let ws = new WebSocket("ws://localhost:3030/blog");
+          let msg = { page: "newpost"
+                    , title: document.querySelector("#title").value
+                    , art: document.querySelector("#art").value
+                    , uuid: window.localStorage.getItem("uuid")
+          };
+          ws.addEventListener("open", (event) => {
+            ws.send(JSON.stringify(msg));
+          });
+          ws.addEventListener("message", (event) => {
+            document.location.reload();
+            ws.close();
+          });
+          ws.addEventListener("error", (event) => {
+            window.alert('WebSocket error: ', event);
+          });
+        });
+      </script>
+      <ul>
+        <li>
+          <label for="name">Title:</label>
+          <input type="text" id="title" name="title" required/>
+        </li>
+        <li>
+          <label for="art">Art:</label>
+          <textarea id="art" name="art" rows="30" cols="160" required></textarea>
+        </li>
+        <li class="button">
+          <button id="sendButton" type="button">Send your message</button>
+        </li>
+      </ul>
+    </template>
+    </section>
+
+    <section id="posts">
+    <template>
+      <header class="post-heading">
+        <a class="post-title">Title</a>
+        <span class="post-date">Date</span>
+      </header>
+      <pre class="post-content">Art</pre>
+    </template>
+    </section>
+
+    <script src="/scripts/blogclient.js"></script>
+  </body>
+</html>

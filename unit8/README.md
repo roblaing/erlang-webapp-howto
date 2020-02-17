@@ -1,3 +1,9 @@
+Redirect to permalink page when blog is sent
+
+replace \n with <br>
+
+https://classroom.udacity.com/courses/cs253/lessons/48587898/concepts/486660700923
+
 <h1>Tying everything together into a blog</h1>
 
 A wonderful online resource I only recently discovered is
@@ -40,8 +46,11 @@ joined by a unique ID replaced every login session to give it little value to ha
 <h2>Javascript style</h2>
 
 Something that frustrates me about Javascript &mdash; and I'm guessing many others &mdash; is it's a language designed by committee,
-cluttered with synonymous ways of doing anything. Googling the "best" way leads to a swamp of conflicting advice, so I've settled
-on the examples in <a href="https://developer.mozilla.org/en-US/">MDN</a> as my reference.
+cluttered with synonymous ways of doing anything. Googling the "best" way leads to a swamp of conflicting advice, 
+usually advocating using JQuery, TypeScript, Angular, React... whatever library is top of the pops that week.
+
+I'm sticking to a minimal <em>patois</em> of plain vanilla Javascript to keep things manageable, using
+the examples in <a href="https://developer.mozilla.org/en-US/">MDN</a> as my reference.
 
 A style rule I'm adopting to make Javascript more Erlangish is to write all my <em>nodes</em> as  
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">
@@ -55,11 +64,7 @@ event listeners</a> using this basic pattern:
 
 To access the `<target>` when it's an `element`, as opposed to `window` or `document`, I'm going to standardise on
 `document.querySelector("CSS Selector")` which involves refreshing my memory of when to use dots, hashes, square brackets,
-and greater than signs in
-<a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
-
-I find trying to keep up with JQuery, TypeScript, Angular, React... whatever is top of the pops this week exhausting, and
-sticking to a minimal <em>patois</em> of plain vanilla Javascript keeps things manageable.
+and greater than signs in <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
 
 <h2>Javascript websocket client</h2>
 
