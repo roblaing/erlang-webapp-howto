@@ -93,3 +93,5 @@ Unit 6: [Ajax](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit6
  
 Unit 7: [Interlanguage communication via websocket](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7)
 
+Unit 8: [Tying everything together into a blog](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit8)
+
