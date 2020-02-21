@@ -17,6 +17,7 @@ start(_StartType, _StartArgs) ->
     , {"/scripts/[...]", cowboy_static, {priv_dir,  unit2, "scripts"}}
     , {"/form"         , form_handler, ["","","","","",""]}
     , {"/welcome/:name", welcome_handler, []}
+    , {"/[...]"        , filenotfound_handler, []}
     ]}]),
   persistent_term:put(unit2_routes, Dispatch),
   cowboy:start_clear(unit2_http_listener,

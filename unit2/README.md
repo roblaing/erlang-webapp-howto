@@ -202,8 +202,13 @@ except we add two new routes conforming to the pattern <code>{PathMatch, Handler
      [ ...
      , {"/form", form_handler, ["","","","","",""]}
      , {"/welcome/:name", welcome_handler, []}
+     , {"/[...]"        , filenotfound_handler, []}     
      ]
 ```
+
+The order of the routes matter, and the final `"/[...]"` will send anything not picked up earlier to my 
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/filenotfound_handler.erl">
+filenotfound_handler.erl</a> which returns 404 and whatever custom error page I want to write.
 
 Note the `InitialState` I'm passing to my form_handler is the six arguments needed to fill the `~s` holes in my form.html with
 empty strings initially.
@@ -339,15 +344,30 @@ Note the above
 <a href="https://erlang.org/doc/man/code.html#priv_dir-1">code:priv_dir(ApplicationName)</a>
 assumes welcome.html is in the `<myapp>/priv` subdirectory. Alternatively, you can use the full pathname.
 
-Calling the welcome URL without a name, ie <code>http://localhost:3030/welcome</code> leads to a 404 error, which I only know from
-having pressed F12 in Firefox to open the developer screen. The browser screen itself is simply blank &mdash; problems I need to
-address sometime, but not yet.
+<h4>Handling 404 page not found errors</h4>
+
+Calling the welcome URL without a name, ie <code>http://localhost:3030/welcome</code>, gets skipped by 
+`{"/welcome/:name", welcome_handler, []}` to get picked up by `{"/[...]", filenotfound_handler, []}`.
+
+My stub <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/filenotfound_handler.erl">
+filenotfound_handler.erl</a> is:
+
+```erlang
+init(Req0, State) ->
+  Req = cowboy_req:reply(404,
+    #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
+     },
+    <<"<h1>404 Page Not Found Error</h1>">>,
+    Req0
+  ),
+  {ok, Req, State}.
+```
 
 <h4>Form page</h4>
 
 The <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit2/apps/unit2/src/form_handler.erl">form_handler</a>
 is an example of using pattern matching in what Prolog calls the <em>head</em> of a rule, and in Erlang is the function's argument
-list. I want a different handler if it's a "GET" (ie a brand new request for a blank form) or a "POST" (ie a submitted form that
+list. I want a different response if it's a "GET" (ie a brand new request for a blank form) or a "POST" (ie a submitted form that
 needs to either be sent back for corrections or okayed).
 
 This could alternatively be done with a <a href="http://erlang.org/doc/reference_manual/expressions.html#case">case</a> expression as in
