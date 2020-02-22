@@ -55,8 +55,8 @@ Ways to do call and response with a Javascript browser and whatever-language ser
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest">XMLHttpRequest</a>, 
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">fetch</a> which I'm using here,
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">websocket</a> which I use in
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7"> to communicate between Erlang and Prolog and then again in
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit8"> to communicate between Erlang and Javascript, and
+<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7">Unit 7</a> to communicate between Erlang and Prolog and then again in
+<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit8">Unit 8</a> to communicate between Erlang and Javascript, and
 there's also <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a> and
 <a href="https://www.ibm.com/developerworks/library/wa-reverseajax1/index.html">Comet</a> which I'm unfamiliar with.
 
