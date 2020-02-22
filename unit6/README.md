@@ -51,7 +51,7 @@ I could store whatever key-value pairs I needed in
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> on the browser and ETS on the server,
 joined by a unique ID replaced every login session to give it little value to hackers.
 
-Ways to do call and response with a Javascript browser and whatever-language server include the original 
+Ways to do <em>call</em> and <em>response</em> with a Javascript browser and a whatever-language server include the original 
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest">XMLHttpRequest</a>, 
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">fetch</a> which I'm using here,
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">websocket</a> which I use in
@@ -60,7 +60,7 @@ Ways to do call and response with a Javascript browser and whatever-language ser
 there's also <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a> and
 <a href="https://www.ibm.com/developerworks/library/wa-reverseajax1/index.html">Comet</a> which I'm unfamiliar with.
 
-I did <em>fetch</em> in this unit, and then <em>websocket</em> in the last unit. In retrospect I should have done them them
+I did <em>fetch</em> in this unit, and then <em>websocket</em> in the last unit. In retrospect I should have done them
 the other way round &mdash; websocket is actually easier than fetch, and I had several "aha!" moments doing the last unit
 which I've now had to come back and implement here.
 
@@ -75,10 +75,10 @@ the examples in <a href="https://developer.mozilla.org/en-US/">MDN</a> as my ref
 
 In my first iteration of this exercise I wrote my Javascript as an
 <a href="https://developer.mozilla.org/en-US/docs/Glossary/IIFE">Immediately Invoked Function Expression</a> 
-(IIFE to its friends) under the misconception the listener had to be wrapped in `(function() {...})();`,
+(IIFE to its friends) under the misconception the listener had to be wrapped in `(function() {...})();`
 syntax which I personally find ugly and confusing.
 
-Fortunatley, one of the side-effects of learning Erlang and its emphasis on thinking <em>concurrent</em> instead of <em>sequential</em>
+Fortunatley, one of the side-effects of learning Erlang and its emphasis on thinking <em>concurrently</em> instead of <em>sequentially</em>
 is viewing <em>event listeners</em> as the basic building blocks of programs rather than thinking in objects or functions. So I no longer
 need IIFEs.
 
@@ -111,15 +111,17 @@ simply involve lots of stanzas following the same basic pattern.
 
 <h3>Changes to html</h3>
 
-Since we are no longer using the browser's default form behaviour as in Unit 4, the opening `<form ...>` and closing `</form>` 
+Since we are no longer using the browser's default <em>form</em> behaviour as in Unit 4, the opening `<form ...>` and closing `</form>` 
 tags have to be removed (which messes up the CSS styling copied from Mozilla, but such is life on the interwebs).
 
-Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">button</a>  
+Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">
+button</a>  
 to send its click event to our event listener requires editing `type="submit"` to `type="button"`.
 
 <h2>Fetch</h2>
 
-Javascript promises, first encountered in Unit 4's password hashing exercise, appear again here with
+Javascript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">promises</a>, 
+first encountered in Unit 4's password hashing exercise, appear again here with
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch">fetch(url, Object)</a>.
 
 ```javascript
