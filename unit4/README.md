@@ -276,15 +276,18 @@ My original, wrong, blocking, way to write my function was:
 ```javascript
 async function write_cookie() {
   let text = document.getElementById("username").value +
-               document.getElementById("salt").value +
-               document.getElementById("password").value;
+             document.getElementById("salt").value +
+             document.getElementById("password").value;
   let digestValue = await digestMessage(text);
   let hex = await hexString(digestValue);
-  document.cookie = "user_id=" + hex;  
-  return hex;
+  document.cookie = "user_id=" + hex;
 ```
 
-Enlightened by reading up on `.then(...)` chaining, I changed it to:
+Incidently, you can only use `await` within functions prefixed with `async`, and then when these are called from other functions
+they return `{<state>: "pending"}` unless the call invoking them was also prefixed with `await`, 
+which requires the function the invoking line is housed in to have also been prefixed with `async`... and so on to hell.
+
+Mercifully, I then discovered <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then">then()</a>:
 
 ```javascript
 async function write_cookie() {
@@ -296,14 +299,12 @@ async function write_cookie() {
     .then((hex) => {document.cookie = "user_id=" + hex});
 ```
 
-In subsequent units, when I move away from using cookies to sending the hash in a Json message, I replace
-write_cookie with getId which simply returns a hash. 
-
-I tried to do that already here by using `getId().then((id) => {document.cookie = "user_id=" + hex})`
-with no success (getting `{<state>: "pending"}` written as my cookie).
+I spent many frustrating hours trying to get asynchronous functions to return things. For instance, I
+tried to have a function called getId(), return the hash instead of writing it as a cookie, only to 
+discover `getId().then((id) => {document.cookie = "user_id=" + hex})` wrote `{<state>: "pending"}` as the cookie.
 
 It seems with Javascript promises, you have to keep the old <em>Fleetwood Mac</em> song in mind and never
-break the chain.
+break the chain. 
 
 We go deeper into Javascript's promises in Unit 6 which introduces `fetch`.
 
