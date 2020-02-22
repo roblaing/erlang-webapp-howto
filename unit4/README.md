@@ -275,11 +275,11 @@ My original, wrong, blocking, way to write my function was:
 
 ```javascript
 async function write_cookie() {
-  let text = document.getElementById("username").value +
-             document.getElementById("salt").value +
-             document.getElementById("password").value;
-  let digestValue = await digestMessage(text);
-  let hex = await hexString(digestValue);
+  const text = document.getElementById("username").value +
+               document.getElementById("salt").value +
+               document.getElementById("password").value;
+  const digestValue = await digestMessage(text);
+  const hex = await hexString(digestValue);
   document.cookie = "user_id=" + hex;
 ```
 
@@ -292,7 +292,7 @@ Mercifully, I <em>then</em> discovered <a href="https://developer.mozilla.org/en
 
 ```javascript
 async function write_cookie() {
-  let text = document.getElementById("username").value +
+  const text = document.getElementById("username").value +
                document.getElementById("salt").value +
                document.getElementById("password").value;
   digestMessage(text)
