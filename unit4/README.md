@@ -285,9 +285,10 @@ async function write_cookie() {
 
 Incidently, you can only use `await` within functions prefixed with `async`, and then when these are called from other functions
 they return `{<state>: "pending"}` unless the call invoking them was also prefixed with `await`, 
-which requires the function the invoking line is housed in to have also been prefixed with `async`... and so on to hell.
+which requires the function the invoking line is housed in to have also been prefixed with `async`... and so on to 
+<a href="https://www.freecodecamp.org/news/avoiding-the-async-await-hell-c77a0fb71c4c/">async/await hell</a>.
 
-Mercifully, I then discovered <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then">then()</a>:
+Mercifully, I <em>then</em> discovered <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then">then()</a>:
 
 ```javascript
 async function write_cookie() {
