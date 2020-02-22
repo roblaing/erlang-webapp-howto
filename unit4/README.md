@@ -65,9 +65,11 @@ and the database id should be
 
 Both are strings containing hexadecimals. The Javascript functions `hexString(buffer)` and `digestMessage(message)` to create
 the cookie are in my 
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/userid_cookie.js">
-userid_cookie.js</a> file and based on Mozilla's
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/getid.js">
+getid.js</a> file and based on Mozilla's
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest">examples</a>.
+
+This was my first, painful, encounter with Javascript promises, which I'll elaborate on at the end of this tutorial
 
 The options listed for Erlang's <a href="https://erlang.org/doc/man/crypto.html#mac-4">
 mac(Type, SubType, Key, Data) -> Mac | descriptive_error()</a> are exhaustive, but I couldn't find a builtin
