@@ -256,15 +256,16 @@ entered a second time in the verify field matches.
 my first encounter with what Javascript terms
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">promises</a>.
 
-I partly blame the hashing examples given by Mozilla &msash; which I admittedly blindly cut 'n pasted for my first version of this &mdash;
-for leading me down the frustrating path of combining 
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function">
-async function() {...}</a> combined with its <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">
-await</a>.
-
 Something that tripped me up with my first attempt at
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/write_cookie.js">write_cookie.js</a> 
-was a race condition whereby the function sometimes returning a hashstring, but othertimes `{<state>: "pending"}`.
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/getid.js">getid.js</a> 
+was a race condition whereby the function sometime produced a hashstring, othertimes `{<state>: "pending"}`. Whether the cookie
+had been set by the time the server received the browser's http header response was completely random.
+
+I partly blame the hashing examples given by Mozilla &mdash; which I admittedly blindly cut 'n pasted for my first version of this &mdash;
+for misleading me down the frustrating path of using 
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function">
+async function() {...}</a> combined with <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">
+await</a>.
 
 A lot of learning concurrent programming involves unlearning the bad, sequential, habits most of us have grown up with writing
 C-family code. I instinctively went for pausing while the promise finished using `await`, which works, but is not the efficient
