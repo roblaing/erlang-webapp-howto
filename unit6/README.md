@@ -135,7 +135,7 @@ fetch("/login",
 A huge number of parameters besides <em>method, headers</em>, and <em>body</em> are listed at
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/fetch">Mozilla's reference page</a>.
 
-Getting the response from the server to the browser involves chaining a then as in
+Getting the response from the server to the browser involves chaining <em>thens</em> as in
 
 ```javascript
 fetch(url, Object)
@@ -161,20 +161,7 @@ and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/G
 JSON.parse(Json) -> Javascript</a>
 counterparts to make messaging with an Erlang server easy.
 
-In this example, the message from the server is always a succinct boolean `{"logged_in": true}` or `{"logged_in": false}`.
-
-Instead of <em>303</em> redirects from the server, this is now done in the browser using Javascript's 
-`document.location.replace(URL)` function, (which means a key reason I used Cowboy instead of the builtin inets httpd
-module has gone).
-
-If there are problems with the form, the existing values automatically remain where they are and error messages can be inserted
-by the browser using `document.getElementById('error_id').textContent = "Error message"`, so I no longer need to use templating
-on the server to make small changes and then schlep the whole web page back.
-
-This means I can remove the `~s` placeholders in the HTML file.
-
-In terms of messages from the browser to the server, the difference isn't very big. I'm still sending the data from the browser
-in the body of a "POST" httpd request.
+I'm still sending the data from the browser in the body of a "POST" httpd request.
 
 Whereas in Unit 4 I used
 
@@ -188,7 +175,7 @@ to get the `key1=value1;key2=value2;...` "POST" data, I now use
   Proplist = jsx:decode(JString),
 ```
 Having more control of what data gets posted from the browser, however, is nice. I no longer have to blank
-the password, salt and verify keys, and Javascript's `async-await` construct works.
+the password, salt and verify keys.
 
 <h3>User Authentication with websocket and Web Storage</h3>
 
