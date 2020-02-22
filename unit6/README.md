@@ -161,7 +161,10 @@ and <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/G
 JSON.parse(Json) -> Javascript</a>
 counterparts to make messaging with an Erlang server easy.
 
-I'm still sending the data from the browser in the body of a "POST" httpd request.
+One advantage is I can now use server-side templating, so there's no need to schlep entire HTML pages from
+the server to make a few edits.
+
+I'm still sending the data from the browser in the body of a "POST" httpd request, so not much gain there.
 
 Whereas in Unit 4 I used
 
@@ -177,10 +180,10 @@ to get the `key1=value1;key2=value2;...` "POST" data, I now use
 Having more control of what data gets posted from the browser, however, is nice. I no longer have to blank
 the password, salt and verify keys.
 
-<h3>User Authentication with websocket and Web Storage</h3>
+<h3>User Authentication with Web Storage</h3>
 
-Instead of writing the user's ID hash as a cookie, I can turn to another of the myriad of web APIs
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> which lets me
+Instead of writing the user's ID hash as a cookie, I can turn to another of the myriad of web APIs,
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a>, which lets me
 store key/value pairs temporarily during a session with
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage">Window.sessionStorage</a>
 or permanently with
