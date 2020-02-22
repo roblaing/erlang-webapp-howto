@@ -78,7 +78,7 @@ In my first iteration of this exercise I wrote my Javascript as an
 (IIFE to its friends) under the misconception the listener had to be wrapped in `(function() {...})();`
 syntax which I personally find ugly and confusing.
 
-Fortunatley, one of the side-effects of learning Erlang and its emphasis on thinking <em>concurrently</em> instead of <em>sequentially</em>
+Fortunately, one of the side-effects of learning Erlang and its emphasis on thinking <em>concurrently</em> instead of <em>sequentially</em>
 is viewing <em>event listeners</em> as the basic building blocks of programs rather than thinking in objects or functions. So I no longer
 need IIFEs.
 
@@ -114,9 +114,8 @@ simply involve lots of stanzas following the same basic pattern.
 Since we are no longer using the browser's default <em>form</em> behaviour as in Unit 4, the opening `<form ...>` and closing `</form>` 
 tags have to be removed (which messes up the CSS styling copied from Mozilla, but such is life on the interwebs).
 
-Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">
-button</a>  
-to send its click event to our event listener requires editing `type="submit"` to `type="button"`.
+Telling the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button">button</a> to send its click event to our 
+event listener requires editing `type="submit"` to `type="button"`.
 
 <h2>Fetch</h2>
 
