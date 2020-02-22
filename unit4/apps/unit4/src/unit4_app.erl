@@ -19,6 +19,7 @@ start(_StartType, _StartArgs) ->
      , {"/logout"        , cowboy_static, {priv_file, unit4, "logout.html"}}
      , {"/styles/[...]"  , cowboy_static, {priv_dir,  unit4, "styles"}}
      , {"/scripts/[...]" , cowboy_static, {priv_dir,  unit4, "scripts"}}
+     , {"/[...]"         , filenotfound_handler, []}
      ] 
     }
    ]

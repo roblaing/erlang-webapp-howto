@@ -111,6 +111,7 @@ apps/unit4/src/unit4_app.erl</a> looks like this:
      , {"/logout"        , cowboy_static, {priv_file, unit4, "logout.html"}}
      , {"/styles/[...]"  , cowboy_static, {priv_dir,  unit4, "styles"}}
      , {"/scripts/[...]" , cowboy_static, {priv_dir,  unit4, "scripts"}}
+     , {"/[...]"         , filenotfound_handler, []}
      ] 
     }
    ]
@@ -247,63 +248,61 @@ johnsmith6982).
 Again, I'm relying on the browser to check that the user name and password are at least six characters long, and that the password
 entered a second time in the verify field matches.
 
-<h3>Asynchronous race conditions, and Javascript's async/await hell</h3>
+<h2>Javascript and asynchronous programming</h2>
 
-In the course of redoing this exercise in Unit 6, using Ajax instead of the 
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest">SubtleCrypto.digest()</a> was
+my first encounter with what Javascript terms
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">promises</a>.
 
-```html
-<form name="signup" onsubmit="return validateSignupForm()" method="POST">
-...
-</form>
-```
+I partly blame the hashing examples given by Mozilla &msash; which I admittedly blindly cut 'n pasted for my first version of this &mdash;
+for leading me down the frustrating path of combining 
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function">
+async function() {...}</a> combined with its <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/await">
+await</a>.
 
-method used here, I tripped over my first asynchronous race condition trap.
+Something that tripped me up with my first attempt at
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/write_cookie.js">write_cookie.js</a> 
+was a race condition whereby the function sometimes returning a hashstring, but othertimes `{<state>: "pending"}`.
 
-I assumed that when the signup_handler's init/2 received a "POST" request, the cookie would be present
-and correct in the `Req0` map. This turned out to be a bad assumption, since the 
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/userid_cookie.js">
-userid_cookie.js</a> script would sometimes have completed writing the "user_id=..." cookie by the time the form
-responded, sometimes not.
+A lot of learning concurrent programming involves unlearning the bad, sequential, habits most of us have grown up with writing
+C-family code. I instinctively went for pausing while the promise finished using `await`, which works, but is not the efficient
+or ellegant way to handle asynchronous programming in Javascript.
 
-The reason is the Javascript crypto library's `digest` along with the function to convert the digest to a hexstring both
-return what Javascript terms a
-<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">promise</a>.
+My original, wrong, blocking, way to write my function was:
 
-```js
-async function hexString(buffer) {
-  const byteArray = new Uint8Array(buffer);
-  const hexCodes = [...byteArray].map(value => {
-    const hexCode = value.toString(16);
-    const paddedHexCode = hexCode.padStart(2, "0");
-    return paddedHexCode;
-  });
-  return hexCodes.join("");
-}
-
-async function digestMessage(message) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(message);
-  return window.crypto.subtle.digest("SHA-256", data);
-}
-
-async function writeCookie() {
-  const text = document.getElementById("username").value +
+```javascript
+async function write_cookie() {
+  let text = document.getElementById("username").value +
                document.getElementById("salt").value +
                document.getElementById("password").value;
-  const digestValue = await digestMessage(text);
-  const hex = await hexString(digestValue);
-  document.cookie = "user_id=" + hex;
+  let digestValue = await digestMessage(text);
+  let hex = await hexString(digestValue);
+  document.cookie = "user_id=" + hex;  
   return hex;
-}
 ```
 
-My initial guess was I'd just need to prefix my
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/priv/scripts/signup.js">
-`function validateSignupForm() {...}`</a> with `async` and put `await` before `writeCookie()` inside the
-statements block.
+Enlightened by reading up on `.then(...)` chaining, I changed it to:
 
-No such luck. All that achieved was getting the lines to blank the password and salt values ignored so that they were sent to the server.
-I'll hopefully have more experience with Javascript's promises by the end of Unit 6, which introduces another promise, `fetch`.
+```javascript
+async function write_cookie() {
+  let text = document.getElementById("username").value +
+               document.getElementById("salt").value +
+               document.getElementById("password").value;
+  digestMessage(text)
+    .then((digestValue) => hexString(digestValue))
+    .then((hex) => {document.cookie = "user_id=" + hex});
+```
+
+In subsequent units, when I move away from using cookies to sending the hash in a Json message, I replace
+write_cookie with getId which simply returns a hash. 
+
+I tried to do that already here by using `getId().then((id) => {document.cookie = "user_id=" + hex})`
+with no success (getting `{<state>: "pending"}` written as my cookie).
+
+It seems with Javascript promises, you have to keep the old <em>Fleetwood Mac</em> song in mind and never
+break the chain.
+
+We go deeper into Javascript's promises in Unit 6 which introduces `fetch`.
 
 Next Unit 5 &mdash; <a href ="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5">Web Services</a>. 
 

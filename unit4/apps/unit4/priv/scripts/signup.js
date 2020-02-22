@@ -7,7 +7,7 @@ function validateSignupForm() {
     document.getElementById("error_verify").textContent = "";
   }
   if (valid) {
-    writeCookie();
+    write_cookie();
     document.forms.signup.elements.password.value = "";
     document.forms.signup.elements.verify.value = "";
     document.forms.signup.elements.salt.value = "";
