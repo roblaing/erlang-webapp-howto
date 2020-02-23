@@ -88,6 +88,7 @@ EventTarget.addEventListener()</a> as in:
   <response to event goes here...> 
 });
 ```
+
 A more elaborate example with lots of user manipulatable objects in the web page reacting to mouse hovers etc besides clicks would
 simply involve lots of stanzas following the same basic pattern.
 
@@ -95,6 +96,15 @@ To access the `<target>` when it's an `element`, as opposed to `window` or `docu
 `document.querySelector("CSS Selector")` which involves refreshing my memory of when to use dots, hashes, square brackets,
 and greater than signs in <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
 
+Both <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/login.js">login.js</a> and
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/signup.js">signup.js</a> have 
+entry points which look like this:
+
+```javascript
+document.querySelector("#loginButton").addEventListener("click", (event) => {
+  ...
+});
+```
 
 <h3>Changes to html</h3>
 
@@ -163,8 +173,6 @@ to get the `key1=value1;key2=value2;...` "POST" data, I now use
   {ok, [{JString, true}], _} = cowboy_req:read_urlencoded_body(Req0),
   Proplist = jsx:decode(JString),
 ```
-Having more control of what data gets posted from the browser, however, is nice. I no longer have to blank
-the password, salt and verify keys.
 
 <h3>User Authentication with Web Storage</h3>
 
@@ -176,7 +184,8 @@ or permanently with
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">Window.localStorage</a>.
 
 Web Storage differs from cookies in that the key/value pairs are not sent to the server with each request, which
-helps with <em>information hiding</em> in various senses of the word. 
+helps with <em>information hiding</em> in various senses of the word. I no longer have to blank the password, salt 
+and verify keys because they don't get sent unless I specifically say so.
 
 I still need to send the hash created by the browser from the user's login name and password to verify with its "rehash" on the server,
 but there's no longer any need to store it. Instead, the server can respond with a disposable session ID which it
@@ -205,15 +214,6 @@ the server wants the browser to say its user name to verify the uuid is not a lu
 
 <h3>Logging out</h3>
 
-Both <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/login.js">login.js</a> and
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/signup.js">signup.js</a> have 
-entry points which look like this:
-
-```javascript
-document.querySelector("#loginButton").addEventListener("click", (event) => {
-  ...
-});
-```
 The server not receiving a cookie with every request means my browser
 now needs to respond to a "GET" request with a "POST" to provide the server the ID or whatever
 stored locally. Unlike in Unit 4, I now need an index.html file which does nothing except invoke
