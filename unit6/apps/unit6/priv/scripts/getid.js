@@ -14,13 +14,10 @@ async function digestMessage(message) {
   return window.crypto.subtle.digest("SHA-256", data);
 }
 
-async function writeCookie() {
+async function getId() {
   const text = document.getElementById("username").value +
                document.getElementById("salt").value +
                document.getElementById("password").value;
-  const digestValue = await digestMessage(text);
-  const hex = await hexString(digestValue);
-  document.cookie = "user_id=" + hex;
-  return hex;
+  return digestMessage(text).then((digestValue) => hexString(digestValue));
 }
 

@@ -1,7 +1,7 @@
 {application, unit6,
  [{description, "Simple example using Ajax"},
   {vsn, "0.1.0"},
-  {registered, []},
+  {registered, [uuids]},
   {mod, {unit6_app, []}},
   {applications,
    [ kernel

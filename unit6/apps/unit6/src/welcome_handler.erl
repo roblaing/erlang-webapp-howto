@@ -5,8 +5,7 @@
 
 init(Req0, State) ->
   #{bindings := #{name := Name}} = Req0,
-  Content = webutil:template(code:priv_dir(unit6) ++ "/welcome.html", 
-    webutil:html_escape([Name, Name, Name])),  
+  {ok, Content} = file:read_file(code:priv_dir(unit6) ++ "/welcome.html"),  
   Req = cowboy_req:reply(200,
     #{ <<"content-type">> => <<"text/html; charset=UTF-8">>
      },

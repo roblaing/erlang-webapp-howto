@@ -12,15 +12,10 @@ init(Req0=#{method := <<"GET">>}, State) ->
 init(Req0=#{method := <<"POST">>}, State) ->
   {ok, [{JString, true}], _} = cowboy_req:read_urlencoded_body(Req0),
   Proplist = jsx:decode(JString),
-  Hash = proplists:get_value(<<"user_id">>, Proplist),
-  #{num_rows := Rows} = pgo:query("SELECT name FROM users WHERE id = $1::text", [webutil:create_hash(Hash)]),
-  case Rows of
-    0 -> Content = jsx:encode([{<<"logged_in">>, false}]);
-    1 -> Content = jsx:encode([{<<"logged_in">>, true}])
-  end,
+  Json = jsx:encode([{<<"uuid">>, webutil:getuuid(Proplist)}]),
   Req = cowboy_req:reply(200,
     #{<<"content-type">> => <<"application/json; charset=UTF-8">>},
-    Content,
+    Json,
     Req0
     ),
   {ok, Req, State}.

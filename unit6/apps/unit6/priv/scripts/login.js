@@ -1,23 +1,26 @@
-(function() {
-  document.getElementById("ajaxButton").onclick = function() {
-    makeRequest();
-  };
+"use strict";
 
-  async function makeRequest() 
-    { fetch("/login"
-           , { method: "POST"
-             , headers: {"Content-Type": "application/json"}
-             , body: JSON.stringify({"user_id": await writeCookie()})
-             }
-      ).then((response) => { return response.json(); } 
-      ).then((myJson) => 
-        { if (myJson.logged_in === false) {
-            document.getElementById('login_error').textContent = "Your user name or password is incorrect";
-          } else {
-            document.location.replace('/welcome/' + encodeURIComponent(document.getElementById("username").value));
-          }
-        }
-      ).catch(error => alert('Caught Exception: ' + error.description)); 
-    }
+document.querySelector("#loginButton").addEventListener("click", (event) => {
+  getId().then((id) => {
+    const outmsg = { user_id: id
+                   , uuid: window.localStorage.getItem("uuid")
+                   };
+    fetch("/login",
+      { method: "POST"
+      , headers: {"Content-Type": "application/json"}
+      , body: JSON.stringify(outmsg)
+      })
+    .then((response) => response.json())
+    .then((inmsg) => {
+      if (inmsg.uuid === false) {
+        document.querySelector('#login_error').textContent = "Your user name or password is incorrect";
+      } else {
+        window.localStorage.setItem("username", document.querySelector("#username").value);
+        window.localStorage.setItem("uuid", inmsg.uuid);
+        document.location.replace("/");
+      }
+    })
+    .catch(error => alert('Caught Exception: ' + error.description));
+  });
+});
 
-})();

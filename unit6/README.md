@@ -91,23 +91,13 @@ EventTarget.addEventListener()</a> as in:
   <response to event goes here...> 
 });
 ```
+A more elaborate example with lots of user manipulatable objects in the web page reacting to mouse hovers etc besides clicks would
+simply involve lots of stanzas following the same basic pattern.
 
 To access the `<target>` when it's an `element`, as opposed to `window` or `document`, I'm going to standardise on
 `document.querySelector("CSS Selector")` which involves refreshing my memory of when to use dots, hashes, square brackets,
 and greater than signs in <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
 
-Both <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/login.js">login.js</a> and
-<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/signup.js">signup.js</a> have 
-entry points which look like this:
-
-```javascript
-document.querySelector("#loginButton").addEventListener("click", (event) => {
-  ...
-}).
-```
-
-A more elaborate example with lots of user manipulatable objects in the web page reacting to mouse hovers etc besides clicks would
-simply involve lots of stanzas following the same basic pattern.
 
 <h3>Changes to html</h3>
 
@@ -161,7 +151,7 @@ JSON.parse(Json) -> Javascript</a>
 counterparts to make messaging with an Erlang server easy.
 
 One advantage is I can now use server-side templating, so there's no need to schlep entire HTML pages from
-the server to make a few edits.
+the server back to the browser to reload for a few small edits.
 
 I'm still sending the data from the browser in the body of a "POST" httpd request, so not much gain there.
 
@@ -216,6 +206,45 @@ Furthermore, I check this key isn't already in ETS, and get a different key if i
 The client and server just pass this uuid back and forth, with no need to wire already known data such as the user name &mdash; unless
 the server wants the browser to say its user name to verify the uuid is not a lucky guess by a hacker.
 
+<h3>Logging out</h3>
+
+Both <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/login.js">login.js</a> and
+<a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit6/apps/unit6/priv/scripts/signup.js">signup.js</a> have 
+entry points which look like this:
+
+```javascript
+document.querySelector("#loginButton").addEventListener("click", (event) => {
+  ...
+});
+```
+The server not receiving a cookie with every request means my browser
+now needs to respond to a "GET" request with a "POST" to provide the server the ID or whatever
+stored locally. Unlike in Unit 4, I now need an index.html file which does nothing except invoke
+a Javascript file to give the server the required authentication information, and then redirect
+to a login or welcome page.
+
+For the sake of consistency, I've used an event listener which runs the code as soon as the page
+has loaded, though just putting the code inside a file to run as soon as the html calls it also
+works.
+
+```javascript
+window.addEventListener("DOMContentLoaded", (event) => {
+   ...
+});
+```
+
+My logout page now also needs to inform the server to delete the temporary ID in its ETS table, not just 
+clear the local web storage. Testing this turned into a bit of a nightmare, until I realised I needed to
+get Firefox to clear its recent history before it looked at the new, debugged code.
+
+I considered using "DELETE" instead of "POST", but discovered I'd need to change the behaviour from
+cowboy_handler to <a href="https://ninenines.eu/docs/en/cowboy/2.7/manual/cowboy_rest/">cowboy_rest</a>.
+The Cowboy User Guide doesn't provide examples, but googling brought up an
+<a href="http://davekuhlman.org/cowboy-rest-add-get-update-list.html">example</a> which I haven't worked
+through yet.
+
+It would be nice to expand my http vocabulary to the full set of methods, and I hope to redo this exercise
+again at some stage using cowboy_rest.
 
 
 Next &mdash; Unit 7: [Interlanguage communication via websocket](https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7)
