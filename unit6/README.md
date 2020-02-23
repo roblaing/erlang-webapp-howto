@@ -51,14 +51,18 @@ I could store whatever key-value pairs I needed in
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> on the browser and ETS on the server,
 joined by a unique ID replaced every login session to give it little value to hackers.
 
-Ways to do <em>call</em> and <em>response</em> with a Javascript browser and a whatever-language server include the original 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest">XMLHttpRequest</a>, 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">fetch</a> which I'm using here,
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">websocket</a> which I use in
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7">Unit 7</a> to communicate between Erlang and Prolog and then again in
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit8">Unit 8</a> to communicate between Erlang and Javascript, and
-there's also <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a> and
-<a href="https://www.ibm.com/developerworks/library/wa-reverseajax1/index.html">Comet</a> which I'm unfamiliar with.
+Ways to do <em>call</em> and <em>response</em> with a Javascript browser and a whatever-language server include:
+
+<ol>
+  <li>the original <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Using_XMLHttpRequest">XMLHttpRequest</a></li> 
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API">fetch</a> which I'm using here</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API">websocket</a> which I use in
+      <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7">Unit 7</a> to communicate between Erlang and Prolog 
+      and then again in
+      <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit8">Unit 8</a> to communicate between Erlang and Javascript</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events">Server-sent events</a> and</li>
+  <li><a href="https://www.ibm.com/developerworks/library/wa-reverseajax1/index.html">Comet</a> which I'm unfamiliar with</li>
+</ol>
 
 I did <em>fetch</em> in this unit, and then <em>websocket</em> in the last unit. In retrospect I should have done them
 the other way round &mdash; websocket is actually easier than fetch, and I had several "aha!" moments doing the last unit
