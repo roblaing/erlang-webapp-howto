@@ -44,13 +44,6 @@ With Ajax, we can think of the browser as a node with a listening loop. This uni
 
 <h2>Call and response with Javascript</h2>
 
-I've returned to refactor this unit after redoing my user authentication system a third time in 
-<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit8">Unit 8</a> with websocket &mdash; a technology
-Cowboy supports &mdash; during which I improved my Javascript, leading to a realisation that instead of using cookies 
-I could store whatever key-value pairs I needed in 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> on the browser and ETS on the server,
-joined by a unique ID replaced every login session to give it little value to hackers.
-
 Ways to do <em>call</em> and <em>response</em> with a Javascript browser and a whatever-language server include:
 
 <ol>
