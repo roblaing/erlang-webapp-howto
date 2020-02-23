@@ -45,7 +45,8 @@ getuuid(Proplist) ->
       #{rows := Rows} = pgo:query("SELECT name FROM users WHERE id=$1::text", [create_hash(Hash)]),
       case Rows of
         [] -> false;
-        [{Name}] -> String = io_lib:format("~p~p~p", [erlang:system_time(millisecond), make_ref(), node()]),
+        [{Name}] -> delete_uid(Proplist),
+                    String = io_lib:format("~p~p~p", [erlang:system_time(millisecond), make_ref(), node()]),
                     <<I:128>> = crypto:hash(md5, String),
                     Uuid = integer_to_binary(I, 16),
                     Unique = ets:insert_new(uuids, {Uuid, Name}),

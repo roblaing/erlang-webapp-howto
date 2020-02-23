@@ -89,9 +89,6 @@ EventTarget.addEventListener()</a> as in:
 });
 ```
 
-A more elaborate example with lots of user manipulatable objects in the web page reacting to mouse hovers etc besides clicks would
-simply involve lots of stanzas following the same basic pattern.
-
 To access the `<target>` when it's an `element`, as opposed to `window` or `document`, I'm going to standardise on
 `document.querySelector("CSS Selector")` which involves refreshing my memory of when to use dots, hashes, square brackets,
 and greater than signs in <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
@@ -105,6 +102,8 @@ document.querySelector("#loginButton").addEventListener("click", (event) => {
   ...
 });
 ```
+A more elaborate example with lots of user manipulatable objects in the web page reacting to mouse hovers etc besides clicks would
+simply involve lots of stanzas following the same basic pattern.
 
 <h3>Changes to html</h3>
 

@@ -15,16 +15,16 @@ init(Req0=#{method := <<"POST">>}, State) ->
   Name = proplists:get_value(<<"username">>, Proplist),
   #{num_rows := Rows} = pgo:query("SELECT name FROM users WHERE name=$1::text", [Name]),
   case Rows of
-    0 -> Content = jsx:encode([{<<"logged_in">>, true}]),
-         Hash = proplists:get_value(<<"user_id">>, Proplist),
+    0 -> Hash = proplists:get_value(<<"user_id">>, Proplist),
          Email = proplists:get_value(<<"email">>, Proplist),
          pgo:query("INSERT INTO users (id, name, email) VALUES ($1::text, $2::text, $3::text)", 
-           [webutil:create_hash(Hash), Name, Email]);                  
-    1 -> Content = jsx:encode([{<<"logged_in">>, false}])
+           [webutil:create_hash(Hash), Name, Email]),
+         Json = jsx:encode([{<<"uuid">>, webutil:getuuid(Proplist)}]);                
+    1 -> Json = jsx:encode([{<<"uuid">>, false}])
   end,
   Req = cowboy_req:reply(200,
     #{<<"content-type">> => <<"application/json; charset=UTF-8">>},
-    Content,
+    Json,
     Req0
   ),
   {ok, Req, State}.
