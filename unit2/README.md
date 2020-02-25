@@ -310,6 +310,15 @@ init(Req0, State) ->
   ...
 ```
 
+In contrast to Prolog where what goes on which side of an equal sign doesn't matter, when pattern matching in Erlang
+I've found the program won't compile unless the pattern goes on the left and the variable containing the data on the
+right, a convention Cowby breaks as I'll explain below.
+
+Personally, I prefer it on the right to show I'm using the equal sign to compare
+and not assign a value &mdash; <a href="https://arstechnica.com/science/2017/07/how-the-equals-sign-changed-the-world/">
+Robert Recorde</a>'s great invention has sadly been badly abused by computer programing language designers, leading to all
+the confusing single, double, and triple equal signs in Javascript, and `=:=`, `=>`, `:=` etc in Erlang.
+
 In an earlier version of this document,
 I used a convoluted process of nesting `maps:get/2` functions as in `Name = maps:get(name, maps:get(bindings, Req0))`
 to achieve the above. 
@@ -390,11 +399,6 @@ it's more readable to split the GET and POST responders into different init/2 fu
 to end the first one with a semicolon, and only the last with a full stop.
 
 ```erlang
--module(form_handler).
--behavior(cowboy_handler).
-
--export([init/2]).
-
 init(Req0=#{method := <<"GET">>}, State) ->
   Content = webutil:template(code:priv_dir(unit2) ++ "/form.html", State),
   Req = cowboy_req:reply(200,
@@ -438,6 +442,10 @@ init(Req0=#{method := <<"POST">>}, State) ->
   end,
   {ok, Req, State}.
 ```
+
+One gotcha is Cowboy demands when map pattern matching that the variable containing the map is placed on the left 
+of the equal sign as in `Req0=#{method := <<"POST">>}` whereas regular Erlang insists it is on the right as in
+`#{method := <<"POST">>} = Req0`. 
 
 <h4>Client-side form validation</h4>
 
