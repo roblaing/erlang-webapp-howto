@@ -312,9 +312,9 @@ init(Req0, State) ->
 
 In contrast to Prolog where what goes on which side of an equal sign doesn't matter, when pattern matching in Erlang
 I've found the program won't compile unless the pattern goes on the left and the variable containing the data on the
-right, a convention Cowby breaks as I'll explain below.
+right, a convention Cowboy breaks as I'll explain below.
 
-Personally, I prefer it on the right to show I'm using the equal sign to compare
+Personally, I prefer the <em>grounded</em> variable on the right to show I'm using the equal sign to compare
 and not assign a value &mdash; <a href="https://arstechnica.com/science/2017/07/how-the-equals-sign-changed-the-world/">
 Robert Recorde</a>'s great invention has sadly been badly abused by computer programing language designers, leading to all
 the confusing single, double, and triple equal signs in Javascript, and `=:=`, `=>`, `:=` etc in Erlang.
