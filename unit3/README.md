@@ -61,9 +61,8 @@ Your application gets the database name, username, password if needed, and whate
 you need to add to the <a href="">config/sys.config</a> file created by rebar3:
 
 ```erlang
-[
-  {unit3, []},
-  {pgo, [{pools, [{default, #{ pool_size => 10
+[ {unit3, []}
+, {pgo, [{pools, [{default, #{ pool_size => 10
                              , host => "127.0.0.1"
                              , database => "my_database"
                              , user => "user_name"
@@ -109,12 +108,12 @@ jgs\__/'---'\__/
 
 ```
 
-The reason is it contains single quotes, which are dangerous within SQL strings which are bounded by single quotes. 
+The reason is it contains single quotes, which are dangerous within SQL strings because they are bounded by single quotes. 
 To escape single quotes not intended to end the string, they must be preceeded by a single quote. 
 
 My original solution in 
 <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit3/apps/unit3/src/arts_handler.erl">arts_handler</a>
-like so:
+looked like so:
 
 ```erlang
       ...
@@ -164,7 +163,22 @@ Even in traditional programming languages, I've noticed an increasing <em>for lo
 from functional languages getting adopted by Python, Ruby, Javascript etc.
 
 While limiting oneself to <em>immutable</em> variables at first seems weird, languages which have adopted this have been able to embrace
-parallel computing far more easily by avoiding the horror of <em>mutex locks</em>. 
+parallel computing far more easily by avoiding the horror of <em>mutex locks</em>.
+
+Writing this series of tutorials turned into re-learning Javascript as much as learning Erlang, and in some ways Javascript's new (to me)
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/const">const</a> variable declaration statement
+mimics the single use variables of functional languages. I created a bug in some Javascript code by trying to re-assign a value to a variable
+I'd created with `const x`, making it clear to me when to rather use 
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let">let</a>.
+
+Prolog's <a href="http://www.learnprolognow.org/lpnpage.php?pagetype=html&pageid=lpn-htmlse5">unification</a> is more complex than `const`
+in that though you can only assign a value to a variable once, you can leave variables <em>ungrounded</em>, and grounding variables is how Prolog's 
+<em>out</em> arguments turn into return values. In Erlang, where functions return values the <em>normal</em> way rather than as out arguments,
+one can think of them as synonymous to Javascript's `const` variables. 
+
+Javascript has ungrounded variables in the sense that `let X;` sets X to the primitive type 
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a>, but you can't declare
+X an undefined constant until it gets a value as in Prolog.
 
 Some of the ways to iterate in Erlang include:
 
