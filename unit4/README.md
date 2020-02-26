@@ -253,7 +253,8 @@ two database hits when one would do. Cutting out unnecessary hits on the databas
 The command
 
 ```erlang
-Query = pgo:query("INSERT INTO users (id, name, email) VALUES ($1::text, $2::text, $3::text)", [Id, Name, Email]),
+Query = pgo:query("INSERT INTO users (id, name, email) VALUES ($1::text, $2::text, $3::text)", 
+  [Id, Name, Email]),
 ```
 will either return
 
@@ -282,10 +283,12 @@ So I can rely on the constraint I set when I created my user table and let Postg
   Query = pgo:query("INSERT INTO users (id, name, email) VALUES ($1::text, $2::text, $3::text)", 
             [webutil:create_hash(Hash), Name, Email]),
   case Query of
-    {error, _} -> Content = webutil:template(code:priv_dir(unit4) ++ "/signup_form.html", 
-                    webutil:html_escape([Name, "Sorry, that name is already taken. Please pick another.", Email])),
-                  Req = cowboy_req:reply(200, #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0);
-    _          -> Req = cowboy_req:reply(303, #{<<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))}, Req0)
+    {error, _} -> 
+      Content = webutil:template(code:priv_dir(unit4) ++ "/signup_form.html", 
+        webutil:html_escape([Name, "Sorry, that name is already taken. Please pick another.", Email])),
+      Req = cowboy_req:reply(200, #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0);
+    _ -> 
+      Req = cowboy_req:reply(303, #{<<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))}, Req0)
   end,
   {ok, Req, State}.     
 ```
