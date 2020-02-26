@@ -94,7 +94,7 @@ watch out for when using them as database IDs.
 
 I hadn't encountered something like Erlang's <<I:256>> before, and found an explanation in
 <a href="http://erlang.org/doc/reference_manual/expressions.html#bit-syntax-expressions">Expressions</a> section of the
-official documentation. Besided the colon followed by a 2<sup>n</sup> value to say `<<Binary>>` should be chopped up into a list
+official documentation. Besides the colon followed by a 2<sup>n</sup> value to say `<<Binary>>` should be chopped up into a list
 `<<Value1, Value2, Value3,...>>` of 2<sup>n</sup> sized values, there's also the `Value1/Type`notation, as in 
 `<< "That's what she said! ", Msg/binary >>` which I encountered in Unit 7.
 
@@ -245,7 +245,54 @@ call to set the cookie. What I also do in this Javascript function is blank the 
 <h2>signup_handler</h2>
 
 Like Facebook and Twitter, user names have to be unique (though I haven't bothered to tell someone signing up as John Smith that he has to be
-johnsmith6982). 
+johnsmith6982).
+
+A classic blunder I made in the first version of this was to check if a username was already taken before doing the insert, requiring
+two database hits when one would do. Cutting out unnecessary hits on the database is generally the first place to start optimising web applications.
+
+The command
+
+```erlang
+Query = pgo:query("INSERT INTO users (id, name, email) VALUES ($1::text, $2::text, $3::text)", [Id, Name, Email]),
+```
+will either return
+
+```erlang
+#{command => insert,num_rows => 1,rows => []}
+```
+
+or something like
+
+```erlang
+{error,{pgsql_error,#{code => <<"23505">>,constraint => <<"users_name_key">>,
+                      detail => <<"Key (name)=(John Smith) already exists.">>,
+                      file => <<"nbtinsert.c">>,line => <<"434">>,
+                      message =>
+                          <<"duplicate key value violates unique constraint \"users_name_key\"">>,
+                      routine => <<"_bt_check_unique">>,
+                      schema => <<"public">>,severity => <<"ERROR">>,
+                      table => <<"users">>,
+                      {unknown,86} => <<"ERROR">>}}}
+```
+
+So I can rely on the constraint I set when I created my user table and let PostgreSQL check usernames are unique like this:
+
+```erlang
+...
+  Query = pgo:query("INSERT INTO users (id, name, email) VALUES ($1::text, $2::text, $3::text)", 
+            [webutil:create_hash(Hash), Name, Email]),
+  case Query of
+    {error, _} -> Content = webutil:template(code:priv_dir(unit4) ++ "/signup_form.html", 
+                    webutil:html_escape([Name, "Sorry, that name is already taken. Please pick another.", Email])),
+                  Req = cowboy_req:reply(200, #{<<"content-type">> => <<"text/html; charset=UTF-8">>}, Content, Req0);
+    _          -> Req = cowboy_req:reply(303, #{<<"location">> => list_to_binary(io_lib:format("/welcome/~s", [Name]))}, Req0)
+  end,
+  {ok, Req, State}.     
+```
+
+My actual code in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/src/signup_handler.erl">signup_handler.erl</a>
+is a bit more convoluted because I also guard against the cookie not being set, an intermittent bug which plagued my earlier attempts
+until I figured out how to use Javascript promises as explained next.
 
 Again, I'm relying on the browser to check that the user name and password are at least six characters long, and that the password
 entered a second time in the verify field matches.
