@@ -290,6 +290,11 @@ So I can rely on the constraint I set when I created my user table and let Postg
   {ok, Req, State}.     
 ```
 
+This style of programming encouraged by Erlang of using "guards" stands on the shoulders of giants such as Edsger Dijkstra's
+<a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.90.97&rep=rep1&type=pdf">Guarded Command Language</a> which cited
+Tony Hoare's <a href="https://www.cs.cmu.edu/~crary/819-f09/Hoare69.pdf">axiomatic basis for computer programming</a>. I've found
+learning to think in terms of guards rather than traditional <em>if-then</em> statements took some practice.
+
 My actual code in <a href="https://github.com/roblaing/erlang-webapp-howto/blob/master/unit4/apps/unit4/src/signup_handler.erl">signup_handler.erl</a>
 is a bit more convoluted because I also guard against the cookie not being set, an intermittent bug which plagued my earlier attempts
 until I figured out how to use Javascript promises as explained next.
