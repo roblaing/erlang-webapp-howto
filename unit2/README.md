@@ -164,7 +164,10 @@ One snag was I initially used `~w` instead of `~s` since it's more commonly used
 in my HTML as `[72,101,...]`. Next I tried `~p`, which caused the surrounding double quotes, single quotes, or chevrons to be retained
 in the HTML output.
 
-Mercifully, `~s` appears to be the correct magic incantation, and so far appears to be working well.
+Mercifully, `~s` appears to be the correct magic incantation &mdash; except for numbers where you must use `~p`. This tripped me
+up when trying to create an URL out of integers taken from an SQL database, and in the
+<a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit5">Web Services</a> example where temperatures are supplied
+as floating point numbers rather than strings.
 
 <h2 id="observer">Introducing Observer</h2>
 
