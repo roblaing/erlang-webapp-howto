@@ -314,8 +314,9 @@ go to a console (F12 in Firefox) and enter
 crypto.subtle.digest("SHA-256", new TextEncoder().encode("My login and password with a salt"));
 ```
 
-Besides the liturgy of having to create a TextEncoder object instead of just inputting the text, there's the unhelpful response
-of 
+Besides the liturgy of having to create a 
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder">TextEncoder</a> 
+object instead of just inputting the text, there's the unhelpful response of 
 
 ```javascript
 Promise { <state>: "pending" }
