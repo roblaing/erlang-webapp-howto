@@ -307,6 +307,33 @@ entered a second time in the verify field matches.
 
 <h2>Javascript and asynchronous programming</h2>
 
+To grasp the horror of Javascript <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">promises</a>,
+go to a console (F12 in Firefox) and enter
+
+```javascript
+crypto.subtle.digest("SHA-256", new TextEncoder().encode("My login and password with a salt"));
+```
+
+Besides the palaver of having to create a TextEncoder object instead of just inputting the text, there's the unhelpful response
+of 
+
+```javascript
+Promise { <state>: "pending" }
+```
+
+Getting the promised pending <em>promise</em> as so:
+
+```javascript
+crypto.subtle.digest("SHA-256", new TextEncoder().encode("My login and password with a salt"))
+.then((hash) => console.log(hash));
+```
+
+produces the equally unhelpful:
+
+```javascript
+ArrayBuffer { byteLength: 32 }
+```
+
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest">SubtleCrypto.digest()</a> was
 my first encounter with what Javascript terms
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises">promises</a>.
