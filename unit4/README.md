@@ -314,7 +314,7 @@ go to a console (F12 in Firefox) and enter
 crypto.subtle.digest("SHA-256", new TextEncoder().encode("My login and password with a salt"));
 ```
 
-Besides the palaver of having to create a TextEncoder object instead of just inputting the text, there's the unhelpful response
+Besides the liturgy of having to create a TextEncoder object instead of just inputting the text, there's the unhelpful response
 of 
 
 ```javascript
@@ -333,6 +333,8 @@ produces the equally unhelpful:
 ```javascript
 ArrayBuffer { byteLength: 32 }
 ```
+
+requiring further liturgy to actually get something useable...
 
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest">SubtleCrypto.digest()</a> was
 my first encounter with what Javascript terms
