@@ -43,6 +43,14 @@ apps/unit5/src/unit5.app.src</a> with many new additions:
 Adding inets to the above list automatically creates an httpc process when the `unit5` application is started. 
 (One of the things that makes inets's httpd application confusing is it isn't started unless you make edits to explicitly include it.)
 
+If you use gun instead of httpc, you obviously need to replace inets with gun in the above list, and you need to include
+
+```erlang
+{gun, {git, "https://github.com/ninenines/gun", {branch, "master"}}}
+```
+
+in <var>rebar.config</var>. You still, however, need <var>ssl</var>.
+
 Erlang's standard library doesn't include a Json parser, so we need to pick one of the many third-party libraries available.
 I'm going with <a href="https://github.com/talentdeficit/jsx">jsx</a> which is easy to add as dependency because 
 <a href="https://hex.pm/">https://hex.pm/</a> is the default depot for OTP applications, meaning we don't need extra 
