@@ -13,7 +13,8 @@ secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> applic
 
 I picked <var>inets</var> and its <var>httpc</var> client before doing <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7">
 Unit 7</a> which uses <em>websocket</em>. This required using a third-party web client, 
-<a href="https://github.com/ninenines/gun">Gun</a> created by the same 99s team which created <em>Cowboy</em> as an alternative web server.
+<a href="https://github.com/ninenines/gun">Gun</a>, created as an alternative web client by the same 99s team which created <em>Cowboy</em> 
+as an alternative web server.
 
 For HTTP/1.1 it doesn't make much difference if you use OTP's included <var>httpc</var> module or the third party <var>gun</var> module, but
 for websocket and HTTP/2 you need gun, so I've included the alternative code for <var>gun</var> below.
