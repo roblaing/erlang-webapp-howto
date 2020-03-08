@@ -9,7 +9,14 @@ To get data from a service provider, we need a web client, which the standard OT
 <a href="http://erlang.org/doc/apps/inets/http_client.html">inets</a>
 includes as <a href="http://erlang.org/doc/apps/inets/http_client.html">httpc</a>. 
 To access `https://...` sites, httpc needs Erlang's 
-secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> application. 
+secure socket layer <a href="https://erlang.org/doc/man/ssl.html">ssl</a> application.
+
+I picked <var>inets</var> and its <var>httpc</var> client before doing <a href="https://github.com/roblaing/erlang-webapp-howto/tree/master/unit7">
+Unit 7</a> which uses <em>websocket</em>. This required using a third-party web client, 
+<a href="https://github.com/ninenines/gun">Gun</a> created by the same 99s team which created <em>Cowboy</em> as an alternative web server.
+
+For HTTP/1.1 it doesn't make much difference if you use OTP's included <var>httpc</var> module or the third party <var>gun</var> module, but
+for websocket and HTTP/2 you need gun, so I've included the alternative code for <var>gun</var> below.
 
 We also need a Json parser &mdash; which means adding a third-party application to the dependency list &mdash; and 
 an XML parser which comes included.
@@ -96,6 +103,15 @@ io:format("Body: ~p~n", [Body]).
 This will show `Body` to be a string containing Json, so lots of escaped double quotes inside the bounding double quotes,
 which can be gotten rid of in the output with `io:format("Body: ~s~n", [Body])`. I find the `~p` option handy when exploring so as to
 show if the returned data is a string, binary, atom, map...
+
+The alternative way using <var>gun</var> instead of <var>httpc</var> looks like:
+
+```erlang
+{ok, PID} = gun:open("samples.openweathermap.org", 443),
+StreamRef = gun:get(PID, "/data/2.5/weather?q=London,uk&appid=b6907d289e10d714a6e88b30761fae22"),
+{ok, Body} = gun:await_body(PID, StreamRef),
+io:format("Body: ~p~n", [Body]).
+```
 
 Using <a href="https://jsonlint.com/">https://jsonlint.com</a> to neaten up the indentation, the returned Json looks like:
 
