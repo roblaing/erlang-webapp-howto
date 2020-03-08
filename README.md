@@ -4,6 +4,9 @@
 
 I'm adding Erlang to the list of languages &mdash; Python, Ruby, Node.js, [Prolog](https://github.com/roblaing/swipl-webapp-howto)... &mdash; I've taught myself to write simple web applications with.
 
+I've developed <a href="https://www.joeblog.co.za/">joeblog.co.za</a> in tandem with writing these tutorials, so it's pretty much an example
+of a <em>proper, production</em> site using what I've learned and am trying to teach here.
+
 A reason I'm migrating my site <https://www.newsgames.biz> from SWI Prolog to Erlang is to make use of parallel computing, 
 something Erlang was designed from scratch to do. A snag with the commonly used scripting languages mentioned above is they
 have a <a href="https://en.wikipedia.org/wiki/Global_interpreter_lock">Global interpreter lock (GIL)</a> which means
