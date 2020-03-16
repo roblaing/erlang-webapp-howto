@@ -30,7 +30,7 @@ If you are familiar with one of these templating systems, simply add it with cow
 just going to use this two-line function as my templating system:
 
 ```erlang
--spec template(FileName :: file:filename(), ArgList :: [string()]) -> Html :: binary().
+-spec template(FileName :: file:filename(), ArgList :: [string()]) -> Html :: chars().
 %% @doc Reads an html file from its complete path name, and inserts strings without escaping `<' or `>'.
 template(FileName, ArgList) ->
   {ok, Binary} = file:read_file(FileName),
@@ -153,7 +153,8 @@ Text in Erlang can be one of three things:
      which I'll expand on quickly in <em>Introducing Observer</em>.
   3. Chevroned <<"Hello World">> is a <a href="https://erlang.org/doc/reference_manual/data_types.html#bit-strings-and-binaries">binary</a>.
      This is the format that <a href="https://erlang.org/doc/man/file.html#read_file-1">file:read_file("form.hml")</a> returns the HTML in
-     form.html as, and also how Cowboy sends and receives http headers and bodies, which is apparently more efficient than traditional text.
+     form.html as, and also how Cowboy sends and receives http headers and bodies. Concatenation of strings within binaries can be done 
+     <<"Hello", " ", "World">>, but my attempts to do that with variables just crash.
 
 I've found the <code>io_lib:format(Template, [Arg1, Arg2, Arg3, ...])</code> function a huge boon because <code>Template</code> can be any
 of these three types, as can each Arg in the Arglist, with all the type conversion you would need
