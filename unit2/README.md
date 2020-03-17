@@ -30,7 +30,7 @@ If you are familiar with one of these templating systems, simply add it with cow
 just going to use this two-line function as my templating system:
 
 ```erlang
--spec template(FileName :: file:filename(), ArgList :: [string()]) -> Html :: chars().
+-spec template(FileName :: file:filename(), ArgList :: [string()]) -> Html :: [char()].
 %% @doc Reads an html file from its complete path name, and inserts strings without escaping `<' or `>'.
 template(FileName, ArgList) ->
   {ok, Binary} = file:read_file(FileName),
@@ -146,7 +146,9 @@ While you do need to protect your site from malicious user input, that's easily 
 Text in Erlang can be one of three things:
 
   1. Double quoted "Hello World" is under the hood a list of character codes [72,101,108,108,111,32,87,111,114,108,100]. 
-     Since it's a list, you can concatenate these using Erlang's "Hello " ++ "World" notation.
+     Since it's a list, you can concatenate these using Erlang's "Hello " ++ "World" notation. The
+     <a href="https://erlang.org/doc/reference_manual/typespec.html#types-and-their-syntax">list of Erlang types</a> indicates
+     this could be denoted by either `string()` or `[char()]`.
   2. Single quoted 'Hello World' is an atom, and cannot be concatenated unless converted by <code>atom_to_list('Hello World')</code>
      first. The <a href="http://erlang.org/doc/efficiency_guide/commoncaveats.html">Common Caveats</a> section of the official 
      documentation advises against converting the other two text types to atoms without good reason, 
@@ -154,13 +156,21 @@ Text in Erlang can be one of three things:
   3. Chevroned <<"Hello World">> is a <a href="https://erlang.org/doc/reference_manual/data_types.html#bit-strings-and-binaries">binary</a>.
      This is the format that <a href="https://erlang.org/doc/man/file.html#read_file-1">file:read_file("form.hml")</a> returns the HTML in
      form.html as, and also how Cowboy sends and receives http headers and bodies. Concatenation of strings within binaries can be done 
-     <<"Hello", " ", "World">>, but my attempts to do that with variables just crash.
+     <<"Hello", " ", "World">>, but my attempts to do that with variables just crash. There is a `bitstring()' type to differentiate these
+     from other `binary()' blobs enclosed by chevrones.
+
+Some text handling functions are polymorphic regarding the above three types as inputs, but others aren't.
 
 I've found the <code>io_lib:format(Template, [Arg1, Arg2, Arg3, ...])</code> function a huge boon because <code>Template</code> can be any
 of these three types, as can each Arg in the Arglist, with all the type conversion you would need
 to do if you wanted to laboriously concatenate strings happening automagically.
 
-One snag was I initially used `~w` instead of `~s` since it's more commonly used in Prolog's
+But something that constantly trips me up is that while `io_lib:format/2` doesn't care about the input string type, it returns a `[char()]` list,
+requiring <a href="http://erlang.org/doc/man/erlang.html#list_to_binary-1">list_to_binary(IoList) -> binary()</a> if the next step requires a
+bitstring. There's also <a href="list_to_bitstring(BitstringList) -> bitstring()">list_to_bitstring(BitstringList) -> bitstring()</a> which,
+as far as I can tell, is identical for `[char()]` lists.
+
+One snag with `io_lib:format/2` was I initially used `~w` instead of `~s` since it's more commonly used in Prolog's
 <a href="https://www.swi-prolog.org/pldoc/doc_for?object=format/2">format/2</a> statement, which caused the input to get rendered
 in my HTML as `[72,101,...]`. Next I tried `~p`, which caused the surrounding double quotes, single quotes, or chevrons to be retained
 in the HTML output.
