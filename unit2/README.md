@@ -156,8 +156,8 @@ Text in Erlang can be one of three things:
   3. Chevroned <<"Hello World">> is a <a href="https://erlang.org/doc/reference_manual/data_types.html#bit-strings-and-binaries">binary</a>.
      This is the format that <a href="https://erlang.org/doc/man/file.html#read_file-1">file:read_file("form.hml")</a> returns the HTML in
      form.html as, and also how Cowboy sends and receives http headers and bodies. Concatenation of strings within binaries can be done 
-     <<"Hello", " ", "World">>, but my attempts to do that with variables just crash. There is a `bitstring()' type to differentiate these
-     from other `binary()' blobs enclosed by chevrones.
+     <<"Hello", " ", "World">>, but my attempts to do that with variables just crash. There is a `bitstring()` type to differentiate these
+     from more general `binary()` blobs enclosed by chevrones.
 
 Some text handling functions are polymorphic regarding the above three types as inputs, but others aren't.
 
