@@ -1,5 +1,5 @@
 "use strict";
-const loginButton = document.querySelector("#signupButton");
+const signupButton = document.querySelector("#signupButton");
 
 signupButton.addEventListener("click", (event) => {
   let websocket = new WebSocket("ws://localhost:3030/blog");

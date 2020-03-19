@@ -30,6 +30,7 @@ start(_StartType, _StartArgs) ->
  unit8_sup:start_link().
 
 stop(_State) ->
-    ok = cowboy:stop_listener(http_listener).
+  ets:delete(uuids), 
+  ok = cowboy:stop_listener(http_listener).
 
 %% internal functions

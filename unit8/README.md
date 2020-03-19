@@ -32,34 +32,6 @@ this approach, decided to stick with it.
 There is little new Erlang in this exercise, which mainly involves pushing the work such as html templating from the server to browser, thereby
 reducing the lines of Erlang code while increasing the lines of Javascript code.
 
-The switch to getting the client and server to communicate by short Json messages means I no longer use a cookie for user authentication.
-Instead I'm storing whatever key-value pairs I need in 
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> on the browser and ETS on the server,
-joined by a unique ID replaced every login session to give it little value to hackers.
-
-<h2>Javascript style</h2>
-
-Something that frustrates me about Javascript &mdash; and I'm guessing many others &mdash; is it's a language designed by committee,
-cluttered with synonymous ways of doing anything. Googling the "best" way leads to a swamp of conflicting advice, 
-usually advocating using JQuery, TypeScript, Angular, React... whatever library is top of the pops that week.
-
-I'm sticking to a minimal <em>patois</em> of plain vanilla Javascript to keep things manageable, using
-the examples in <a href="https://developer.mozilla.org/en-US/">MDN</a> as my reference.
-
-A style rule I'm adopting to make Javascript more Erlangish is to write all my <em>nodes</em> as  
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener">
-event listeners</a> using this basic pattern:
-
-```javascript
-<target>.addEventListener("EventType", (event) => {
-  <response to event goes here...> 
-});
-```
-
-To access the `<target>` when it's an `element`, as opposed to `window` or `document`, I'm going to standardise on
-`document.querySelector("CSS Selector")` which involves refreshing my memory of when to use dots, hashes, square brackets,
-and greater than signs in <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">CSS selectors</a>.
-
 <h2>Javascript websocket client</h2>
 
 My first attempt involved opening a websocket when the page was loaded and then assuming I could keep it open until the page was
@@ -151,43 +123,6 @@ websocket.addEventListener("error", (event) => {
 Cowboy's User Guide recommends in websocket's
 <a href="https://ninenines.eu/docs/en/cowboy/2.7/guide/ws_handlers/#_saving_memory">saving memory</a> section to add
 the optional <em>hibernate</em> atom to the tuple returned by its various handlers to save memory, which I've done.
-
-<h3>User Authentication with websocket and Web Storage</h3>
-
-Instead of writing the user's ID hash as a cookie, I can turn to another of the myriad of web APIs
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API">Web Storage</a> which lets me
-store key/value pairs temporarily during a session with
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage">Window.sessionStorage</a>
-or permanently with
-<a href="https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage">Window.localStorage</a>.
-
-Web Storage differs from cookies in that the key/value pairs are not sent to the server with each request, which
-helps with <em>information hiding</em> in various senses of the word. 
-
-I still need to send the hash created by the browser from the user's login name and password to verify with its "rehash" on the server,
-but there's no longer any need to store it. Instead, the server can respond with a disposable session ID which it
-remembers as an ETS key to temporarily store whatever is needed in the database (just the user name in this example), so no more
-database hits are required for authentication until the user logs out and back in again, when a new session ID is created, foiling
-anyone masquerading by somehow stealing someone else's cookie.
-
-My method of creating a unique ID is hopefully overkill: I create a string by concatenating
-<a href="https://erlang.org/doc/man/erlang.html#system_time-1">erlang:system_time(millisecond)</a> to get a precise instant in time, 
-<a href="http://erlang.org/doc/man/erlang.html#make_ref-0">make_ref()</a> to get a "reference unique among connected nodes", and
-<a href="http://erlang.org/doc/man/erlang.html#node-0">node()</a> in case some other node created the same make_ref/0
-at precisely the same instant.
-
-This string is then hashed with
-
-```erlang
-...
-<<I:128>> = crypto:hash(md5, String),
-Uuid = integer_to_binary(I, 16),
-...
-```
-Furthermore, I check this key isn't already in ETS, and get a different key if it is.
-
-The client and server just pass this uuid back and forth, with no need to wire already known data such as the user name &mdash; unless
-the server wants the browser to say its user name to verify the uuid is not a lucky guess by a hacker.
 
 
 
